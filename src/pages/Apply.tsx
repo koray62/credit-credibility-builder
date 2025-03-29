@@ -8,7 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CheckIcon, ChevronRightIcon } from 'lucide-react';
+import { CheckIcon, ChevronRightIcon, AlertTriangle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Link } from 'react-router-dom';
 
 const Apply: React.FC = () => {
   const navigate = useNavigate();
@@ -21,12 +23,17 @@ const Apply: React.FC = () => {
     telefon: '',
     email: '',
     adres: '',
+    ilce: '',
     sehir: '',
     egitimDurumu: '',
     meslek: '',
+    digerMeslek: '',
     gelir: '',
     kvkkOnay: false,
     pazarlamaIzni: false,
+    taahhut1: false,
+    taahhut2: false,
+    taahhut3: false
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,9 +49,37 @@ const Apply: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (name === 'meslek' && value !== 'diger') {
+      setFormData(prev => ({ ...prev, digerMeslek: '' }));
+    }
+  };
+
+  const isStepValid = (step: number) => {
+    switch (step) {
+      case 1:
+        return formData.tcKimlik && formData.tcKimlik.length === 11 &&
+               formData.ad && formData.soyad && formData.dogumTarihi &&
+               formData.telefon && formData.email;
+      case 2:
+        return formData.adres && formData.ilce && formData.sehir && 
+               formData.egitimDurumu && (formData.meslek !== 'diger' || 
+               (formData.meslek === 'diger' && formData.digerMeslek)) && formData.gelir;
+      case 3:
+        return formData.kvkkOnay && (formData.taahhut1 && formData.taahhut2 && formData.taahhut3);
+      default:
+        return true;
+    }
+  };
+
   const handleNext = () => {
-    setCurrentStep(prev => prev + 1);
-    window.scrollTo(0, 0);
+    if (isStepValid(currentStep)) {
+      setCurrentStep(prev => prev + 1);
+      window.scrollTo(0, 0);
+    } else {
+      alert("Lütfen tüm zorunlu alanları doldurun.");
+    }
   };
 
   const handlePrevious = () => {
@@ -54,10 +89,36 @@ const Apply: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Form gönderimi simülasyonu
-    console.log('Form gönderildi:', formData);
-    navigate('/surec');
+    if (isStepValid(currentStep)) {
+      // Form gönderimi simülasyonu
+      console.log('Form gönderildi:', formData);
+      
+      // Başvuru tamamlandı sayfasına yönlendir
+      navigate('/basvuru-basarili');
+    } else {
+      alert("Lütfen tüm zorunlu alanları doldurun ve taahhütleri onaylayın.");
+    }
   };
+
+  const meslekListesi = [
+    { value: "ogrenci", label: "Öğrenci" },
+    { value: "ogretmen", label: "Öğretmen" },
+    { value: "doktor", label: "Doktor" },
+    { value: "muhendis", label: "Mühendis" },
+    { value: "avukat", label: "Avukat" },
+    { value: "memur", label: "Devlet Memuru" },
+    { value: "isci", label: "İşçi" },
+    { value: "yonetici", label: "Yönetici" },
+    { value: "satisci", label: "Satış Elemanı" },
+    { value: "teknisyen", label: "Teknisyen" },
+    { value: "muhasebeci", label: "Muhasebeci" },
+    { value: "mimar", label: "Mimar" },
+    { value: "hizmetli", label: "Hizmetli" },
+    { value: "emekli", label: "Emekli" },
+    { value: "evhanimi", label: "Ev Hanımı" },
+    { value: "issiz", label: "İşsiz" },
+    { value: "diger", label: "Diğer" }
+  ];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -135,6 +196,7 @@ const Apply: React.FC = () => {
                           value={formData.dogumTarihi}
                           onChange={handleChange}
                           required
+                          placeholder="GG/AA/YYYY"
                         />
                       </div>
                       
@@ -193,6 +255,7 @@ const Apply: React.FC = () => {
                         type="button" 
                         onClick={handleNext}
                         className="bg-primary hover:bg-primary-dark text-white"
+                        disabled={!isStepValid(1)}
                       >
                         Devam Et <ChevronRightIcon className="ml-2 h-4 w-4" />
                       </Button>
@@ -211,6 +274,18 @@ const Apply: React.FC = () => {
                           name="adres"
                           placeholder="Adresiniz"
                           value={formData.adres}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="ilce">İlçe *</Label>
+                        <Input
+                          id="ilce"
+                          name="ilce"
+                          placeholder="İlçe"
+                          value={formData.ilce}
                           onChange={handleChange}
                           required
                         />
@@ -250,25 +325,46 @@ const Apply: React.FC = () => {
                         </RadioGroup>
                       </div>
                       
-                      <div className="space-y-2">
+                      <div className="space-y-2 col-span-2">
                         <Label htmlFor="meslek">Meslek *</Label>
-                        <Input
-                          id="meslek"
-                          name="meslek"
-                          placeholder="Mesleğiniz"
-                          value={formData.meslek}
-                          onChange={handleChange}
-                          required
-                        />
+                        <Select 
+                          value={formData.meslek} 
+                          onValueChange={(value) => handleSelectChange('meslek', value)}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Mesleğinizi seçin" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {meslekListesi.map((meslek) => (
+                              <SelectItem key={meslek.value} value={meslek.value}>
+                                {meslek.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       
+                      {formData.meslek === 'diger' && (
+                        <div className="space-y-2 col-span-2">
+                          <Label htmlFor="digerMeslek">Mesleğinizi Belirtin *</Label>
+                          <Input
+                            id="digerMeslek"
+                            name="digerMeslek"
+                            placeholder="Mesleğinizi yazın"
+                            value={formData.digerMeslek}
+                            onChange={handleChange}
+                            required
+                          />
+                        </div>
+                      )}
+                      
                       <div className="space-y-2">
-                        <Label htmlFor="gelir">Aylık Gelir (TL) *</Label>
+                        <Label htmlFor="gelir">Aylık Net Gelir (TL) *</Label>
                         <Input
                           id="gelir"
                           name="gelir"
                           type="number"
-                          placeholder="Aylık geliriniz"
+                          placeholder="Aylık net geliriniz"
                           value={formData.gelir}
                           onChange={handleChange}
                           required
@@ -288,6 +384,7 @@ const Apply: React.FC = () => {
                         type="button" 
                         onClick={handleNext}
                         className="bg-primary hover:bg-primary-dark text-white"
+                        disabled={!isStepValid(2)}
                       >
                         Devam Et <ChevronRightIcon className="ml-2 h-4 w-4" />
                       </Button>
@@ -358,8 +455,84 @@ const Apply: React.FC = () => {
                           htmlFor="pazarlamaIzni"
                           className="text-sm font-normal leading-relaxed cursor-pointer"
                         >
-                          Kampanya, indirim ve fırsatlardan haberdar olmak için elektronik iletişim kanalları üzerinden ticari elektronik ileti almayı kabul ediyorum.
+                          Kredi puanım karşılığında ileride ulaşabileceğim bana özel Kampanya, indirim ve fırsatlardan haberdar olmak için elektronik iletişim kanalları üzerinden ticari elektronik ileti almayı kabul ediyorum.
                         </Label>
+                      </div>
+
+                      <div className="pt-4 border-t border-gray-200">
+                        <h3 className="font-semibold text-lg mb-3">Taahhütler</h3>
+                        <p className="text-sm text-gray-600 mb-4">
+                          Başvurunuzun değerlendirilebilmesi için aşağıdaki taahhütleri onaylamanız gerekmektedir.
+                        </p>
+
+                        <div className="space-y-3">
+                          <div className="flex items-start space-x-3">
+                            <Checkbox
+                              id="taahhut1"
+                              checked={formData.taahhut1}
+                              onCheckedChange={(checked) => 
+                                handleCheckboxChange('taahhut1', checked as boolean)
+                              }
+                              required
+                            />
+                            <Label
+                              htmlFor="taahhut1"
+                              className="text-sm font-normal leading-relaxed cursor-pointer"
+                            >
+                              Aktif bir kredi ürünüm (kredi kartı, tüketici kredisi, taşıt kredisi, vs.) bulunmadığını ve bankalar ve finansal kuruluşlara aktif bir borcumun olmadığını beyan ederim. *
+                            </Label>
+                          </div>
+                          
+                          <div className="flex items-start space-x-3">
+                            <Checkbox
+                              id="taahhut2"
+                              checked={formData.taahhut2}
+                              onCheckedChange={(checked) => 
+                                handleCheckboxChange('taahhut2', checked as boolean)
+                              }
+                              required
+                            />
+                            <Label
+                              htmlFor="taahhut2"
+                              className="text-sm font-normal leading-relaxed cursor-pointer"
+                            >
+                              Son 5 yıl içerisinde kullanmış olduğum kredilerimin tümünü kapattığımı ve şu anda aktif bir kredi borcumun olmadığını beyan ederim. *
+                            </Label>
+                          </div>
+                          
+                          <div className="flex items-start space-x-3">
+                            <Checkbox
+                              id="taahhut3"
+                              checked={formData.taahhut3}
+                              onCheckedChange={(checked) => 
+                                handleCheckboxChange('taahhut3', checked as boolean)
+                              }
+                              required
+                            />
+                            <Label
+                              htmlFor="taahhut3"
+                              className="text-sm font-normal leading-relaxed cursor-pointer"
+                            >
+                              Kredi kullanım sürecinde, taksitlerimi düzenli olarak ödeyeceğimi ve programın tüm şartlarına uyacağımı taahhüt ederim. *
+                            </Label>
+                          </div>
+                        </div>
+
+                        {!(formData.taahhut1 && formData.taahhut2 && formData.taahhut3) && (
+                          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 flex items-start">
+                            <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+                            <div>
+                              <p className="font-medium">Uyarı</p>
+                              <p className="text-sm">
+                                Tüm taahhütleri onaylamazsanız, başvurunuz değerlendirmeye alınamayacaktır. 
+                                Banka Findeks sorgusu sonucunda bu kriterlere uymadığınız tespit edilirse başvurunuz reddedilecektir.
+                              </p>
+                              <Link to="/#kim-basvurabilir" className="text-sm font-medium flex items-center mt-2 hover:underline">
+                                Kimler başvuru yapabilir? <ChevronRightIcon className="h-4 w-4 ml-1" />
+                              </Link>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                     
@@ -380,7 +553,7 @@ const Apply: React.FC = () => {
                       <Button 
                         type="submit"
                         className="bg-primary hover:bg-primary-dark text-white"
-                        disabled={!formData.kvkkOnay}
+                        disabled={!isStepValid(3)}
                       >
                         Başvuruyu Tamamla
                       </Button>

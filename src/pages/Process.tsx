@@ -118,12 +118,14 @@ const Process: React.FC = () => {
                 </div>
                 
                 <div className="mt-4 md:mt-0">
-                  <Button 
-                    variant="outline"
-                    className="border-primary text-primary hover:bg-primary hover:text-white transition-colors"
-                  >
-                    Yardım Al
-                  </Button>
+                  <Link to="/#faq">
+                    <Button 
+                      variant="outline"
+                      className="border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+                    >
+                      Yardım Al
+                    </Button>
+                  </Link>
                 </div>
               </div>
               
@@ -216,14 +218,14 @@ const Process: React.FC = () => {
                 <div>
                   <h3 className="font-medium text-gray-800 mb-2">Başvurum reddedilirse ne olur?</h3>
                   <p className="text-gray-600">
-                    Başvurunuzun reddedilmesi durumunda, sebepleri size bildirilecektir. İsterseniz belirli bir süre sonra tekrar başvurabilir veya alternatif çözümler için bizimle iletişime geçebilirsiniz.
+                    Başvurunuzun reddedilmesi durumunda, sebepleri size bildirilecektir. İsterseniz belirli bir süre sonra tekrar başvurabilir veya başka bir banka üzerinden süreci tekrar başlatabilirsiniz.
                   </p>
                 </div>
               </div>
               
               <div className="mt-6 text-center">
                 <p className="text-gray-600 mb-4">Başka sorularınız mı var?</p>
-                <Link to="/sss">
+                <Link to="/#faq">
                   <Button variant="outline">
                     Tüm SSS'leri Görüntüle
                   </Button>

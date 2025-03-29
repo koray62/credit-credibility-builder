@@ -24,13 +24,20 @@ const Navbar: React.FC = () => {
             <Link to="/basvuru" className="text-gray-700 hover:text-primary transition-colors">Başvuru</Link>
             <Link to="/surec" className="text-gray-700 hover:text-primary transition-colors">Süreç Takibi</Link>
             
-            <div className="relative" onMouseEnter={() => setIsDropdownOpen(true)} onMouseLeave={() => setIsDropdownOpen(false)}>
-              <button className="flex items-center text-gray-700 hover:text-primary transition-colors">
+            <div className="relative">
+              <button 
+                className="flex items-center text-gray-700 hover:text-primary transition-colors"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                onMouseEnter={() => setIsDropdownOpen(true)}
+              >
                 Bilgi <ChevronDown className="ml-1 h-4 w-4" />
               </button>
               
               {isDropdownOpen && (
-                <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 animate-fade-in">
+                <div 
+                  className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 animate-fade-in"
+                  onMouseLeave={() => setIsDropdownOpen(false)}
+                >
                   <Link to="/biz-kimiz" className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary hover:text-white">Biz Kimiz</Link>
                   <Link to="/blog" className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary hover:text-white">Blog</Link>
                   <Link to="/findeks" className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary hover:text-white">Findeks</Link>

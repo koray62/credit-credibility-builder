@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <Link to="/" className="inline-block mb-4">
-              <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">KrediBuild</span>
+              <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">SkorUp</span>
             </Link>
             <p className="text-gray-600 mb-4">
               Kredibilitenizi oluşturmanızı ve finansal geleceğinizi güvence altına almanızı sağlayan güvenilir platformunuz.
@@ -99,7 +99,7 @@ const Footer: React.FC = () => {
         <div className="border-t border-gray-200 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-500 text-sm">
-              &copy; {currentYear} KrediBuild. Tüm hakları saklıdır.
+              &copy; {currentYear} SkorUp. Tüm hakları saklıdır.
             </p>
             <div className="mt-4 md:mt-0">
               <ul className="flex space-x-6">

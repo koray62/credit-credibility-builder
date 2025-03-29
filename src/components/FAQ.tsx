@@ -39,12 +39,12 @@ const FAQ: React.FC = () => {
     },
     {
       question: "Ne kadar sürede kredi puanım yükselir?",
-      answer: "Kredi puanınızın yükselmesi, düzenli ödeme yapmanıza bağlıdır. Genellikle, ilk birkaç taksit ödemesinden sonra puanınızda artış görmeye başlarsınız. Programın tamamlanması (6-24 ay) sonunda, hedeflenen Findeks puanına ulaşmış olursunuz."
+      answer: "Kredi puanınızın yükselmesi, düzenli ödeme yapmanıza bağlıdır. Genellikle, ilk birkaç taksit ödemesinden sonra puanınızda artış görmeye başlarsınız. Programın tamamlanması (12-24 ay) sonunda, hedeflenen Findeks puanına ulaşmış olursunuz."
     }
   ];
 
   return (
-    <section className="py-16 bg-white">
+    <section id="faq" className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Sıkça Sorulan Sorular</h2>
