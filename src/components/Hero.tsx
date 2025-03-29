@@ -28,7 +28,7 @@ const Hero: React.FC = () => {
               </Link>
               <Link to="/surec">
                 <Button size="lg" variant="outline" className="w-full sm:w-auto border-secondary text-secondary hover:bg-secondary hover:text-white transition-all duration-300">
-                  Süreç Hakkında Bilgi Al
+                  Mevcut Başvurunu Takip Et
                 </Button>
               </Link>
             </div>
