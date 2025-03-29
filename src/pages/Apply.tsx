@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -8,9 +8,15 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CheckIcon, ChevronRightIcon, AlertTriangle } from 'lucide-react';
+import { CheckIcon, ChevronRightIcon, AlertTriangle, HelpCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from 'react-router-dom';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const Apply: React.FC = () => {
   const navigate = useNavigate();
@@ -29,6 +35,8 @@ const Apply: React.FC = () => {
     meslek: '',
     digerMeslek: '',
     gelir: '',
+    taksitTutari: '2000', // Default minimum value
+    krediVadesi: '12', // Default minimum value
     kvkkOnay: false,
     pazarlamaIzni: false,
     taahhut1: false,
@@ -36,9 +44,28 @@ const Apply: React.FC = () => {
     taahhut3: false
   });
 
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    if (name === 'taksitTutari' && Number(value) < 2000 && value !== '') {
+      setFormData(prev => ({ ...prev, [name]: '2000' }));
+    } else if (name === 'krediVadesi') {
+      const vadeDegeri = parseInt(value);
+      if (vadeDegeri < 12) {
+        setFormData(prev => ({ ...prev, [name]: '12' }));
+      } else if (vadeDegeri > 24) {
+        setFormData(prev => ({ ...prev, [name]: '24' }));
+      } else {
+        setFormData(prev => ({ ...prev, [name]: value }));
+      }
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleCheckboxChange = (name: string, checked: boolean) => {
@@ -65,7 +92,12 @@ const Apply: React.FC = () => {
       case 2:
         return formData.adres && formData.ilce && formData.sehir && 
                formData.egitimDurumu && (formData.meslek !== 'diger' || 
-               (formData.meslek === 'diger' && formData.digerMeslek)) && formData.gelir;
+               (formData.meslek === 'diger' && formData.digerMeslek)) && 
+               formData.gelir && formData.taksitTutari && 
+               Number(formData.taksitTutari) >= 2000 && 
+               formData.krediVadesi && 
+               Number(formData.krediVadesi) >= 12 && 
+               Number(formData.krediVadesi) <= 24;
       case 3:
         return formData.kvkkOnay && (formData.taahhut1 && formData.taahhut2 && formData.taahhut3);
       default:
@@ -192,12 +224,14 @@ const Apply: React.FC = () => {
                         <Input
                           id="dogumTarihi"
                           name="dogumTarihi"
-                          type="date"
+                          type="text"
                           value={formData.dogumTarihi}
                           onChange={handleChange}
                           required
                           placeholder="GG/AA/YYYY"
+                          pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}"
                         />
+                        <p className="text-xs text-gray-500">Örnek: 01/05/1990</p>
                       </div>
                       
                       <div className="space-y-2">
@@ -370,6 +404,37 @@ const Apply: React.FC = () => {
                           required
                         />
                       </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="taksitTutari">Ödemek İstediğiniz Aylık Taksit Tutarı (TL) *</Label>
+                        <Input
+                          id="taksitTutari"
+                          name="taksitTutari"
+                          type="number"
+                          min="2000"
+                          placeholder="Minimum 2000 TL"
+                          value={formData.taksitTutari}
+                          onChange={handleChange}
+                          required
+                        />
+                        <p className="text-xs text-gray-500">Minimum 2000 TL olmalıdır</p>
+                      </div>
+                      
+                      <div className="space-y-2 col-span-2">
+                        <Label htmlFor="krediVadesi">Talep Ettiğiniz Kredi Vadesi (Ay) *</Label>
+                        <Input
+                          id="krediVadesi"
+                          name="krediVadesi"
+                          type="number"
+                          min="12"
+                          max="24"
+                          placeholder="12-24 ay arası"
+                          value={formData.krediVadesi}
+                          onChange={handleChange}
+                          required
+                        />
+                        <p className="text-xs text-gray-500">12-24 ay arasında bir değer giriniz</p>
+                      </div>
                     </div>
                     
                     <div className="pt-4 flex justify-between">
@@ -513,7 +578,7 @@ const Apply: React.FC = () => {
                               htmlFor="taahhut3"
                               className="text-sm font-normal leading-relaxed cursor-pointer"
                             >
-                              Kredi kullanım sürecinde, taksitlerimi düzenli olarak ödeyeceğimi ve programın tüm şartlarına uyacağımı taahhüt ederim. *
+                              Hali hazırda kapanmamış yasal veya kanuni takipte bir kredi/kredi kartı borcum bulunmamaktadır *
                             </Label>
                           </div>
                         </div>
@@ -527,9 +592,26 @@ const Apply: React.FC = () => {
                                 Tüm taahhütleri onaylamazsanız, başvurunuz değerlendirmeye alınamayacaktır. 
                                 Banka Findeks sorgusu sonucunda bu kriterlere uymadığınız tespit edilirse başvurunuz reddedilecektir.
                               </p>
-                              <Link to="/#kim-basvurabilir" className="text-sm font-medium flex items-center mt-2 hover:underline">
-                                Kimler başvuru yapabilir? <ChevronRightIcon className="h-4 w-4 ml-1" />
-                              </Link>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="text-sm font-medium flex items-center mt-2 cursor-help">
+                                      Kimler başvuru yapabilir? <HelpCircle className="h-4 w-4 ml-1" />
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="w-80 p-4 bg-white">
+                                    <h4 className="font-bold mb-2">Programa Kimler Katılabilir?</h4>
+                                    <ul className="list-disc pl-5 space-y-1">
+                                      <li>Hiç kredi geçmişi olmayan gençler ve öğrenciler</li>
+                                      <li>Daha önce kendi adına kredi kullanmamış ev hanımları</li>
+                                      <li>Bugüne kadar hiç kredi kullanmamış kişiler</li>
+                                      <li>Kredi puanı düşük olan ve iyileştirmek isteyenler</li>
+                                      <li>Takibe düşmüş ve borcunu kapatmış olanlar</li>
+                                    </ul>
+                                    <p className="mt-2 italic text-sm">Aktif kredisi olanlar veya aktif takipte olanlar programa dahil edilemez.</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                             </div>
                           </div>
                         )}

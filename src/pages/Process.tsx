@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -53,10 +52,8 @@ const Step: React.FC<StepProps> = ({ number, title, description, icon, isActive,
 };
 
 const Process: React.FC = () => {
-  // Simülasyon için bir aktif adım belirledik
   const [activeStep, setActiveStep] = useState(3);
   
-  // Süreç adımları
   const steps = [
     {
       number: 1,
