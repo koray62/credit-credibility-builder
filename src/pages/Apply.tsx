@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -8,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CheckIcon, ChevronRightIcon, AlertTriangle, HelpCircle } from 'lucide-react';
+import { CheckIcon, ChevronRightIcon, AlertTriangle, HelpCircle, Calendar as CalendarIcon } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from 'react-router-dom';
 import {
@@ -17,6 +16,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { format } from 'date-fns';
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from '@/lib/utils';
 
 const Apply: React.FC = () => {
   const navigate = useNavigate();
@@ -43,26 +50,55 @@ const Apply: React.FC = () => {
     taahhut2: false,
     taahhut3: false
   });
+  const [date, setDate] = useState<Date | undefined>();
 
   // Scroll to top when page loads
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  useEffect(() => {
+    // When date changes, update dogumTarihi in formData
+    if (date) {
+      const formattedDate = format(date, 'dd/MM/yyyy');
+      setFormData(prev => ({ ...prev, dogumTarihi: formattedDate }));
+    }
+  }, [date]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     
-    if (name === 'taksitTutari' && Number(value) < 2000 && value !== '') {
-      setFormData(prev => ({ ...prev, [name]: '2000' }));
-    } else if (name === 'krediVadesi') {
-      const vadeDegeri = parseInt(value);
-      if (vadeDegeri < 12) {
-        setFormData(prev => ({ ...prev, [name]: '12' }));
-      } else if (vadeDegeri > 24) {
-        setFormData(prev => ({ ...prev, [name]: '24' }));
+    if (name === 'taksitTutari') {
+      const taksitValue = Number(value);
+      if (taksitValue < 2000 && value !== '') {
+        setFormData(prev => ({ ...prev, [name]: '2000' }));
+        alert('Minimum taksit tutarı 2000 TL olmalıdır.');
       } else {
         setFormData(prev => ({ ...prev, [name]: value }));
       }
+    } else if (name === 'krediVadesi') {
+      const vadeDegeri = parseInt(value);
+      if (vadeDegeri < 12 && value !== '') {
+        setFormData(prev => ({ ...prev, [name]: '12' }));
+        alert('Minimum vade süresi 12 ay olmalıdır.');
+      } else if (vadeDegeri > 24) {
+        setFormData(prev => ({ ...prev, [name]: '24' }));
+        alert('Maksimum vade süresi 24 ay olmalıdır.');
+      } else {
+        setFormData(prev => ({ ...prev, [name]: value }));
+      }
+    } else if (name === 'dogumTarihi') {
+      // Auto-format the date as user types
+      let formattedValue = value.replace(/\D/g, '');
+      if (formattedValue.length > 0) {
+        // Add slashes between day, month, year
+        if (formattedValue.length > 2 && formattedValue.length <= 4) {
+          formattedValue = formattedValue.substring(0, 2) + '/' + formattedValue.substring(2);
+        } else if (formattedValue.length > 4) {
+          formattedValue = formattedValue.substring(0, 2) + '/' + formattedValue.substring(2, 4) + '/' + formattedValue.substring(4, 8);
+        }
+      }
+      setFormData(prev => ({ ...prev, [name]: formattedValue }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -110,7 +146,18 @@ const Apply: React.FC = () => {
       setCurrentStep(prev => prev + 1);
       window.scrollTo(0, 0);
     } else {
-      alert("Lütfen tüm zorunlu alanları doldurun.");
+      if (currentStep === 2 && formData.taksitTutari && Number(formData.taksitTutari) < 2000) {
+        alert("Minimum taksit tutarı 2000 TL olmalıdır.");
+      } else if (currentStep === 2 && formData.krediVadesi) {
+        const vade = Number(formData.krediVadesi);
+        if (vade < 12) {
+          alert("Minimum vade süresi 12 ay olmalıdır.");
+        } else if (vade > 24) {
+          alert("Maksimum vade süresi 24 ay olmalıdır.");
+        }
+      } else {
+        alert("Lütfen tüm zorunlu alanları doldurun.");
+      }
     }
   };
 
@@ -221,16 +268,39 @@ const Apply: React.FC = () => {
                       
                       <div className="space-y-2">
                         <Label htmlFor="dogumTarihi">Doğum Tarihi *</Label>
-                        <Input
-                          id="dogumTarihi"
-                          name="dogumTarihi"
-                          type="text"
-                          value={formData.dogumTarihi}
-                          onChange={handleChange}
-                          required
-                          placeholder="GG/AA/YYYY"
-                          pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}"
-                        />
+                        <div className="flex gap-2">
+                          <Input
+                            id="dogumTarihi"
+                            name="dogumTarihi"
+                            type="text"
+                            value={formData.dogumTarihi}
+                            onChange={handleChange}
+                            required
+                            placeholder="GG/AA/YYYY"
+                            pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}"
+                            className="flex-grow"
+                          />
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button 
+                                variant="outline" 
+                                type="button"
+                                className="px-2 h-10"
+                              >
+                                <CalendarIcon className="h-4 w-4" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="end">
+                              <Calendar
+                                mode="single"
+                                selected={date}
+                                onSelect={setDate}
+                                initialFocus
+                                className={cn("p-3 pointer-events-auto")}
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
                         <p className="text-xs text-gray-500">Örnek: 01/05/1990</p>
                       </div>
                       

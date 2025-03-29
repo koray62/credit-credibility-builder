@@ -26,7 +26,7 @@ const CTASection: React.FC = () => {
           </Link>
           
           <Link to="/biz-kimiz">
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 transition-colors">
+            <Button size="lg" className="bg-white text-primary hover:bg-gray-100 transition-colors">
               Daha Fazla Bilgi Al
             </Button>
           </Link>
