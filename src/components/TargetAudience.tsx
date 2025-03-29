@@ -34,7 +34,7 @@ const TargetAudience: React.FC = () => {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Kimler İçin Uygun?</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            KrediBuild programı aşağıdaki kişiler için özel olarak tasarlanmıştır.
+            SkorUp programı aşağıdaki kişiler için özel olarak tasarlanmıştır.
             Sizin durumunuza uygun bir çözüm sunuyoruz.
           </p>
         </div>
@@ -90,7 +90,7 @@ const TargetAudience: React.FC = () => {
             <div className="md:w-3/4">
               <h3 className="text-xl font-semibold mb-3 text-center md:text-left">Emin Değil misiniz?</h3>
               <p className="text-gray-600 mb-4">
-                Durumunuzun programa uygun olup olmadığını anlayabilmek için aşağıdaki kriterleri kontrol edin. Eğer hiç kredi kullanmadıysanız veya son 5 yıldır aktif bir krediniz yoksa, bu program tam size göre!
+                Durumunuzun programa uygun olup olmadığını anlayabilmek için aşağıdaki kriterleri kontrol edin. Eğer hiç kredi kullanmadıysanız veya Findeks kredi notunuz 0 (sıfır) olarak gözüküyorsa, bu program tam size göre!
               </p>
               <ul className="space-y-2">
                 <li className="flex items-start">

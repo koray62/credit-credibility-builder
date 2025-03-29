@@ -12,7 +12,7 @@ const Benefits: React.FC = () => {
       benefits: [
         "Findeks puanınızı sıfırdan oluşturma",
         "Bankalarda kredi skorunuzu yükseltme",
-        "Gelecekte daha iyi kredi fırsatlarına erişim",
+        "Gelecekte kredi skorunun sağlayacağı farklı fırsatlara erişim",
         "Finansal kimliğinizi oluşturma"
       ]
     },
@@ -21,10 +21,10 @@ const Benefits: React.FC = () => {
       description: "Programımızda kullandığınız krediler için hiçbir faiz ödemesi yapmazsınız.",
       icon: <Award className="h-7 w-7" />,
       benefits: [
-        "Sadece 1000 TL işlem komisyonu",
+        "Sadece krediden kesilecek olan 1000 TL işlem komisyonu",
         "Faiz yükü olmayan geri ödeme planı",
-        "Taksitleri ödedikçe bloke çözülür",
-        "Vade sonunda ana para size geri döner"
+        "Taksitler ödenip kredi kapanınca bloke çözülür",
+        "Vade sonunda ödediğiniz tüm taksitler size geri döner"
       ]
     },
     {
@@ -32,10 +32,11 @@ const Benefits: React.FC = () => {
       description: "Size uygun bir ödeme planıyla kredi puanınızı oluşturabilirsiniz.",
       icon: <Clock className="h-7 w-7" />,
       benefits: [
-        "6-24 ay arası esnek vadeler",
+        "12-24 ay arası esnek vadeler",
         "Kendi ödeme takviminizie göre planlama",
         "Erken kapatma seçeneği",
-        "Banka mobil uygulaması üzerinden kolay takip"
+        "Aylık olarak ödeyebileceğin taksit tutarını sen belirle",
+        "Ne kadar yüksek taksit ödersen o kadar fazla birikim yapmış olursun"
       ]
     },
     {
@@ -44,7 +45,6 @@ const Benefits: React.FC = () => {
       icon: <ShieldCheck className="h-7 w-7" />,
       benefits: [
         "Anlaşmalı bankalarla güvenli işlem",
-        "BDDK denetiminde finansal kurumlar",
         "Kişisel verilerin korunması",
         "Şeffaf ve yasal süreç"
       ]
@@ -55,7 +55,7 @@ const Benefits: React.FC = () => {
     <section className="py-16 md:py-24">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Neden KrediBuild?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Neden SkorUp?</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Kredi geçmişi olmayan veya uzun süredir kredi kullanmayan kişiler için
             özel olarak tasarlanmış avantajlı çözümlerimizle tanışın.

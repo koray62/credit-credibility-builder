@@ -42,14 +42,14 @@ const HowItWorks: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4">
           <Step 
             number={1}
-            title="Başvurunuzu Yapın"
+            title="Ücretsiz olarak Başvurunuzu Yapın"
             description="Formu doldurun ve kredi başvurusunu anlaşmalı bankaya iletin. Tüm süreç online olarak ilerleyecek."
           />
           
           <Step 
             number={2}
             title="Onay ve Aktivasyon"
-            description="Başvurunuz onaylandıktan sonra, bankanın mobil uygulaması üzerinden hesabınızı aktifleştirin."
+            description="Başvurunuz onaylandıktan sonra, bankanın mobil uygulaması üzerinden kredinizi kullanın."
           />
           
           <Step 
