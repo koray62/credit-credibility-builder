@@ -1,18 +1,22 @@
 
 import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { FcGoogle } from 'react-icons/fc';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Loader2 } from 'lucide-react';
 
 const Auth: React.FC = () => {
   const { user, signInWithGoogle, isLoading } = useAuth();
+  const location = useLocation();
+  
+  // Get the return path from location state or default to home
+  const from = (location.state as any)?.from || "/";
 
   // Redirect if user is already authenticated
   if (user && !isLoading) {
-    return <Navigate to="/" />;
+    return <Navigate to={from} />;
   }
 
   return (
@@ -42,7 +46,14 @@ const Auth: React.FC = () => {
               disabled={isLoading}
             >
               <FcGoogle className="h-5 w-5" />
-              <span>Google ile {isLoading ? 'Yükleniyor...' : 'Devam Et'}</span>
+              {isLoading ? (
+                <span className="flex items-center">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Yükleniyor...
+                </span>
+              ) : (
+                <span>Google ile Devam Et</span>
+              )}
             </Button>
           </div>
         </CardContent>
