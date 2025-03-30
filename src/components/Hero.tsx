@@ -87,7 +87,7 @@ const Hero: React.FC = () => {
                     </svg>
                     <span className="text-gray-700">Hedef Puan: 1300+</span>
                   </div>
-                  <span className="text-gray-700">12 ay sonra</span>
+                  <span className="text-gray-700">12 ay içinde</span>
                 </div>
               </div>
             </div>
