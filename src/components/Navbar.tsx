@@ -3,11 +3,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, ChevronDown, TrendingUp } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { useAuth } from '@/hooks/useAuth';
+import UserMenu from './UserMenu';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -79,17 +82,23 @@ const Navbar: React.FC = () => {
               )}
             </div>
             
-            <Link to="/giris">
-              <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-white transition-colors">
-                Giriş Yap
-              </Button>
-            </Link>
-            
-            <Link to="/basvuru">
-              <Button size="sm" className="bg-primary text-white hover:bg-primary-dark transition-colors">
-                Hemen Başvur
-              </Button>
-            </Link>
+            {!user ? (
+              <>
+                <Link to="/giris">
+                  <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-white transition-colors">
+                    Giriş Yap
+                  </Button>
+                </Link>
+                
+                <Link to="/basvuru">
+                  <Button size="sm" className="bg-primary text-white hover:bg-primary-dark transition-colors">
+                    Hemen Başvur
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <UserMenu />
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -154,26 +163,59 @@ const Navbar: React.FC = () => {
               >
                 Findeks
               </Link>
-              <div className="flex space-x-2 mt-4">
-                <Link 
-                  to="/giris" 
-                  className="flex-1"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-white">
-                    Giriş Yap
-                  </Button>
-                </Link>
-                <Link 
-                  to="/basvuru" 
-                  className="flex-1"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Button className="w-full bg-primary text-white hover:bg-primary-dark">
-                    Hemen Başvur
-                  </Button>
-                </Link>
-              </div>
+              
+              {!user ? (
+                <div className="flex space-x-2 mt-4">
+                  <Link 
+                    to="/giris" 
+                    className="flex-1"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-white">
+                      Giriş Yap
+                    </Button>
+                  </Link>
+                  <Link 
+                    to="/basvuru" 
+                    className="flex-1"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Button className="w-full bg-primary text-white hover:bg-primary-dark">
+                      Hemen Başvur
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="mt-4 px-3 py-2">
+                  <p className="font-medium text-gray-800 mb-2">
+                    {user.user_metadata?.name || 'Kullanıcı'}
+                  </p>
+                  <Link 
+                    to="/profil" 
+                    className="block py-2 text-sm text-gray-700 hover:text-primary"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Profil
+                  </Link>
+                  <Link 
+                    to="/surec" 
+                    className="block py-2 text-sm text-gray-700 hover:text-primary"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Başvurularım
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      const { signOut } = useAuth();
+                      signOut();
+                    }}
+                    className="block py-2 text-sm text-red-500 hover:text-red-700 w-full text-left"
+                  >
+                    Çıkış Yap
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}

@@ -1,0 +1,61 @@
+
+import React from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { Navigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { FcGoogle } from 'react-icons/fc';
+import { TrendingUp } from 'lucide-react';
+
+const Auth: React.FC = () => {
+  const { user, signInWithGoogle, isLoading } = useAuth();
+
+  // Redirect if user is already authenticated
+  if (user && !isLoading) {
+    return <Navigate to="/" />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-4">
+      <div className="mb-8 text-center">
+        <span className="font-heading text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center justify-center">
+          SkorUp
+          <TrendingUp className="ml-2 h-6 w-6 text-primary" />
+        </span>
+        <p className="text-gray-600 mt-2">Finansal geleceğinizi inşa edin</p>
+      </div>
+      
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="space-y-1 text-center">
+          <CardTitle className="text-2xl font-bold">Giriş Yap / Kaydol</CardTitle>
+          <CardDescription>
+            Kredibilite oluşturma yolculuğunuza başlayın
+          </CardDescription>
+        </CardHeader>
+        
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Button 
+              variant="outline" 
+              className="w-full flex items-center justify-center gap-2 border-gray-300 hover:bg-gray-50"
+              onClick={signInWithGoogle}
+              disabled={isLoading}
+            >
+              <FcGoogle className="h-5 w-5" />
+              <span>Google ile {isLoading ? 'Yükleniyor...' : 'Devam Et'}</span>
+            </Button>
+          </div>
+        </CardContent>
+        
+        <CardFooter className="flex flex-col space-y-4">
+          <div className="text-center text-sm text-gray-500">
+            Devam ederek, <a href="#" className="underline text-primary">Hizmet Şartlarımızı</a> ve{' '}
+            <a href="#" className="underline text-primary">Gizlilik Politikamızı</a> kabul etmiş olursunuz.
+          </div>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+};
+
+export default Auth;
