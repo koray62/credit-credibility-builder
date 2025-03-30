@@ -57,7 +57,7 @@ const Hero: React.FC = () => {
                 <div className="w-48 h-48 rounded-full bg-gray-100 border-8 border-primary flex items-center justify-center relative">
                   <div className="text-center">
                     <div className="text-4xl font-bold text-primary-dark">1200</div>
-                    <div className="text-gray-500 text-sm">Hedef Puan</div>
+                    <div className="text-gray-500 text-sm">Mevcut Puan</div>
                   </div>
                 </div>
               </div>
