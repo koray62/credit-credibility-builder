@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, TrendingUp } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 const Navbar: React.FC = () => {
@@ -29,7 +29,10 @@ const Navbar: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">SkorUp</span>
+              <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center">
+                SkorUp
+                <TrendingUp className="ml-1 h-5 w-5 text-primary" />
+              </span>
             </Link>
           </div>
 

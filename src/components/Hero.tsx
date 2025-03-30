@@ -2,7 +2,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, TrendingUp } from 'lucide-react';
+import { Progress } from "@/components/ui/progress";
 
 const Hero: React.FC = () => {
   return (
@@ -26,9 +27,9 @@ const Hero: React.FC = () => {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
-              <Link to="/surec">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto border-secondary text-secondary hover:bg-secondary hover:text-white transition-all duration-300">
-                  Mevcut Başvurunu Takip Et
+              <Link to="/biz-kimiz">
+                <Button size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white transition-all duration-300">
+                  Daha Fazla Bilgi Al
                 </Button>
               </Link>
             </div>
@@ -50,16 +51,13 @@ const Hero: React.FC = () => {
                   <h3 className="text-lg font-semibold text-gray-800">Kredi Puanınız</h3>
                   <p className="text-gray-500 text-sm">Simülasyon</p>
                 </div>
-                <div className="bg-primary-light text-primary text-sm py-1 px-3 rounded-full">
-                  Örnek Gösterim
-                </div>
               </div>
               
               <div className="flex items-center justify-center my-8">
                 <div className="w-48 h-48 rounded-full bg-gray-100 border-8 border-primary flex items-center justify-center relative">
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-primary-dark">0</div>
-                    <div className="text-gray-500 text-sm">Başlangıç</div>
+                    <div className="text-4xl font-bold text-primary-dark">1200</div>
+                    <div className="text-gray-500 text-sm">Hedef Puan</div>
                   </div>
                 </div>
               </div>
@@ -67,10 +65,16 @@ const Hero: React.FC = () => {
               <div className="mb-6">
                 <div className="flex justify-between mb-2">
                   <span className="text-gray-600">İlerleme</span>
-                  <span className="text-gray-600">0/1900</span>
+                  <span className="text-gray-600">1200/1900</span>
                 </div>
-                <div className="w-full h-2 bg-gray-200 rounded-full">
-                  <div className="h-full bg-gradient-to-r from-primary to-secondary rounded-full w-0 animate-pulse-slow"></div>
+                <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full rounded-full" 
+                    style={{ 
+                      width: '63%',
+                      background: 'linear-gradient(to right, #e53e3e, #ecc94b, #48bb78)'
+                    }}
+                  ></div>
                 </div>
               </div>
               

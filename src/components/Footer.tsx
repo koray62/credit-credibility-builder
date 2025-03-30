@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, GithubIcon, LinkedinIcon, TwitterIcon } from 'lucide-react';
+import { ArrowUpRight, GithubIcon, LinkedinIcon, TwitterIcon, YoutubeIcon, TrendingUp } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -10,7 +10,10 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <Link to="/" className="flex items-center">
-              <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">SkorUp</span>
+              <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center">
+                SkorUp
+                <TrendingUp className="ml-1 h-5 w-5 text-primary" />
+              </span>
             </Link>
             <p className="text-gray-600 text-sm max-w-xs">
               Kredibilite oluşturmanıza yardımcı olan güvenilir finansal çözüm platformu.
@@ -24,6 +27,9 @@ const Footer: React.FC = () => {
               </a>
               <a href="#" className="text-gray-600 hover:text-primary transition-colors">
                 <GithubIcon className="h-5 w-5" />
+              </a>
+              <a href="#" className="text-gray-600 hover:text-primary transition-colors">
+                <YoutubeIcon className="h-5 w-5" />
               </a>
             </div>
           </div>

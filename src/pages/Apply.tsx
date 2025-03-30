@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -51,11 +52,15 @@ const Apply: React.FC = () => {
     taahhut3: false
   });
   const [date, setDate] = useState<Date | undefined>();
+  const [formErrors, setFormErrors] = useState({
+    taksitTutari: false,
+    krediVadesi: false
+  });
 
-  // Scroll to top when page loads
+  // Scroll to top when page loads or step changes
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  }, [currentStep]);
 
   useEffect(() => {
     // When date changes, update dogumTarihi in formData
@@ -68,26 +73,7 @@ const Apply: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     
-    if (name === 'taksitTutari') {
-      const taksitValue = Number(value);
-      if (taksitValue < 2000 && value !== '') {
-        setFormData(prev => ({ ...prev, [name]: '2000' }));
-        alert('Minimum taksit tutarı 2000 TL olmalıdır.');
-      } else {
-        setFormData(prev => ({ ...prev, [name]: value }));
-      }
-    } else if (name === 'krediVadesi') {
-      const vadeDegeri = parseInt(value);
-      if (vadeDegeri < 12 && value !== '') {
-        setFormData(prev => ({ ...prev, [name]: '12' }));
-        alert('Minimum vade süresi 12 ay olmalıdır.');
-      } else if (vadeDegeri > 24) {
-        setFormData(prev => ({ ...prev, [name]: '24' }));
-        alert('Maksimum vade süresi 24 ay olmalıdır.');
-      } else {
-        setFormData(prev => ({ ...prev, [name]: value }));
-      }
-    } else if (name === 'dogumTarihi') {
+    if (name === 'dogumTarihi') {
       // Auto-format the date as user types
       let formattedValue = value.replace(/\D/g, '');
       if (formattedValue.length > 0) {
@@ -101,6 +87,13 @@ const Apply: React.FC = () => {
       setFormData(prev => ({ ...prev, [name]: formattedValue }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
+      
+      // Reset the form errors when user types
+      if (name === 'taksitTutari') {
+        setFormErrors(prev => ({ ...prev, taksitTutari: false }));
+      } else if (name === 'krediVadesi') {
+        setFormErrors(prev => ({ ...prev, krediVadesi: false }));
+      }
     }
   };
 
@@ -119,6 +112,32 @@ const Apply: React.FC = () => {
     }
   };
 
+  const validateStepFields = (step: number) => {
+    let isValid = true;
+    let newErrors = { ...formErrors };
+    
+    if (step === 2) {
+      // Validate taksit tutarı
+      if (formData.taksitTutari && Number(formData.taksitTutari) < 2000) {
+        newErrors.taksitTutari = true;
+        isValid = false;
+      }
+      
+      // Validate kredi vadesi
+      if (formData.krediVadesi) {
+        const vade = Number(formData.krediVadesi);
+        if (vade < 12 || vade > 24) {
+          newErrors.krediVadesi = true;
+          isValid = false;
+        }
+      }
+      
+      setFormErrors(newErrors);
+    }
+    
+    return isValid;
+  };
+
   const isStepValid = (step: number) => {
     switch (step) {
       case 1:
@@ -130,10 +149,7 @@ const Apply: React.FC = () => {
                formData.egitimDurumu && (formData.meslek !== 'diger' || 
                (formData.meslek === 'diger' && formData.digerMeslek)) && 
                formData.gelir && formData.taksitTutari && 
-               Number(formData.taksitTutari) >= 2000 && 
-               formData.krediVadesi && 
-               Number(formData.krediVadesi) >= 12 && 
-               Number(formData.krediVadesi) <= 24;
+               formData.krediVadesi;
       case 3:
         return formData.kvkkOnay && (formData.taahhut1 && formData.taahhut2 && formData.taahhut3);
       default:
@@ -142,19 +158,14 @@ const Apply: React.FC = () => {
   };
 
   const handleNext = () => {
-    if (isStepValid(currentStep)) {
+    if (validateStepFields(currentStep) && isStepValid(currentStep)) {
       setCurrentStep(prev => prev + 1);
       window.scrollTo(0, 0);
     } else {
-      if (currentStep === 2 && formData.taksitTutari && Number(formData.taksitTutari) < 2000) {
+      if (formErrors.taksitTutari) {
         alert("Minimum taksit tutarı 2000 TL olmalıdır.");
-      } else if (currentStep === 2 && formData.krediVadesi) {
-        const vade = Number(formData.krediVadesi);
-        if (vade < 12) {
-          alert("Minimum vade süresi 12 ay olmalıdır.");
-        } else if (vade > 24) {
-          alert("Maksimum vade süresi 24 ay olmalıdır.");
-        }
+      } else if (formErrors.krediVadesi) {
+        alert("Vade süresi 12-24 ay arasında olmalıdır.");
       } else {
         alert("Lütfen tüm zorunlu alanları doldurun.");
       }
@@ -371,7 +382,7 @@ const Apply: React.FC = () => {
                 {currentStep === 2 && (
                   <div className="space-y-6 animate-fade-in">
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                      <div className="space-y-2">
+                      <div className="space-y-2 col-span-1 md:col-span-2">
                         <Label htmlFor="adres">Adres *</Label>
                         <Input
                           id="adres"
@@ -407,7 +418,7 @@ const Apply: React.FC = () => {
                         />
                       </div>
                       
-                      <div className="space-y-2 col-span-2">
+                      <div className="space-y-2 col-span-1 md:col-span-2">
                         <Label>Eğitim Durumu *</Label>
                         <RadioGroup value={formData.egitimDurumu} onValueChange={(value) => handleRadioChange('egitimDurumu', value)} className="grid grid-cols-2 gap-4 pt-2">
                           <div className="flex items-center space-x-2">
@@ -429,7 +440,7 @@ const Apply: React.FC = () => {
                         </RadioGroup>
                       </div>
                       
-                      <div className="space-y-2 col-span-2">
+                      <div className="space-y-2 col-span-1 md:col-span-2">
                         <Label htmlFor="meslek">Meslek *</Label>
                         <Select 
                           value={formData.meslek} 
@@ -449,7 +460,7 @@ const Apply: React.FC = () => {
                       </div>
                       
                       {formData.meslek === 'diger' && (
-                        <div className="space-y-2 col-span-2">
+                        <div className="space-y-2 col-span-1 md:col-span-2">
                           <Label htmlFor="digerMeslek">Mesleğinizi Belirtin *</Label>
                           <Input
                             id="digerMeslek"
@@ -486,11 +497,12 @@ const Apply: React.FC = () => {
                           value={formData.taksitTutari}
                           onChange={handleChange}
                           required
+                          className={formErrors.taksitTutari ? "border-red-500" : ""}
                         />
                         <p className="text-xs text-gray-500">Minimum 2000 TL olmalıdır</p>
                       </div>
                       
-                      <div className="space-y-2 col-span-2">
+                      <div className="space-y-2 col-span-1 md:col-span-2">
                         <Label htmlFor="krediVadesi">Talep Ettiğiniz Kredi Vadesi (Ay) *</Label>
                         <Input
                           id="krediVadesi"
@@ -502,6 +514,7 @@ const Apply: React.FC = () => {
                           value={formData.krediVadesi}
                           onChange={handleChange}
                           required
+                          className={formErrors.krediVadesi ? "border-red-500" : ""}
                         />
                         <p className="text-xs text-gray-500">12-24 ay arasında bir değer giriniz</p>
                       </div>
@@ -664,7 +677,7 @@ const Apply: React.FC = () => {
                               </p>
                               <TooltipProvider>
                                 <Tooltip>
-                                  <TooltipTrigger asChild>
+                                  <TooltipTrigger>
                                     <div className="text-sm font-medium flex items-center mt-2 cursor-help">
                                       Kimler başvuru yapabilir? <HelpCircle className="h-4 w-4 ml-1" />
                                     </div>
