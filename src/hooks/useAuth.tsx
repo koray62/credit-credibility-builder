@@ -9,6 +9,7 @@ type AuthContextType = {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
+  isAuthenticated: boolean; // Added for easier checks
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -62,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo:`${window.location.origin}/auth/v1/callback`, // Use the current site origin as the redirect URL
+          redirectTo: `${origin}/auth/v1/callback`, // Use the current site origin as the redirect URL
         },
       });
       
@@ -98,6 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       session,
       isLoading,
+      isAuthenticated: !!user, // Added for easier checks
       signInWithGoogle,
       signOut,
     }}>

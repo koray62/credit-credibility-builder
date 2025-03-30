@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -30,7 +31,7 @@ import { toast } from '@/hooks/use-toast';
 
 const Apply: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     tcKimlik: '',
@@ -180,13 +181,13 @@ const Apply: React.FC = () => {
       setIsSubmitting(true);
       
       try {
-        if (!user) {
+        if (!isAuthenticated || !user) {
           toast({
             title: "Giriş gerekli",
             description: "Başvuru yapmak için giriş yapmalısınız.",
             variant: "destructive",
           });
-          navigate('/giris');
+          navigate('/giris', { state: { from: '/basvuru' } });
           return;
         }
         
@@ -218,19 +219,27 @@ const Apply: React.FC = () => {
           })
         };
         
-        const { error } = await supabase
+        console.log('Submitting application data:', applicationData);
+        
+        const { error, data } = await supabase
           .from('credit_applications')
-          .insert(applicationData);
+          .insert(applicationData)
+          .select();
           
         if (error) {
+          console.error('Supabase error:', error);
           throw error;
         }
         
-        console.log('Başvuru başarıyla kaydedildi:', applicationData);
+        console.log('Application submitted successfully:', data);
+        toast({
+          title: "Başvuru Başarılı",
+          description: "Kredi başvurunuz başarıyla alındı.",
+        });
         
         navigate('/basvuru-basarili');
       } catch (error) {
-        console.error('Başvuru gönderilirken bir hata oluştu:', error);
+        console.error('Error submitting application:', error);
         toast({
           title: "Başvuru Hatası",
           description: "Başvurunuz gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
