@@ -25,13 +25,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from '@/hooks/use-toast';
 
 const Apply: React.FC = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, isLoading } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     tcKimlik: '',
@@ -47,8 +43,8 @@ const Apply: React.FC = () => {
     meslek: '',
     digerMeslek: '',
     gelir: '',
-    taksitTutari: '2000',
-    krediVadesi: '12',
+    taksitTutari: '2000', // Default minimum value
+    krediVadesi: '12', // Default minimum value
     kvkkOnay: false,
     pazarlamaIzni: false,
     taahhut1: false,
@@ -60,13 +56,14 @@ const Apply: React.FC = () => {
     taksitTutari: false,
     krediVadesi: false
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Scroll to top when page loads or step changes
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentStep]);
 
   useEffect(() => {
+    // When date changes, update dogumTarihi in formData
     if (date) {
       const formattedDate = format(date, 'dd/MM/yyyy');
       setFormData(prev => ({ ...prev, dogumTarihi: formattedDate }));
@@ -77,8 +74,10 @@ const Apply: React.FC = () => {
     const { name, value } = e.target;
     
     if (name === 'dogumTarihi') {
+      // Auto-format the date as user types
       let formattedValue = value.replace(/\D/g, '');
       if (formattedValue.length > 0) {
+        // Add slashes between day, month, year
         if (formattedValue.length > 2 && formattedValue.length <= 4) {
           formattedValue = formattedValue.substring(0, 2) + '/' + formattedValue.substring(2);
         } else if (formattedValue.length > 4) {
@@ -89,6 +88,7 @@ const Apply: React.FC = () => {
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
       
+      // Reset the form errors when user types
       if (name === 'taksitTutari') {
         setFormErrors(prev => ({ ...prev, taksitTutari: false }));
       } else if (name === 'krediVadesi') {
@@ -117,11 +117,13 @@ const Apply: React.FC = () => {
     let newErrors = { ...formErrors };
     
     if (step === 2) {
+      // Validate taksit tutarı
       if (formData.taksitTutari && Number(formData.taksitTutari) < 2000) {
         newErrors.taksitTutari = true;
         isValid = false;
       }
       
+      // Validate kredi vadesi
       if (formData.krediVadesi) {
         const vade = Number(formData.krediVadesi);
         if (vade < 12 || vade > 24) {
@@ -175,79 +177,14 @@ const Apply: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isStepValid(currentStep)) {
-      setIsSubmitting(true);
+      // Form gönderimi simülasyonu
+      console.log('Form gönderildi:', formData);
       
-      try {
-        if (!isAuthenticated || !user) {
-          toast({
-            title: "Giriş gerekli",
-            description: "Başvuru yapmak için giriş yapmalısınız.",
-            variant: "destructive",
-          });
-          navigate('/giris', { state: { from: '/basvuru' } });
-          return;
-        }
-        
-        const applicationData = {
-          user_id: user.id,
-          amount: parseFloat(formData.taksitTutari) * parseInt(formData.krediVadesi),
-          installment_count: parseInt(formData.krediVadesi),
-          notes: JSON.stringify({
-            personal: {
-              tcKimlik: formData.tcKimlik,
-              ad: formData.ad,
-              soyad: formData.soyad,
-              dogumTarihi: formData.dogumTarihi,
-              telefon: formData.telefon,
-              email: formData.email
-            },
-            address: {
-              adres: formData.adres,
-              ilce: formData.ilce,
-              sehir: formData.sehir
-            },
-            financial: {
-              egitimDurumu: formData.egitimDurumu,
-              meslek: formData.meslek,
-              digerMeslek: formData.digerMeslek,
-              gelir: formData.gelir,
-              taksitTutari: formData.taksitTutari
-            }
-          })
-        };
-        
-        console.log('Submitting application data:', applicationData);
-        
-        const { error, data } = await supabase
-          .from('credit_applications')
-          .insert(applicationData)
-          .select();
-          
-        if (error) {
-          console.error('Supabase error:', error);
-          throw error;
-        }
-        
-        console.log('Application submitted successfully:', data);
-        toast({
-          title: "Başvuru Başarılı",
-          description: "Kredi başvurunuz başarıyla alındı.",
-        });
-        
-        navigate('/basvuru-basarili');
-      } catch (error) {
-        console.error('Error submitting application:', error);
-        toast({
-          title: "Başvuru Hatası",
-          description: "Başvurunuz gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsSubmitting(false);
-      }
+      // Başvuru tamamlandı sayfasına yönlendir
+      navigate('/basvuru-basarili');
     } else {
       alert("Lütfen tüm zorunlu alanları doldurun ve taahhütleri onaylayın.");
     }
@@ -290,6 +227,7 @@ const Apply: React.FC = () => {
                 </p>
               </div>
               
+              {/* İlerleme Çubuğu */}
               <div className="mb-10">
                 <div className="flex justify-between items-center mb-2">
                   {[1, 2, 3].map((step) => (
@@ -321,6 +259,7 @@ const Apply: React.FC = () => {
               </div>
               
               <form onSubmit={handleSubmit}>
+                {/* Adım 1: Kişisel Bilgiler */}
                 {currentStep === 1 && (
                   <div className="space-y-6 animate-fade-in">
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -439,6 +378,7 @@ const Apply: React.FC = () => {
                   </div>
                 )}
                 
+                {/* Adım 2: Ek Bilgiler */}
                 {currentStep === 2 && (
                   <div className="space-y-6 animate-fade-in">
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -600,6 +540,7 @@ const Apply: React.FC = () => {
                   </div>
                 )}
                 
+                {/* Adım 3: Onay */}
                 {currentStep === 3 && (
                   <div className="space-y-6 animate-fade-in">
                     <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
@@ -777,16 +718,9 @@ const Apply: React.FC = () => {
                       <Button 
                         type="submit"
                         className="bg-primary hover:bg-primary-dark text-white"
-                        disabled={!isStepValid(3) || isSubmitting}
+                        disabled={!isStepValid(3)}
                       >
-                        {isSubmitting ? (
-                          <>
-                            <span className="mr-2">İşleniyor</span>
-                            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-                          </>
-                        ) : (
-                          'Başvuruyu Tamamla'
-                        )}
+                        Başvuruyu Tamamla
                       </Button>
                     </div>
                   </div>
