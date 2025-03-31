@@ -9,7 +9,15 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  base: "./", // ✅ Use root-relative paths
+  base: "./", // Use relative paths for assets
+  build: {
+    assetsDir: "assets", // Explicitly define assets directory
+    rollupOptions: {
+      output: {
+        manualChunks: undefined, // Disable code splitting
+      },
+    },
+  },
   plugins: [
     react(),
     mode === 'development' && componentTagger(),
@@ -20,4 +28,3 @@ export default defineConfig(({ mode }) => ({
     },
   },
 }));
-
