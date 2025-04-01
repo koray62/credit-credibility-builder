@@ -17,6 +17,7 @@ import Findeks from "./pages/Findeks";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
+// Create the QueryClient
 const queryClient = new QueryClient();
 
 // ScrollToTop component
@@ -30,6 +31,7 @@ const ScrollToTop = () => {
   return null;
 };
 
+// App Routes component
 const AppRoutes = () => (
   <>
     <ScrollToTop />
@@ -52,6 +54,7 @@ const AppRoutes = () => (
   </>
 );
 
+// Main App component
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
