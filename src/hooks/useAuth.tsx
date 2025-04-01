@@ -56,7 +56,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       
       if (data) {
-        setProfile(data as ProfileType);
+        // Ensure all fields from ProfileType are present, even if null
+        const profileData: ProfileType = {
+          id: data.id,
+          full_name: data.full_name,
+          tc_kimlik: data.tc_kimlik,
+          phone: data.phone,
+          address: data.address,
+          district: data.district,
+          city: data.city,
+          education_level: data.education_level,
+          occupation: data.occupation,
+          monthly_income: data.monthly_income,
+          birth_date: data.birth_date,
+          kvkk_consent: data.kvkk_consent,
+          marketing_consent: data.marketing_consent,
+          consent_updated_at: data.consent_updated_at
+        };
+        
+        setProfile(profileData);
       }
     } catch (error) {
       console.error('Error in fetchProfile:', error);
