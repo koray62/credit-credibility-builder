@@ -18,7 +18,14 @@ import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 // Create the QueryClient
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false
+    }
+  }
+});
 
 // ScrollToTop component
 const ScrollToTop = () => {

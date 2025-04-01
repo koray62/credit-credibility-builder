@@ -113,9 +113,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    // Set up auth state listener FIRST
+    let mounted = true;
+    
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
+        if (!mounted) return;
+        
+        console.log('Auth state changed:', event);
         setSession(newSession);
         setUser(newSession?.user ?? null);
         
@@ -140,20 +145,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(async ({ data: { session: currentSession } }) => {
-      setSession(currentSession);
-      setUser(currentSession?.user ?? null);
-      
-      // Fetch profile for existing session
-      if (currentSession?.user) {
-        await fetchProfile(currentSession.user.id);
+    // Check for existing session
+    const initializeAuth = async () => {
+      try {
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        
+        if (mounted) {
+          setSession(currentSession);
+          setUser(currentSession?.user ?? null);
+          
+          // Fetch profile for existing session
+          if (currentSession?.user) {
+            await fetchProfile(currentSession.user.id);
+          }
+          
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
-      
-      setIsLoading(false);
-    });
+    };
+
+    initializeAuth();
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
@@ -168,6 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       
       if (error) {
+        console.error('Google authentication error:', error);
         throw error;
       }
     } catch (error) {
