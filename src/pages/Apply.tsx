@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -25,9 +24,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from '@/lib/utils';
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 
 const Apply: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     tcKimlik: '',
@@ -56,6 +59,7 @@ const Apply: React.FC = () => {
     taksitTutari: false,
     krediVadesi: false
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Scroll to top when page loads or step changes
   useEffect(() => {
@@ -177,16 +181,69 @@ const Apply: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isStepValid(currentStep)) {
-      // Form gönderimi simülasyonu
-      console.log('Form gönderildi:', formData);
-      
-      // Başvuru tamamlandı sayfasına yönlendir
+    
+    if (!isStepValid(currentStep)) {
+      toast({
+        title: "Eksik bilgi",
+        description: "Lütfen tüm zorunlu alanları doldurun ve taahhütleri onaylayın.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Check if user is authenticated
+      if (!user) {
+        toast({
+          title: "Giriş yapılmadı",
+          description: "Başvuru yapabilmek için giriş yapmanız gerekmektedir.",
+          variant: "destructive"
+        });
+        navigate('/giris');
+        return;
+      }
+
+      // Prepare application data for database
+      const applicationData = {
+        user_id: user.id,
+        amount: parseFloat(formData.taksitTutari),
+        installment_count: parseInt(formData.krediVadesi),
+        status: 'pending',
+        notes: `Ad: ${formData.ad} ${formData.soyad}, TC: ${formData.tcKimlik}, Tel: ${formData.telefon}, E-posta: ${formData.email}, Adres: ${formData.adres}, ${formData.ilce}, ${formData.sehir}, Doğum Tarihi: ${formData.dogumTarihi}, Eğitim: ${formData.egitimDurumu}, Meslek: ${formData.meslek === 'diger' ? formData.digerMeslek : formData.meslek}, Gelir: ${formData.gelir} TL`,
+        // Store checkbox values
+        kvkk_consent: formData.kvkkOnay,
+        marketing_consent: formData.pazarlamaIzni,
+        no_active_loans: formData.taahhut1,
+        all_loans_paid: formData.taahhut2,
+        no_legal_proceedings: formData.taahhut3
+      };
+
+      // Save application to database
+      const { error } = await supabase
+        .from('credit_applications')
+        .insert([applicationData]);
+
+      if (error) {
+        throw error;
+      }
+
+      // Redirect to success page
       navigate('/basvuru-basarili');
-    } else {
-      alert("Lütfen tüm zorunlu alanları doldurun ve taahhütleri onaylayın.");
+      
+      console.log('Form submitted:', formData);
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      toast({
+        title: "Başvuru hatası",
+        description: "Başvurunuz kaydedilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -718,9 +775,9 @@ const Apply: React.FC = () => {
                       <Button 
                         type="submit"
                         className="bg-primary hover:bg-primary-dark text-white"
-                        disabled={!isStepValid(3)}
+                        disabled={!isStepValid(3) || isSubmitting}
                       >
-                        Başvuruyu Tamamla
+                        {isSubmitting ? 'Gönderiliyor...' : 'Başvuruyu Tamamla'}
                       </Button>
                     </div>
                   </div>

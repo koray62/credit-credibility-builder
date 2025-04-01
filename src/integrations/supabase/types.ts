@@ -11,11 +11,16 @@ export type Database = {
     Tables: {
       credit_applications: {
         Row: {
+          all_loans_paid: boolean | null
           amount: number
           application_date: string
           created_at: string
           id: string
           installment_count: number
+          kvkk_consent: boolean | null
+          marketing_consent: boolean | null
+          no_active_loans: boolean | null
+          no_legal_proceedings: boolean | null
           notes: string | null
           result_date: string | null
           status: string
@@ -23,11 +28,16 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          all_loans_paid?: boolean | null
           amount: number
           application_date?: string
           created_at?: string
           id?: string
           installment_count: number
+          kvkk_consent?: boolean | null
+          marketing_consent?: boolean | null
+          no_active_loans?: boolean | null
+          no_legal_proceedings?: boolean | null
           notes?: string | null
           result_date?: string | null
           status?: string
@@ -35,11 +45,16 @@ export type Database = {
           user_id: string
         }
         Update: {
+          all_loans_paid?: boolean | null
           amount?: number
           application_date?: string
           created_at?: string
           id?: string
           installment_count?: number
+          kvkk_consent?: boolean | null
+          marketing_consent?: boolean | null
+          no_active_loans?: boolean | null
+          no_legal_proceedings?: boolean | null
           notes?: string | null
           result_date?: string | null
           status?: string
