@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -27,6 +28,7 @@ import { cn } from '@/lib/utils';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 const Apply: React.FC = () => {
   const navigate = useNavigate();
@@ -60,6 +62,48 @@ const Apply: React.FC = () => {
     krediVadesi: false
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [existingApplication, setExistingApplication] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Check for existing applications
+  useEffect(() => {
+    const checkExistingApplications = async () => {
+      if (!user) return;
+      
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('credit_applications')
+          .select('status')
+          .eq('user_id', user.id);
+          
+        if (error) {
+          console.error('Error checking existing applications:', error);
+          return;
+        }
+        
+        // Check if user has any applications
+        if (data && data.length > 0) {
+          // Check if any application is accepted
+          const hasAcceptedApp = data.some(app => app.status === 'accepted');
+          if (hasAcceptedApp) {
+            setExistingApplication(true);
+            toast({
+              title: "Aktif başvurunuz bulunmaktadır",
+              description: "Halihazırda onaylanmış bir başvurunuz bulunmaktadır. Yeni başvuru yapamazsınız.",
+              variant: "destructive"
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error checking applications:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkExistingApplications();
+  }, [user]);
 
   // Scroll to top when page loads or step changes
   useEffect(() => {
@@ -228,10 +272,24 @@ const Apply: React.FC = () => {
         .insert([applicationData]);
 
       if (error) {
+        // Check if the error is because user already has an accepted application
+        if (error.message.includes('User already has an accepted application')) {
+          toast({
+            title: "Başvuru yapılamadı",
+            description: "Halihazırda onaylanmış bir başvurunuz bulunmaktadır. Yeni başvuru yapamazsınız.",
+            variant: "destructive"
+          });
+          navigate('/surec');
+          return;
+        }
         throw error;
       }
 
       // Redirect to success page
+      toast({
+        title: "Başvuru başarılı",
+        description: "Başvurunuz başarıyla kaydedildi.",
+      });
       navigate('/basvuru-basarili');
       
       console.log('Form submitted:', formData);
@@ -266,6 +324,57 @@ const Apply: React.FC = () => {
     { value: "issiz", label: "İşsiz" },
     { value: "diger", label: "Diğer" }
   ];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-grow py-12 md:py-16 bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-gray-600">Yükleniyor...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (existingApplication) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-grow py-12 md:py-16 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto">
+              <div className="bg-white rounded-xl shadow-md p-6 md:p-8">
+                <Alert variant="destructive" className="mb-6">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>Aktif başvurunuz bulunmaktadır</AlertTitle>
+                  <AlertDescription>
+                    Halihazırda onaylanmış bir başvurunuz bulunmaktadır. Aynı anda birden fazla başvuru yapamazsınız.
+                  </AlertDescription>
+                </Alert>
+                
+                <p className="text-gray-600 mb-6">
+                  Mevcut başvurunuzun durumunu kontrol etmek için süreç takibi sayfasını ziyaret edebilirsiniz.
+                </p>
+                
+                <div className="flex justify-center">
+                  <Link to="/surec">
+                    <Button className="bg-primary hover:bg-primary-dark text-white">
+                      Süreç Takibine Git
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
