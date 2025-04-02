@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
         
       if (error) {
         console.error('Error fetching profile:', error);
@@ -75,6 +75,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
         
         setProfile(profileData);
+      } else {
+        console.log('No profile found for user:', userId);
       }
     } catch (error) {
       console.error('Error in fetchProfile:', error);
