@@ -95,18 +95,54 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
+          birth_date: string | null
+          city: string | null
+          consent_updated_at: string | null
+          district: string | null
+          education_level: string | null
           full_name: string | null
           id: string
+          kvkk_consent: boolean | null
+          marketing_consent: boolean | null
+          monthly_income: number | null
+          occupation: string | null
+          phone: string | null
+          tc_kimlik: string | null
           updated_at: string | null
         }
         Insert: {
+          address?: string | null
+          birth_date?: string | null
+          city?: string | null
+          consent_updated_at?: string | null
+          district?: string | null
+          education_level?: string | null
           full_name?: string | null
           id: string
+          kvkk_consent?: boolean | null
+          marketing_consent?: boolean | null
+          monthly_income?: number | null
+          occupation?: string | null
+          phone?: string | null
+          tc_kimlik?: string | null
           updated_at?: string | null
         }
         Update: {
+          address?: string | null
+          birth_date?: string | null
+          city?: string | null
+          consent_updated_at?: string | null
+          district?: string | null
+          education_level?: string | null
           full_name?: string | null
           id?: string
+          kvkk_consent?: boolean | null
+          marketing_consent?: boolean | null
+          monthly_income?: number | null
+          occupation?: string | null
+          phone?: string | null
+          tc_kimlik?: string | null
           updated_at?: string | null
         }
         Relationships: []

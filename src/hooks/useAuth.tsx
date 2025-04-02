@@ -22,9 +22,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Set up auth state listener FIRST
+    // First check for existing session
+    const initializeAuth = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error('Error getting session:', error);
+        setIsLoading(false);
+        return;
+      }
+      
+      if (data.session) {
+        setSession(data.session);
+        setUser(data.session.user);
+      }
+      
+      setIsLoading(false);
+    };
+    
+    initializeAuth();
+    
+    // Then set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, newSession) => {
+        console.log('Auth state changed:', event);
+        
         setSession(newSession);
         setUser(newSession?.user ?? null);
         
@@ -42,13 +64,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
-      setSession(currentSession);
-      setUser(currentSession?.user ?? null);
-      setIsLoading(false);
-    });
-
     return () => {
       subscription.unsubscribe();
     };
@@ -62,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo:`${window.location.origin}/auth/v1/callback`, // Use the current site origin as the redirect URL
+          redirectTo: `${origin}/auth/v1/callback`,
         },
       });
       

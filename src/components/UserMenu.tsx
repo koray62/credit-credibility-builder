@@ -16,12 +16,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const UserMenu = () => {
   const { user, signOut } = useAuth();
+  
+  // Safely access user metadata
   const userInitials = user?.user_metadata?.name ? 
     user.user_metadata.name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 
     'U';
   
   const userImage = user?.user_metadata?.avatar_url || '';
   const userName = user?.user_metadata?.name || 'Kullanıcı';
+  
+  if (!user) {
+    return null;
+  }
   
   return (
     <DropdownMenu>
