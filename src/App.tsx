@@ -17,17 +17,7 @@ import Findeks from "./pages/Findeks";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
-// Create the QueryClient with improved error handling
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 2,
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-      refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    },
-  }
-});
+const queryClient = new QueryClient();
 
 // ScrollToTop component
 const ScrollToTop = () => {
@@ -40,7 +30,6 @@ const ScrollToTop = () => {
   return null;
 };
 
-// App Routes component
 const AppRoutes = () => (
   <>
     <ScrollToTop />
@@ -63,14 +52,13 @@ const AppRoutes = () => (
   </>
 );
 
-// Main App component
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      <Toaster />
+      <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Toaster />
-          <Sonner />
           <AppRoutes />
         </AuthProvider>
       </BrowserRouter>

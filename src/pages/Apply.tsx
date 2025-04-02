@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -67,10 +68,7 @@ const Apply: React.FC = () => {
   // Check for existing applications
   useEffect(() => {
     const checkExistingApplications = async () => {
-      if (!user) {
-        setIsLoading(false);
-        return;
-      }
+      if (!user) return;
       
       setIsLoading(true);
       try {
@@ -81,7 +79,6 @@ const Apply: React.FC = () => {
           
         if (error) {
           console.error('Error checking existing applications:', error);
-          setIsLoading(false);
           return;
         }
         
@@ -105,11 +102,7 @@ const Apply: React.FC = () => {
       }
     };
     
-    const timer = setTimeout(() => {
-      checkExistingApplications();
-    }, 500);
-    
-    return () => clearTimeout(timer);
+    checkExistingApplications();
   }, [user]);
 
   // Scroll to top when page loads or step changes
@@ -332,7 +325,6 @@ const Apply: React.FC = () => {
     { value: "diger", label: "Diğer" }
   ];
 
-  // Loading state
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -348,7 +340,6 @@ const Apply: React.FC = () => {
     );
   }
 
-  // Existing application state
   if (existingApplication) {
     return (
       <div className="min-h-screen flex flex-col">
