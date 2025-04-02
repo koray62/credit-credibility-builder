@@ -24,33 +24,68 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // First check for existing session
     const initializeAuth = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        console.error('Error getting session:', error);
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          return;
+        }
+        
+        if (data.session) {
+          setSession(data.session);
+          setUser(data.session.user);
+        }
+      } catch (error) {
+        console.error('Unexpected error during session check:', error);
+      } finally {
         setIsLoading(false);
-        return;
       }
-      
-      if (data.session) {
-        setSession(data.session);
-        setUser(data.session.user);
-      }
-      
-      setIsLoading(false);
     };
     
     initializeAuth();
     
     // Then set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, newSession) => {
+      async (event, newSession) => {
         console.log('Auth state changed:', event);
         
         setSession(newSession);
         setUser(newSession?.user ?? null);
         
         if (event === 'SIGNED_IN') {
+          // Check if profile exists, if not create it
+          if (newSession?.user) {
+            try {
+              const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', newSession.user.id)
+                .single();
+                
+              if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+                console.error('Error fetching profile:', error);
+              }
+              
+              if (!profile) {
+                // Profile doesn't exist, create it
+                const { error: insertError } = await supabase
+                  .from('profiles')
+                  .insert({
+                    id: newSession.user.id,
+                    full_name: newSession.user.user_metadata.name,
+                  });
+                  
+                if (insertError) {
+                  console.error('Error creating profile:', insertError);
+                }
+              }
+            } catch (error) {
+              console.error('Error checking profile:', error);
+            }
+          }
+          
           toast({
             title: "Giriş başarılı",
             description: "Başarıyla giriş yaptınız.",
