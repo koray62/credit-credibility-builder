@@ -46,6 +46,8 @@ const AppRoutes = () => (
       <Route path="/blog" element={<Blog />} />
       <Route path="/findeks" element={<Findeks />} />
       <Route path="/giris" element={<Auth />} />
+      {/* Add the auth callback route */}
+      <Route path="/auth/callback" element={<Auth />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>
