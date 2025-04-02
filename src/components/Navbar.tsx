@@ -10,7 +10,7 @@ const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -25,6 +25,11 @@ const Navbar: React.FC = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleSignOut = () => {
+    setIsMenuOpen(false);
+    signOut();
+  };
 
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -205,11 +210,7 @@ const Navbar: React.FC = () => {
                     Başvurularım
                   </Link>
                   <button 
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      const { signOut } = useAuth();
-                      signOut();
-                    }}
+                    onClick={handleSignOut}
                     className="block py-2 text-sm text-red-500 hover:text-red-700 w-full text-left"
                   >
                     Çıkış Yap
