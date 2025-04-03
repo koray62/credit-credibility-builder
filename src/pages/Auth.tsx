@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { FcGoogle } from 'react-icons/fc';
 import { TrendingUp, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const Auth: React.FC = () => {
   const { user, signInWithGoogle, isLoading } = useAuth();
@@ -37,13 +38,27 @@ const Auth: React.FC = () => {
             return;
           }
           
+          // Check for authentication tokens
           if (hashParams.get('access_token') || params.get('access_token')) {
-            console.log("Access token found, redirecting to home...");
-            navigate('/');
+            console.log("Access token found in URL");
+            
+            // Wait briefly for session to be established
+            setTimeout(() => {
+              navigate('/');
+            }, 1000);
           } else {
-            // We're in the callback URL but don't have tokens yet
             console.log("In callback URL, waiting for session...");
             // The session should be picked up by the auth state listener
+            // After a short delay, check if we have a session and redirect accordingly
+            setTimeout(async () => {
+              const { data } = await supabase.auth.getSession();
+              if (data.session) {
+                navigate('/');
+              } else {
+                console.log("No session established after callback");
+                navigate('/giris');
+              }
+            }, 2000);
           }
         } catch (err) {
           console.error("Error handling auth callback:", err);
