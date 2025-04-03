@@ -36,6 +36,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (data.session) {
           setSession(data.session);
           setUser(data.session.user);
+          
+          // Check if the user has a profile
+          await ensureUserProfile(data.session.user);
         }
       } catch (error) {
         console.error('Unexpected error during session check:', error);
@@ -57,33 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (event === 'SIGNED_IN') {
           // Check if profile exists, if not create it
           if (newSession?.user) {
-            try {
-              const { data: profile, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', newSession.user.id)
-                .single();
-                
-              if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
-                console.error('Error fetching profile:', error);
-              }
-              
-              if (!profile) {
-                // Profile doesn't exist, create it
-                const { error: insertError } = await supabase
-                  .from('profiles')
-                  .insert({
-                    id: newSession.user.id,
-                    full_name: newSession.user.user_metadata.name,
-                  });
-                  
-                if (insertError) {
-                  console.error('Error creating profile:', insertError);
-                }
-              }
-            } catch (error) {
-              console.error('Error checking profile:', error);
-            }
+            await ensureUserProfile(newSession.user);
           }
           
           toast({
@@ -103,6 +80,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       subscription.unsubscribe();
     };
   }, []);
+
+  // Function to ensure a user has a profile
+  const ensureUserProfile = async (user: User) => {
+    if (!user) return;
+    
+    try {
+      // First check if profile exists
+      const { data: profile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      if (fetchError) {
+        // Only log an error if it's not a "no rows returned" error
+        if (fetchError.code !== 'PGRST116') {
+          console.error('Error fetching profile:', fetchError);
+        }
+      }
+      
+      // If profile doesn't exist, create it
+      if (!profile) {
+        console.log('Creating new profile for user:', user.id);
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            full_name: user.user_metadata.name || user.user_metadata.full_name || '',
+            kvkk_consent: false,
+            marketing_consent: false
+          });
+          
+        if (insertError) {
+          console.error('Error creating profile:', insertError);
+          toast({
+            title: "Profil oluşturulamadı",
+            description: "Profiliniz oluşturulurken bir hata oluştu.",
+            variant: "destructive",
+          });
+        } else {
+          console.log('Profile created successfully');
+        }
+      } else {
+        console.log('User profile exists:', profile);
+      }
+    } catch (error) {
+      console.error('Error ensuring user profile:', error);
+    }
+  };
 
   const signInWithGoogle = async () => {
     try {
