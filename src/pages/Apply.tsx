@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -222,19 +223,23 @@ const Apply: React.FC = () => {
         no_legal_proceedings: formData.taahhut3
       };
 
+      console.log("Submitting application data:", applicationData);
+
       // Save application to database
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('credit_applications')
-        .insert([applicationData]);
+        .insert([applicationData])
+        .select();
 
       if (error) {
+        console.error("Database insertion error:", error);
         throw error;
       }
 
+      console.log("Application submitted successfully:", data);
+
       // Redirect to success page
       navigate('/basvuru-basarili');
-      
-      console.log('Form submitted:', formData);
     } catch (error) {
       console.error('Error submitting application:', error);
       toast({
@@ -777,7 +782,14 @@ const Apply: React.FC = () => {
                         className="bg-primary hover:bg-primary-dark text-white"
                         disabled={!isStepValid(3) || isSubmitting}
                       >
-                        {isSubmitting ? 'Gönderiliyor...' : 'Başvuruyu Tamamla'}
+                        {isSubmitting ? (
+                          <span className="flex items-center">
+                            <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                            Gönderiliyor...
+                          </span>
+                        ) : (
+                          'Başvuruyu Tamamla'
+                        )}
                       </Button>
                     </div>
                   </div>
