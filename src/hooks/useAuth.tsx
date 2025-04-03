@@ -131,8 +131,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
+    setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      console.log("Attempting to sign in with Google...");
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
@@ -140,7 +142,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       
       if (error) {
+        console.error("Google auth error:", error);
         throw error;
+      }
+      
+      // Google OAuth başarıyla başlatıldıysa data.url olmalı
+      if (data && data.url) {
+        console.log("Redirecting to Google auth URL:", data.url);
+        window.location.href = data.url;
+      } else {
+        console.error("No URL returned from signInWithOAuth");
+        toast({
+          title: "Giriş yapılamadı",
+          description: "Google ile giriş yapılırken bir hata oluştu.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('Google authentication error:', error);
@@ -149,6 +166,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         description: "Google ile giriş yapılırken bir hata oluştu.",
         variant: "destructive",
       });
+      setIsLoading(false);
     }
   };
 

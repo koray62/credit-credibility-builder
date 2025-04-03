@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { FcGoogle } from 'react-icons/fc';
@@ -10,9 +10,25 @@ import { TrendingUp, Loader2 } from 'lucide-react';
 const Auth: React.FC = () => {
   const { user, signInWithGoogle, isLoading } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Get the return path from location state or default to home
   const from = (location.state as any)?.from || "/";
+
+  // Handle callback from OAuth provider
+  useEffect(() => {
+    // URL'de auth/callback için kontrol
+    if (location.pathname === '/auth/callback') {
+      const handleAuthCallback = async () => {
+        const params = new URLSearchParams(window.location.hash.substring(1));
+        if (params.get('access_token')) {
+          navigate('/');
+        }
+      };
+      
+      handleAuthCallback();
+    }
+  }, [location.pathname, navigate]);
 
   // Redirect if user is already authenticated
   if (user && !isLoading) {
