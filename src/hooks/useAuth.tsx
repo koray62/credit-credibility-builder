@@ -22,7 +22,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // First check for existing session
+    // First set up auth state listener to catch any auth events
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, newSession) => {
+        console.log('Auth state changed:', event);
+        
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
+        
+        if (event === 'SIGNED_IN') {
+          // Defer profile creation check to avoid potential auth deadlocks
+          setTimeout(async () => {
+            if (newSession?.user) {
+              try {
+                await ensureUserProfile(newSession.user);
+              } catch (error) {
+                console.error("Error ensuring user profile after sign in:", error);
+              }
+            }
+          }, 0);
+          
+          toast({
+            title: "Giriş başarılı",
+            description: "Başarıyla giriş yaptınız.",
+          });
+        } else if (event === 'SIGNED_OUT') {
+          toast({
+            title: "Çıkış yapıldı",
+            description: "Başarıyla çıkış yaptınız.",
+          });
+        }
+      }
+    );
+    
+    // Then check for existing session
     const initializeAuth = async () => {
       setIsLoading(true);
       try {
@@ -37,8 +70,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setSession(data.session);
           setUser(data.session.user);
           
-          // Check if the user has a profile
-          await ensureUserProfile(data.session.user);
+          // Check if the user has a profile - defer to avoid auth deadlocks
+          setTimeout(async () => {
+            try {
+              await ensureUserProfile(data.session.user);
+            } catch (error) {
+              console.error("Error ensuring user profile on initialization:", error);
+            }
+          }, 0);
         }
       } catch (error) {
         console.error('Unexpected error during session check:', error);
@@ -49,33 +88,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     initializeAuth();
     
-    // Then set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, newSession) => {
-        console.log('Auth state changed:', event);
-        
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
-        
-        if (event === 'SIGNED_IN') {
-          // Check if profile exists, if not create it
-          if (newSession?.user) {
-            await ensureUserProfile(newSession.user);
-          }
-          
-          toast({
-            title: "Giriş başarılı",
-            description: "Başarıyla giriş yaptınız.",
-          });
-        } else if (event === 'SIGNED_OUT') {
-          toast({
-            title: "Çıkış yapıldı",
-            description: "Başarıyla çıkış yaptınız.",
-          });
-        }
-      }
-    );
-
     return () => {
       subscription.unsubscribe();
     };
@@ -86,28 +98,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!user) return;
     
     try {
+      console.log("Checking for user profile:", user.id);
+      
       // First check if profile exists
       const { data: profile, error: fetchError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
       
       if (fetchError) {
-        // Only log an error if it's not a "no rows returned" error
-        if (fetchError.code !== 'PGRST116') {
-          console.error('Error fetching profile:', fetchError);
-        }
+        console.error('Error fetching profile:', fetchError);
+        throw fetchError;
       }
       
       // If profile doesn't exist, create it
       if (!profile) {
         console.log('Creating new profile for user:', user.id);
+        const fullName = user.user_metadata?.name || 
+                        user.user_metadata?.full_name || 
+                        "Kullanıcı";
+                        
         const { error: insertError } = await supabase
           .from('profiles')
           .insert({
             id: user.id,
-            full_name: user.user_metadata.name || user.user_metadata.full_name || '',
+            full_name: fullName,
             kvkk_consent: false,
             marketing_consent: false
           });
@@ -119,6 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             description: "Profiliniz oluşturulurken bir hata oluştu.",
             variant: "destructive",
           });
+          throw insertError;
         } else {
           console.log('Profile created successfully');
         }
@@ -127,6 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error('Error ensuring user profile:', error);
+      throw error;
     }
   };
 
@@ -143,10 +161,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) {
         console.error("Google auth error:", error);
+        toast({
+          title: "Giriş yapılamadı",
+          description: "Google ile giriş yapılırken bir hata oluştu.",
+          variant: "destructive",
+        });
         throw error;
       }
       
-      // Google OAuth başarıyla başlatıldıysa data.url olmalı
+      // Check if we got a redirect URL from the OAuth process
       if (data && data.url) {
         console.log("Redirecting to Google auth URL:", data.url);
         window.location.href = data.url;

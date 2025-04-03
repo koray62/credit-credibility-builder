@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { FcGoogle } from 'react-icons/fc';
 import { TrendingUp, Loader2 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 const Auth: React.FC = () => {
   const { user, signInWithGoogle, isLoading } = useAuth();
@@ -17,12 +18,41 @@ const Auth: React.FC = () => {
 
   // Handle callback from OAuth provider
   useEffect(() => {
-    // URL'de auth/callback için kontrol
     if (location.pathname === '/auth/callback') {
       const handleAuthCallback = async () => {
-        const params = new URLSearchParams(window.location.hash.substring(1));
-        if (params.get('access_token')) {
-          navigate('/');
+        try {
+          console.log("Processing auth callback...");
+          // Check URL parameters for success or error indicators
+          const params = new URLSearchParams(window.location.search);
+          const hashParams = new URLSearchParams(window.location.hash.substring(1));
+          
+          if (params.get('error')) {
+            console.error("Auth error from URL params:", params.get('error'));
+            toast({
+              title: "Giriş başarısız",
+              description: params.get('error_description') || "Giriş sırasında bir hata oluştu.",
+              variant: "destructive",
+            });
+            navigate('/giris');
+            return;
+          }
+          
+          if (hashParams.get('access_token') || params.get('access_token')) {
+            console.log("Access token found, redirecting to home...");
+            navigate('/');
+          } else {
+            // We're in the callback URL but don't have tokens yet
+            console.log("In callback URL, waiting for session...");
+            // The session should be picked up by the auth state listener
+          }
+        } catch (err) {
+          console.error("Error handling auth callback:", err);
+          toast({
+            title: "Giriş işlemi tamamlanamadı",
+            description: "Giriş işlemi sırasında bir hata oluştu.",
+            variant: "destructive",
+          });
+          navigate('/giris');
         }
       };
       
