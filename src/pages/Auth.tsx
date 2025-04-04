@@ -17,6 +17,46 @@ const Auth: React.FC = () => {
   // Get the return path from location state or default to home
   const from = (location.state as any)?.from || "/";
 
+  // Helper function to ensure profile exists
+  const checkAndCreateProfile = async (userId: string) => {
+    try {
+      console.log("Checking profile in Auth callback for user:", userId);
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        console.log("Profile not found in callback, creating...");
+        // Get user details
+        const { data: userData } = await supabase.auth.getUser();
+        const userName = userData?.user?.user_metadata?.name;
+        
+        // Create profile if it doesn't exist
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert([{ 
+            id: userId,
+            full_name: userName || null
+          }]);
+          
+        if (insertError) {
+          console.error("Error creating profile in callback:", insertError);
+          return false;
+        }
+        console.log("Profile created successfully in callback");
+        return true;
+      }
+      
+      console.log("Profile found in callback:", profile);
+      return true;
+    } catch (error) {
+      console.error("Error in checkAndCreateProfile:", error);
+      return false;
+    }
+  };
+
   // Handle callback from OAuth provider
   useEffect(() => {
     if (location.pathname === '/auth/callback') {
@@ -58,19 +98,8 @@ const Auth: React.FC = () => {
             if (data.session) {
               console.log("Session established, user ID:", data.session.user.id);
               
-              // Verify that the profile exists by checking the profiles table
-              const { data: profileData, error: profileError } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', data.session.user.id)
-                .single();
-                
-              if (profileError) {
-                console.log("No profile found, might be created by trigger:", profileError);
-                // We'll rely on the database trigger to create the profile
-              } else {
-                console.log("Profile found:", profileData);
-              }
+              // Explicitly create the profile regardless of trigger
+              await checkAndCreateProfile(data.session.user.id);
               
               // Navigate to home page after successful login
               navigate('/');
@@ -91,6 +120,8 @@ const Auth: React.FC = () => {
               const { data } = await supabase.auth.getSession();
               if (data.session) {
                 console.log("Session established after delay");
+                // Create profile as a fallback
+                await checkAndCreateProfile(data.session.user.id);
                 navigate('/');
               } else {
                 console.log("No session established after callback");

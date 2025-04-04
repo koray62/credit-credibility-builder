@@ -21,6 +21,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Helper function to ensure profile exists
+  const ensureProfileExists = async (userId: string) => {
+    try {
+      console.log("Checking if profile exists for user:", userId);
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        console.log("No profile found, creating one...");
+        // Create profile if it doesn't exist
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert([{ 
+            id: userId,
+            full_name: user?.user_metadata?.name || null
+          }]);
+          
+        if (insertError) {
+          console.error("Error creating profile:", insertError);
+          return false;
+        }
+        console.log("Profile created successfully");
+        return true;
+      }
+      
+      console.log("Profile exists:", profile);
+      return true;
+    } catch (error) {
+      console.error("Error in ensureProfileExists:", error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     console.log("Setting up auth state listener");
     
@@ -34,6 +70,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (event === 'SIGNED_IN') {
           console.log("User signed in:", newSession?.user?.id);
+          
+          // Create or check profile in a setTimeout to avoid auth deadlock
+          if (newSession?.user) {
+            setTimeout(() => {
+              ensureProfileExists(newSession.user.id);
+            }, 0);
+          }
+          
           toast({
             title: "Giriş başarılı",
             description: "Başarıyla giriş yaptınız.",
@@ -64,6 +108,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log("Found existing session for user:", data.session.user.id);
           setSession(data.session);
           setUser(data.session.user);
+          
+          // Create or check profile
+          await ensureProfileExists(data.session.user.id);
         } else {
           console.log("No existing session found");
         }
