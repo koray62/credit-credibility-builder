@@ -21,38 +21,62 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Helper function to ensure profile exists
-  const ensureProfileExists = async (userId: string) => {
+  // Helper function to ensure profile exists with improved error handling
+  const ensureProfileExists = async (userId: string, userName?: string | null) => {
     try {
       console.log("Checking if profile exists for user:", userId);
-      const { data: profile, error } = await supabase
+      
+      // First check if profile exists
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
       
-      if (error) {
-        console.log("No profile found, creating one...");
+      if (profileError) {
+        console.log("No profile found or error occurred, creating one...");
+        
+        // If we encounter an error, attempt to create a profile
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        const name = userName || userData?.user?.user_metadata?.name || null;
+        
         // Create profile if it doesn't exist
-        const { error: insertError } = await supabase
+        const { data: insertData, error: insertError } = await supabase
           .from('profiles')
           .insert([{ 
             id: userId,
-            full_name: user?.user_metadata?.name || null
-          }]);
+            full_name: name
+          }])
+          .select();
           
         if (insertError) {
           console.error("Error creating profile:", insertError);
-          return false;
+          
+          // If insert fails, try upsert as a fallback
+          const { error: upsertError } = await supabase
+            .from('profiles')
+            .upsert([{ 
+              id: userId,
+              full_name: name
+            }]);
+            
+          if (upsertError) {
+            console.error("Upsert fallback also failed:", upsertError);
+            return false;
+          }
+          
+          console.log("Profile created via upsert fallback");
+          return true;
         }
-        console.log("Profile created successfully");
+        
+        console.log("Profile created successfully:", insertData);
         return true;
       }
       
-      console.log("Profile exists:", profile);
+      console.log("Profile already exists:", profile);
       return true;
     } catch (error) {
-      console.error("Error in ensureProfileExists:", error);
+      console.error("Unexpected error in ensureProfileExists:", error);
       return false;
     }
   };
@@ -62,21 +86,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     // First set up auth state listener to catch any auth events
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, newSession) => {
+      async (event, newSession) => {
         console.log('Auth state changed:', event, newSession?.user?.id);
         
         setSession(newSession);
         setUser(newSession?.user ?? null);
         
-        if (event === 'SIGNED_IN') {
-          console.log("User signed in:", newSession?.user?.id);
+        if (event === 'SIGNED_IN' && newSession?.user) {
+          console.log("User signed in:", newSession.user.id);
           
-          // Create or check profile in a setTimeout to avoid auth deadlock
-          if (newSession?.user) {
-            setTimeout(() => {
-              ensureProfileExists(newSession.user.id);
-            }, 0);
-          }
+          // Create profile in a setTimeout to avoid auth deadlock
+          setTimeout(async () => {
+            try {
+              const name = newSession.user?.user_metadata?.name;
+              await ensureProfileExists(newSession.user.id, name);
+            } catch (error) {
+              console.error("Error ensuring profile exists:", error);
+            }
+          }, 0);
           
           toast({
             title: "Giriş başarılı",
@@ -101,6 +128,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (error) {
           console.error('Error getting session:', error);
+          setIsLoading(false);
           return;
         }
         
@@ -109,8 +137,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setSession(data.session);
           setUser(data.session.user);
           
-          // Create or check profile
-          await ensureProfileExists(data.session.user.id);
+          // Create or check profile with retry logic
+          let attempts = 0;
+          const maxAttempts = 3;
+          let success = false;
+          
+          while (attempts < maxAttempts && !success) {
+            attempts++;
+            success = await ensureProfileExists(data.session.user.id);
+            if (!success && attempts < maxAttempts) {
+              console.log(`Profile creation attempt ${attempts} failed, retrying...`);
+              // Small delay before retry
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
+          }
+          
+          if (!success) {
+            console.error(`Failed to create profile after ${maxAttempts} attempts`);
+          }
         } else {
           console.log("No existing session found");
         }

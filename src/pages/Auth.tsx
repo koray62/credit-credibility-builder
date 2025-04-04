@@ -17,42 +17,61 @@ const Auth: React.FC = () => {
   // Get the return path from location state or default to home
   const from = (location.state as any)?.from || "/";
 
-  // Helper function to ensure profile exists
-  const checkAndCreateProfile = async (userId: string) => {
+  // Helper function to create profile with robust error handling
+  const createProfile = async (userId: string, userName?: string) => {
     try {
-      console.log("Checking profile in Auth callback for user:", userId);
-      const { data: profile, error } = await supabase
+      console.log("Creating profile in Auth callback for user:", userId);
+      
+      // Check if profile exists first
+      const { data: existingProfile, error: checkError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
-      
-      if (error) {
-        console.log("Profile not found in callback, creating...");
-        // Get user details
-        const { data: userData } = await supabase.auth.getUser();
-        const userName = userData?.user?.user_metadata?.name;
         
-        // Create profile if it doesn't exist
-        const { error: insertError } = await supabase
+      if (!checkError && existingProfile) {
+        console.log("Profile already exists in database:", existingProfile);
+        return true;
+      }
+      
+      // If error is not the expected "No rows found" error, log it
+      if (checkError && !checkError.message.includes("No rows found")) {
+        console.error("Unexpected error checking profile:", checkError);
+      }
+      
+      // Directly insert the profile
+      const { data: insertResult, error: insertError } = await supabase
+        .from('profiles')
+        .insert([{ 
+          id: userId,
+          full_name: userName || null
+        }])
+        .select();
+        
+      if (insertError) {
+        console.error("Failed to insert profile in Auth callback:", insertError);
+        
+        // Try upsert as a fallback
+        const { error: upsertError } = await supabase
           .from('profiles')
-          .insert([{ 
+          .upsert([{ 
             id: userId,
             full_name: userName || null
           }]);
           
-        if (insertError) {
-          console.error("Error creating profile in callback:", insertError);
+        if (upsertError) {
+          console.error("Upsert fallback also failed:", upsertError);
           return false;
         }
-        console.log("Profile created successfully in callback");
+        
+        console.log("Profile created via upsert in Auth callback");
         return true;
       }
       
-      console.log("Profile found in callback:", profile);
+      console.log("Profile created successfully in Auth callback:", insertResult);
       return true;
     } catch (error) {
-      console.error("Error in checkAndCreateProfile:", error);
+      console.error("Unexpected error in createProfile:", error);
       return false;
     }
   };
@@ -98,8 +117,12 @@ const Auth: React.FC = () => {
             if (data.session) {
               console.log("Session established, user ID:", data.session.user.id);
               
-              // Explicitly create the profile regardless of trigger
-              await checkAndCreateProfile(data.session.user.id);
+              // Get user metadata for profile creation
+              const userName = data.session.user.user_metadata?.name;
+              
+              // Create profile directly in callback
+              const profileCreated = await createProfile(data.session.user.id, userName);
+              console.log("Profile creation result:", profileCreated);
               
               // Navigate to home page after successful login
               navigate('/');
@@ -120,8 +143,11 @@ const Auth: React.FC = () => {
               const { data } = await supabase.auth.getSession();
               if (data.session) {
                 console.log("Session established after delay");
+                
                 // Create profile as a fallback
-                await checkAndCreateProfile(data.session.user.id);
+                const userName = data.session.user.user_metadata?.name;
+                await createProfile(data.session.user.id, userName);
+                
                 navigate('/');
               } else {
                 console.log("No session established after callback");
