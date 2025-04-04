@@ -22,20 +22,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("Setting up auth state listener");
+    
     // First set up auth state listener to catch any auth events
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, newSession) => {
-        console.log('Auth state changed:', event);
+        console.log('Auth state changed:', event, newSession?.user?.id);
         
         setSession(newSession);
         setUser(newSession?.user ?? null);
         
         if (event === 'SIGNED_IN') {
+          console.log("User signed in:", newSession?.user?.id);
           toast({
             title: "Giriş başarılı",
             description: "Başarıyla giriş yaptınız.",
           });
         } else if (event === 'SIGNED_OUT') {
+          console.log("User signed out");
           toast({
             title: "Çıkış yapıldı",
             description: "Başarıyla çıkış yaptınız.",
@@ -48,6 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initializeAuth = async () => {
       setIsLoading(true);
       try {
+        console.log("Checking for existing session");
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -56,8 +61,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         
         if (data.session) {
+          console.log("Found existing session for user:", data.session.user.id);
           setSession(data.session);
           setUser(data.session.user);
+        } else {
+          console.log("No existing session found");
         }
       } catch (error) {
         console.error('Unexpected error during session check:', error);
@@ -69,6 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initializeAuth();
     
     return () => {
+      console.log("Cleaning up auth state listener");
       subscription.unsubscribe();
     };
   }, []);
@@ -120,6 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
+      console.log("Signing out user");
       await supabase.auth.signOut();
       navigate('/');
     } catch (error) {

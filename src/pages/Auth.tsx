@@ -42,10 +42,47 @@ const Auth: React.FC = () => {
           if (hashParams.get('access_token') || params.get('access_token')) {
             console.log("Access token found in URL");
             
-            // Wait briefly for session to be established
-            setTimeout(() => {
+            // Exchange the token for a session
+            const { data, error } = await supabase.auth.getSession();
+            if (error) {
+              console.error("Error getting session after callback:", error);
+              toast({
+                title: "Giriş hatası",
+                description: "Oturum bilgileri alınamadı.",
+                variant: "destructive",
+              });
+              navigate('/giris');
+              return;
+            }
+            
+            if (data.session) {
+              console.log("Session established, user ID:", data.session.user.id);
+              
+              // Verify that the profile exists by checking the profiles table
+              const { data: profileData, error: profileError } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', data.session.user.id)
+                .single();
+                
+              if (profileError) {
+                console.log("No profile found, might be created by trigger:", profileError);
+                // We'll rely on the database trigger to create the profile
+              } else {
+                console.log("Profile found:", profileData);
+              }
+              
+              // Navigate to home page after successful login
               navigate('/');
-            }, 1000);
+            } else {
+              console.error("No session after token exchange");
+              toast({
+                title: "Giriş hatası",
+                description: "Oturum başlatılamadı.",
+                variant: "destructive",
+              });
+              navigate('/giris');
+            }
           } else {
             console.log("In callback URL, waiting for session...");
             // The session should be picked up by the auth state listener
@@ -53,6 +90,7 @@ const Auth: React.FC = () => {
             setTimeout(async () => {
               const { data } = await supabase.auth.getSession();
               if (data.session) {
+                console.log("Session established after delay");
                 navigate('/');
               } else {
                 console.log("No session established after callback");
