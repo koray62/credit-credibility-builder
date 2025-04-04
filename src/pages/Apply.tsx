@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -23,6 +24,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import KVKKSheet from "@/components/KVKKSheet";
 import { cn } from '@/lib/utils';
 import { supabase } from "@/integrations/supabase/client";
@@ -62,6 +70,7 @@ const Apply: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isKVKKSheetOpen, setIsKVKKSheetOpen] = useState(false);
+  const [isKVKKDialogOpen, setIsKVKKDialogOpen] = useState(false);
 
   // Scroll to top when page loads or step changes
   useEffect(() => {
@@ -275,7 +284,7 @@ const Apply: React.FC = () => {
 
   const handleKVKKClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    setIsKVKKSheetOpen(true);
+    setIsKVKKDialogOpen(true);
   };
 
   const handleKVKKSheetClose = () => {
@@ -819,4 +828,131 @@ const Apply: React.FC = () => {
               <h2 className="text-xl font-semibold mb-4">Anlaşmalı Bankalar</h2>
               <div className="flex flex-wrap gap-4">
                 {[1, 2, 3, 4].map((bank) => (
-                  <div key={bank} className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-
+                  <div key={bank} className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <img 
+                      src={`/placeholder.svg`} 
+                      alt={`Banka ${bank}`} 
+                      className="max-w-[80%] max-h-[80%]" 
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      
+      <Footer />
+
+      {/* KVKK Dialog */}
+      <Dialog open={isKVKKDialogOpen} onOpenChange={setIsKVKKDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl md:text-2xl font-bold mb-2">Kişisel Verilerin Korunması Aydınlatma Metni</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 text-sm md:text-base">
+            <p className="text-gray-600">
+              6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında, kredi başvuru sürecinde tarafımıza ilettiğiniz kişisel verilerinizin işlenmesine ilişkin olarak aşağıdaki bilgilendirme yapılmaktadır.
+            </p>
+
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold">1. Veri Sorumlusu</h2>
+              <p className="text-gray-600">
+                Kişisel verileriniz, veri sorumlusu sıfatıyla <strong>Nora Finansal Yazılımlar Anonim Şirketi (NORA A.Ş.)</strong> tarafından işlenmektedir.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold">2. İşlenen Veriler</h2>
+              <p className="text-gray-600">
+                Ad, soyad, T.C. kimlik numarası, iletişim bilgileri, demografik bilgiler, kredi başvuru detayları, Findeks raporu (rızanızla), IP adresi ve işlem logları.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold">3. İşleme Amaçları</h2>
+              <ul className="list-disc pl-5 text-gray-600 space-y-1">
+                <li>Kredi başvurularının alınması ve değerlendirilmesi</li>
+                <li>Başvuruların anlaşmalı bankalara yönlendirilmesi</li>
+                <li>Kredi geçmişi oluşturulması ve finansal davranış takibi</li>
+                <li>Yasal yükümlülüklerin yerine getirilmesi</li>
+                <li>Finansal okuryazarlık kapsamında bilgilendirme yapılması</li>
+              </ul>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold">4. Hukuki Sebepler</h2>
+              <p className="text-gray-600">
+                KVKK m.5/2 (c) ve (f) hükümleri gereğince ve açık rıza alınması hâlinde işlenmektedir.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold">5. Veri Aktarımı</h2>
+              <p className="text-gray-600">
+                Kişisel verileriniz;
+              </p>
+              <ul className="list-disc pl-5 text-gray-600 space-y-1">
+                <li>5411 sayılı Bankacılık Kanunu kapsamındaki bankalar ve finansal kuruluşlara,</li>
+                <li>Teknoloji hizmet sağlayıcılarına,</li>
+                <li>Yasal yükümlülük kapsamında ilgili kurumlara</li>
+              </ul>
+              <p className="text-gray-600">
+                yalnızca ilgili amaçlar doğrultusunda ve KVKK'ya uygun şekilde aktarılabilir.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold">6. Haklarınız</h2>
+              <p className="text-gray-600">
+                KVKK m.11 kapsamında;
+                verilerinizin işlenip işlenmediğini öğrenme, düzeltilmesini, silinmesini talep etme, yapılan işlemlerin 3. kişilere bildirilmesini isteme, itiraz ve zarar halinde tazmin talep etme haklarına sahipsiniz.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold">7. Başvuru</h2>
+              <p className="text-gray-600">
+                Tüm taleplerinizi <a href="mailto:kvkk@norafinans.com" className="text-primary hover:underline">kvkk@norafinans.com</a> adresine e-posta ile veya şirket merkezimize yazılı olarak iletebilirsiniz.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <div className="flex items-center space-x-3 mb-6">
+              <Checkbox 
+                id="kvkk-consent-dialog" 
+                checked={formData.kvkkOnay}
+                onCheckedChange={(checked) => handleCheckboxChange('kvkkOnay', checked as boolean)}
+              />
+              <Label htmlFor="kvkk-consent-dialog" className="text-sm font-medium leading-relaxed cursor-pointer">
+                Kişisel verilerimin işlenmesine ilişkin aydınlatma metnini okudum ve anladım.
+              </Label>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button 
+              onClick={() => setIsKVKKDialogOpen(false)}
+              className="bg-primary text-white"
+            >
+              Tamam
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* KVKK Sheet (mobile friendly alternative) */}
+      <KVKKSheet 
+        open={isKVKKSheetOpen} 
+        onOpenChange={setIsKVKKSheetOpen} 
+        isChecked={formData.kvkkOnay} 
+        onCheckedChange={handleKVKKSheetCheckedChange} 
+        onClose={handleKVKKSheetClose} 
+      />
+    </div>
+  );
+};
+
+export default Apply;
