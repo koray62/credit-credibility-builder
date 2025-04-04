@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -24,6 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import KVKKSheet from "@/components/KVKKSheet";
 import { cn } from '@/lib/utils';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -61,6 +61,7 @@ const Apply: React.FC = () => {
     krediVadesi: false
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isKVKKSheetOpen, setIsKVKKSheetOpen] = useState(false);
 
   // Scroll to top when page loads or step changes
   useEffect(() => {
@@ -271,6 +272,19 @@ const Apply: React.FC = () => {
     { value: "issiz", label: "İşsiz" },
     { value: "diger", label: "Diğer" }
   ];
+
+  const handleKVKKClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsKVKKSheetOpen(true);
+  };
+
+  const handleKVKKSheetClose = () => {
+    setIsKVKKSheetOpen(false);
+  };
+
+  const handleKVKKSheetCheckedChange = (checked: boolean) => {
+    setFormData(prev => ({ ...prev, kvkkOnay: checked }));
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -645,7 +659,11 @@ const Apply: React.FC = () => {
                             Kişisel verilerimin, 6698 sayılı KVKK kapsamında, başvurumun değerlendirilmesi amacıyla işlenmesine ve anlaşmalı bankalara aktarılmasına izin veriyorum. *
                           </Label>
                           <p className="text-xs text-gray-500 mt-1">
-                            <a href="/kvkk" className="text-primary hover:underline">
+                            <a 
+                              href="#" 
+                              onClick={handleKVKKClick}
+                              className="text-primary hover:underline"
+                            >
                               KVKK Aydınlatma Metni
                             </a>
                             'ni okudum ve anladım.
@@ -801,22 +819,4 @@ const Apply: React.FC = () => {
               <h2 className="text-xl font-semibold mb-4">Anlaşmalı Bankalar</h2>
               <div className="flex flex-wrap gap-4">
                 {[1, 2, 3, 4].map((bank) => (
-                  <div key={bank} className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <img src="/placeholder.svg" alt={`Banka ${bank}`} className="max-w-full max-h-full p-2" />
-                  </div>
-                ))}
-              </div>
-              <p className="mt-4 text-sm text-gray-600">
-                Başvurunuz, yukarıdaki anlaşmalı bankalarımızdan birine yönlendirilecektir. Tüm işlemler güvenli ve yasal çerçevede gerçekleştirilmektedir.
-              </p>
-            </div>
-          </div>
-        </div>
-      </main>
-      
-      <Footer />
-    </div>
-  );
-};
-
-export default Apply;
+                  <div key={bank} className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-

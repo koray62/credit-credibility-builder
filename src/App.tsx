@@ -14,6 +14,7 @@ import SuccessPage from "./pages/SuccessPage";
 import AboutUs from "./pages/AboutUs";
 import Blog from "./pages/Blog";
 import Findeks from "./pages/Findeks";
+import KVKK from "./pages/KVKK";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -45,6 +46,7 @@ const AppRoutes = () => (
       <Route path="/biz-kimiz" element={<AboutUs />} />
       <Route path="/blog" element={<Blog />} />
       <Route path="/findeks" element={<Findeks />} />
+      <Route path="/kvkk" element={<KVKK />} />
       <Route path="/giris" element={<Auth />} />
       {/* Add the auth callback route */}
       <Route path="/auth/callback" element={<Auth />} />
