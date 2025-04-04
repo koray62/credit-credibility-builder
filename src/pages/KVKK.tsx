@@ -92,7 +92,10 @@ const KVKK: React.FC = () => {
               <div className="space-y-2">
                 <h2 className="text-xl font-semibold">7. Başvuru</h2>
                 <p className="text-gray-600">
-                  Tüm taleplerinizi <a href="mailto:info@noratech.com.tr" className="text-primary hover:underline"info@noratech.com.tr</a> adresine e-posta ile veya şirket merkezimize yazılı olarak iletebilirsiniz.
+                  Tüm taleplerinizi <a href="mailto:info@noratech.com.tr" className="text-primary hover:underline">
+  info@noratech.com.tr
+</a>
+ adresine e-posta ile veya şirket merkezimize yazılı olarak iletebilirsiniz.
                 </p>
               </div>
             </section>
