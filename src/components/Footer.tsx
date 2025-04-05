@@ -75,7 +75,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-3 text-gray-600">
               <li className="flex items-center justify-between group">
                 <span className="text-sm">E-posta</span>
-                <a href="mailto:iletisim@skorup.com.tr" className="text-primary font-medium group-hover:underline flex items-center">
+                <a href="mailto:info@skorup.org" className="text-primary font-medium group-hover:underline flex items-center">
                   iletisim@skorup.com.tr
                   <ArrowUpRight className="ml-1 h-3 w-3" />
                 </a>
