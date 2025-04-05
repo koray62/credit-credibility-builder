@@ -19,7 +19,7 @@ const FAQ: React.FC = () => {
     },
     {
       question: "Gerçekten faiz ödemeyecek miyim?",
-      answer: "Evet, bu programda kullanılan krediler için faiz ödemezsiniz. Sadece 1000 TL'lik bir işlem komisyonu alınır. Kredi tutarı bankada bloke edilir ve taksitler ödendikçe Findeks puanınız yükselir. Vade sonunda, ödediğiniz tüm taksitlerin toplamını geri alırsınız."
+      answer: "Hayır, bu programda kullanılan krediler için faiz ödemezsiniz. Sadece kullanacağınız krediden hesabınıza geçerken 1000 TL'lik bir işlem komisyonu alınır. Kredi tutarı bankada bloke edilir ve taksitler ödendikçe Findeks puanınız yükselir. Vade sonunda, işlem komisyonu hariç ödediğiniz tüm taksitlerin toplamını geri alırsınız."
     },
     {
       question: "Başvuru için nelere ihtiyacım var?",
