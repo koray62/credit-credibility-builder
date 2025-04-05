@@ -76,7 +76,7 @@ export const KVKKContent: React.FC = () => {
       <div className="space-y-2">
         <h3 className="font-semibold text-base">7. Başvuru</h3>
         <p className="text-sm text-gray-600">
-          Tüm taleplerinizi <a href="mailto:info@noratech.com.tr" className="text-primary hover:underline">info@noratech.com.tr</a> adresine e-posta ile veya şirket merkezimize yazılı olarak iletebilirsiniz.
+          Tüm taleplerinizi <a href="mailto:info@skorup.gov" className="text-primary hover:underline">info@skorup.gov</a> adresine e-posta ile veya şirket merkezimize yazılı olarak iletebilirsiniz.
         </p>
       </div>
     </>
