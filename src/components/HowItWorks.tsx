@@ -34,8 +34,8 @@ const HowItWorks: React.FC = () => {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Nasıl Çalışır?</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Kredibilite puanınızı oluşturmak için izlemeniz gereken adımlar çok basit.
-            Aşağıdaki süreci takip ederek finansal geleceğinizi güvence altına alın. Unutmayın, Bu kredi harcamak için değil; kredi puanı kazanmak ve birikim yapmak içindir!
+            Kredibilite puanınızı oluşturmak için izlemeniz gereken adımlar çok basit. 
+            Unutmayın, Bu kredi harcamak için değil; kredi puanı kazanmak ve birikim yapmak içindir!
           </p>
         </div>
         
