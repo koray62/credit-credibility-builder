@@ -55,7 +55,7 @@ const HowItWorks: React.FC = () => {
           <Step 
             number={3}
             title="Düzenli Ödeme ve Kazanım"
-            description="Taksitlerinizi zamanında ödeyerek Findeks puanınızı yükseltin ve finansal güvenilirliğinizi oluşturun."
+            description="Taksitlerinizi zamanında ödeyerek Findeks puanınızı yükseltirken aynı zamanda birikim yapın."
             isLast
           />
         </div>
