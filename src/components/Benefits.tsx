@@ -58,7 +58,7 @@ const Benefits: React.FC = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Neden SkorUp?</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Kredi geçmişi olmayan veya uzun süredir kredi kullanmayan kişiler için
-            özel olarak tasarlanmış avantajlı çözümlerimizle tanışın.
+           sektör uzmanları tarafından özel olarak tasarlanmış avantajlı çözümümüzle tanışın.
           </p>
         </div>
         
