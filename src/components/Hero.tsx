@@ -16,8 +16,7 @@ const Hero: React.FC = () => {
             </h1>
             
             <p className="text-gray-700 text-lg md:text-xl mb-8 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              Hiç kredi kullanmadınız mı? Son 5 yıldır aktif kredisi olmayan biri misiniz? 
-              Endişelenmeyin! Kredibilite puanınızı hızlıca oluşturmanız için buradayız.
+              Findeks notunuz yoksa endişelenmeyin. SkorUp ile kredibilitenizi adım adım inşa ediyoruz!
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-in" style={{ animationDelay: "0.4s" }}>
@@ -39,7 +38,7 @@ const Hero: React.FC = () => {
                 <svg className="h-5 w-5 text-primary mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span><strong>Güvenli süreç:</strong> SkorUp platformunda tüm işlemler anlaşmalı bankalar üzerinden yapılmakta, herhangi bir ücret talep edilmemekte ve kullanıcı bilgileri KVKK kapsamında güvenli bir şekilde saklanmaktadır.</span>
+                <span><strong>Nasıl?:</strong> SkorUp aracılığıyla, kredi puanınızı oluşturmaya yönelik özel bir kredi ile anlaşmalı bankalardan kredi hesabı açarak Findeks notunuzu oluşturmaya başlayabilirsiniz. Tüm işlemler tamamen ücretsizdir, </span>
               </p>
             </div>
           </div>
