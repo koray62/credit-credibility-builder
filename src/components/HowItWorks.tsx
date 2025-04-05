@@ -35,7 +35,7 @@ const HowItWorks: React.FC = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Nasıl Çalışır?</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Kredibilite puanınızı oluşturmak için izlemeniz gereken adımlar çok basit.
-            Aşağıdaki süreci takip ederek finansal geleceğinizi güvence altına alın.
+            Aşağıdaki süreci takip ederek finansal geleceğinizi güvence altına alın. Unutmayın, Bu kredi harcamak için değil; kredi puanı kazanmak ve birikim yapmak içindir!
           </p>
         </div>
         
@@ -43,19 +43,19 @@ const HowItWorks: React.FC = () => {
           <Step 
             number={1}
             title="Ücretsiz olarak Başvurunuzu Yapın"
-            description="Formu doldurun ve kredi başvurusunu anlaşmalı bankaya iletin. Tüm onay ve kullaım süreci online olarak ilerleyecek."
+            description="Formu doldurun, sistem sizin adınıza anlaşmalı bankaya kredi başvurunuzu iletsin. Bu kredi harcama amacıyla değil, kredi notu kazanmak için kullanılacak."
           />
           
           <Step 
             number={2}
             title="Onay ve Aktivasyon"
-            description="Başvurunuz onaylandıktan sonra, bankanın mobil uygulaması üzerinden kredinizi kullanın. Kredi tutarı hesabınıza geçsin ve kredinin teminatı olarak dursun."
+            description="Başvurunuz onaylandığında, banka krediyi hesabınıza aktarır ancak bu tutar teminat olarak durur, kullanılamaz. Bu kredi sadece kredi geçmişinizi oluşturmak içindir."
           />
           
           <Step 
             number={3}
             title="Düzenli Ödeme ve Kazanım"
-            description="Taksitlerinizi zamanında ödeyerek Findeks puanınızı yükseltirken aynı zamanda birikim yapın. Kredi kapanınca birkim tutarınızı Bankadan çekin."
+            description="Taksitleri zamanında ödeyerek Findeks puanınızı yükseltin. Kredi süresi sonunda, teminat olarak duran tutarı geri alarak birikiminize kavuşun."
             isLast
           />
         </div>
