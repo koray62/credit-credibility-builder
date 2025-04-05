@@ -49,7 +49,7 @@ const HowItWorks: React.FC = () => {
           <Step 
             number={2}
             title="Onay ve Aktivasyon"
-            description="Başvurunuz onaylandığında, banka krediyi hesabınıza aktarır ancak bu tutar teminat olarak durur, kullanılamaz. Bu kredi sadece kredi geçmişinizi oluşturmak içindir."
+            description="Başvurunuz onaylandığında, banka krediyi hesabınıza aktarır ancak bu tutar kullanılamaz. Bu kredi sadece kredi geçmişinizi oluşturmak içindir."
           />
           
           <Step 
