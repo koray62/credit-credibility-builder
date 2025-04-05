@@ -43,19 +43,19 @@ const HowItWorks: React.FC = () => {
           <Step 
             number={1}
             title="Ücretsiz olarak Başvurunuzu Yapın"
-            description="Formu doldurun ve kredi başvurusunu anlaşmalı bankaya iletin. Tüm süreç online olarak ilerleyecek."
+            description="Formu doldurun ve kredi başvurusunu anlaşmalı bankaya iletin. Tüm onay ve kullaım süreci online olarak ilerleyecek."
           />
           
           <Step 
             number={2}
             title="Onay ve Aktivasyon"
-            description="Başvurunuz onaylandıktan sonra, bankanın mobil uygulaması üzerinden kredinizi kullanın."
+            description="Başvurunuz onaylandıktan sonra, bankanın mobil uygulaması üzerinden kredinizi kullanın. Kredi tutarı hesabınıza geçsin ve kredinin teminatı olarak dursun."
           />
           
           <Step 
             number={3}
             title="Düzenli Ödeme ve Kazanım"
-            description="Taksitlerinizi zamanında ödeyerek Findeks puanınızı yükseltirken aynı zamanda birikim yapın."
+            description="Taksitlerinizi zamanında ödeyerek Findeks puanınızı yükseltirken aynı zamanda birikim yapın. Kredi kapanınca birkim tutarınızı Bankadan çekin."
             isLast
           />
         </div>
