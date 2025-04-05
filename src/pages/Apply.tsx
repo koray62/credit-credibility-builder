@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -55,8 +54,8 @@ const Apply: React.FC = () => {
     meslek: '',
     digerMeslek: '',
     gelir: '',
-    taksitTutari: '2000', // Default minimum value
-    krediVadesi: '12', // Default minimum value
+    taksitTutari: '2000',
+    krediVadesi: '12',
     kvkkOnay: false,
     pazarlamaIzni: false,
     taahhut1: false,
@@ -72,13 +71,11 @@ const Apply: React.FC = () => {
   const [isKVKKSheetOpen, setIsKVKKSheetOpen] = useState(false);
   const [isKVKKDialogOpen, setIsKVKKDialogOpen] = useState(false);
 
-  // Scroll to top when page loads or step changes
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentStep]);
 
   useEffect(() => {
-    // When date changes, update dogumTarihi in formData
     if (date) {
       const formattedDate = format(date, 'dd/MM/yyyy');
       setFormData(prev => ({ ...prev, dogumTarihi: formattedDate }));
@@ -89,10 +86,8 @@ const Apply: React.FC = () => {
     const { name, value } = e.target;
     
     if (name === 'dogumTarihi') {
-      // Auto-format the date as user types
       let formattedValue = value.replace(/\D/g, '');
       if (formattedValue.length > 0) {
-        // Add slashes between day, month, year
         if (formattedValue.length > 2 && formattedValue.length <= 4) {
           formattedValue = formattedValue.substring(0, 2) + '/' + formattedValue.substring(2);
         } else if (formattedValue.length > 4) {
@@ -103,7 +98,6 @@ const Apply: React.FC = () => {
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
       
-      // Reset the form errors when user types
       if (name === 'taksitTutari') {
         setFormErrors(prev => ({ ...prev, taksitTutari: false }));
       } else if (name === 'krediVadesi') {
@@ -132,13 +126,11 @@ const Apply: React.FC = () => {
     let newErrors = { ...formErrors };
     
     if (step === 2) {
-      // Validate taksit tutarı
       if (formData.taksitTutari && Number(formData.taksitTutari) < 2000) {
         newErrors.taksitTutari = true;
         isValid = false;
       }
       
-      // Validate kredi vadesi
       if (formData.krediVadesi) {
         const vade = Number(formData.krediVadesi);
         if (vade < 12 || vade > 24) {
@@ -207,7 +199,6 @@ const Apply: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Check if user is authenticated
       if (!user) {
         toast({
           title: "Giriş yapılmadı",
@@ -218,14 +209,12 @@ const Apply: React.FC = () => {
         return;
       }
 
-      // Prepare application data for database
       const applicationData = {
         user_id: user.id,
         amount: parseFloat(formData.taksitTutari),
         installment_count: parseInt(formData.krediVadesi),
         status: 'pending',
         notes: `Ad: ${formData.ad} ${formData.soyad}, TC: ${formData.tcKimlik}, Tel: ${formData.telefon}, E-posta: ${formData.email}, Adres: ${formData.adres}, ${formData.ilce}, ${formData.sehir}, Doğum Tarihi: ${formData.dogumTarihi}, Eğitim: ${formData.egitimDurumu}, Meslek: ${formData.meslek === 'diger' ? formData.digerMeslek : formData.meslek}, Gelir: ${formData.gelir} TL`,
-        // Store checkbox values
         kvkk_consent: formData.kvkkOnay,
         marketing_consent: formData.pazarlamaIzni,
         no_active_loans: formData.taahhut1,
@@ -235,7 +224,6 @@ const Apply: React.FC = () => {
 
       console.log("Submitting application data:", applicationData);
 
-      // Save application to database
       const { data, error } = await supabase
         .from('credit_applications')
         .insert([applicationData])
@@ -248,7 +236,6 @@ const Apply: React.FC = () => {
 
       console.log("Application submitted successfully:", data);
 
-      // Redirect to success page
       navigate('/basvuru-basarili');
     } catch (error) {
       console.error('Error submitting application:', error);
@@ -312,7 +299,6 @@ const Apply: React.FC = () => {
                 </p>
               </div>
               
-              {/* İlerleme Çubuğu */}
               <div className="mb-10">
                 <div className="flex justify-between items-center mb-2">
                   {[1, 2, 3].map((step) => (
@@ -344,7 +330,6 @@ const Apply: React.FC = () => {
               </div>
               
               <form onSubmit={handleSubmit}>
-                {/* Adım 1: Kişisel Bilgiler */}
                 {currentStep === 1 && (
                   <div className="space-y-6 animate-fade-in">
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -463,7 +448,6 @@ const Apply: React.FC = () => {
                   </div>
                 )}
                 
-                {/* Adım 2: Ek Bilgiler */}
                 {currentStep === 2 && (
                   <div className="space-y-6 animate-fade-in">
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -625,7 +609,6 @@ const Apply: React.FC = () => {
                   </div>
                 )}
                 
-                {/* Adım 3: Onay */}
                 {currentStep === 3 && (
                   <div className="space-y-6 animate-fade-in">
                     <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
@@ -844,7 +827,6 @@ const Apply: React.FC = () => {
       
       <Footer />
 
-      {/* KVKK Dialog */}
       <Dialog open={isKVKKDialogOpen} onOpenChange={setIsKVKKDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
@@ -853,29 +835,30 @@ const Apply: React.FC = () => {
 
           <div className="space-y-4 text-sm md:text-base">
             <p className="text-gray-600">
-              6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında, kredi başvuru sürecinde tarafımıza ilettiğiniz kişisel verilerinizin işlenmesine ilişkin olarak aşağıdaki bilgilendirme yapılmaktadır.
+              6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında, üyelik ve kredi başvuru sürecinde tarafımıza ilettiğiniz kişisel verilerinizin işlenmesine ilişkin olarak aşağıdaki bilgilendirme yapılmaktadır.
             </p>
 
             <div className="space-y-2">
               <h2 className="text-lg font-semibold">1. Veri Sorumlusu</h2>
               <p className="text-gray-600">
-                Kişisel verileriniz, veri sorumlusu sıfatıyla <strong>Nora Finansal Yazılımlar Anonim Şirketi (NORA A.Ş.)</strong> tarafından işlenmektedir.
+                Kişisel verileriniz, veri sorumlusu sıfatıyla <strong>Nora Finansal Yazılımlar Anonim Şirketi (NORA A.Ş.)</strong> tarafından aşağıda açıklanan çerçevede işlenmektedir.
               </p>
             </div>
 
             <div className="space-y-2">
               <h2 className="text-lg font-semibold">2. İşlenen Veriler</h2>
               <p className="text-gray-600">
-                Ad, soyad, T.C. kimlik numarası, iletişim bilgileri, demografik bilgiler, kredi başvuru detayları, Findeks raporu (rızanızla), IP adresi ve işlem logları.
+                Ad, soyad, T.C. kimlik numarası, iletişim bilgileri, demografik bilgiler, eğitim ve meslek bilgileri, kredi başvuru detayları, Findeks raporu (rızanızla), IP adresi, işlem tarihi ve işlem logları.
               </p>
             </div>
 
             <div className="space-y-2">
               <h2 className="text-lg font-semibold">3. İşleme Amaçları</h2>
               <ul className="list-disc pl-5 text-gray-600 space-y-1">
-                <li>Kredi başvurularının alınması ve değerlendirilmesi</li>
-                <li>Başvuruların anlaşmalı bankalara yönlendirilmesi</li>
+                <li>Kredi başvurusunun alınması, değerlendirilmesi ve anlaşmalı finansal kuruluşa yönlendirilmesi</li>
+                <li>Krediye ilişkin ön değerlendirme ve uygunluk analizlerinin yapılması ve bu amaçla dijital sistemlerin geliştirilmesi ve işletilmesi</li>
                 <li>Kredi geçmişi oluşturulması ve finansal davranış takibi</li>
+                <li>Başvuru sahibinin bilgilendirilmesi ve müşteri destek süreçlerinin yürütülmesi</li>
                 <li>Yasal yükümlülüklerin yerine getirilmesi</li>
                 <li>Finansal okuryazarlık kapsamında bilgilendirme yapılması</li>
               </ul>
@@ -883,19 +866,21 @@ const Apply: React.FC = () => {
 
             <div className="space-y-2">
               <h2 className="text-lg font-semibold">4. Hukuki Sebepler</h2>
-              <p className="text-gray-600">
-                KVKK m.5/2 (c) ve (f) hükümleri gereğince ve açık rıza alınması hâlinde işlenmektedir.
-              </p>
+              <ul className="list-disc pl-5 text-gray-600 space-y-1">
+                <li>KVKK m.5/2(c): Bir sözleşmenin kurulması veya ifasıyla doğrudan ilgili olması</li>
+                <li>KVKK m.5/2(f): Veri sorumlusunun meşru menfaatleri için işlenmesinin zorunlu olması</li>
+                <li>KVKK m.5/1: Açık rıza alınması hâlinde</li>
+              </ul>
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-lg font-semibold">5. Veri Aktarımı</h2>
+              <h2 className="text-lg font-semibold">5. Kişisel Verilerin Aktarılması</h2>
               <p className="text-gray-600">
                 Kişisel verileriniz;
               </p>
               <ul className="list-disc pl-5 text-gray-600 space-y-1">
                 <li>5411 sayılı Bankacılık Kanunu kapsamındaki bankalar ve finansal kuruluşlara,</li>
-                <li>Teknoloji hizmet sağlayıcılarına,</li>
+                <li>Veri işleme ve teknik altyapı hizmeti sağlayan, KVKK ile uyumlu iş ortaklarına,</li>
                 <li>Yasal yükümlülük kapsamında ilgili kurumlara</li>
               </ul>
               <p className="text-gray-600">
@@ -904,17 +889,19 @@ const Apply: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-lg font-semibold">6. Haklarınız</h2>
+              <h2 className="text-lg font-semibold">6. Veri Sahibi Olarak Haklarınız</h2>
               <p className="text-gray-600">
                 KVKK m.11 kapsamında;
-                verilerinizin işlenip işlenmediğini öğrenme, düzeltilmesini, silinmesini talep etme, yapılan işlemlerin 3. kişilere bildirilmesini isteme, itiraz ve zarar halinde tazmin talep etme haklarına sahipsiniz.
+                Kişisel verinizin işlenip işlenmediğini öğrenme,İşlenmişse buna ilişkin bilgi talep etme, İşleme amacını ve amaca uygun kullanılıp kullanılmadığını öğrenme,Yurt içinde veya yurt dışında aktarıldığı üçüncü kişileri bilme,
+                Eksik veya yanlış işlenmiş verilerin düzeltilmesini isteme,Verilerin silinmesini veya yok edilmesini isteme, Bu işlemlerin aktarıldığı üçüncü kişilere bildirilmesini isteme, İşlenen verilerin münhasıran otomatik sistemler 
+                vasıtasıyla analiz edilmesi sonucu aleyhe çıkan bir sonuca itiraz etme, Kanuna aykırı olarak işlenmiş verilerin zarara yol açması hâlinde zararının giderilmesini talep etme haklarına sahipsiniz.
               </p>
             </div>
 
             <div className="space-y-2">
               <h2 className="text-lg font-semibold">7. Başvuru</h2>
               <p className="text-gray-600">
-                Tüm taleplerinizi <a href="mailto:kvkk@norafinans.com" className="text-primary hover:underline">kvkk@norafinans.com</a> adresine e-posta ile veya şirket merkezimize yazılı olarak iletebilirsiniz.
+                Tüm taleplerinizi <a href="mailto:info@noratech.com.tr" className="text-primary hover:underline">info@noratech.com.tr</a> adresine e-posta ile veya şirket merkezimize yazılı olarak iletebilirsiniz.
               </p>
             </div>
           </div>
@@ -943,7 +930,6 @@ const Apply: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* KVKK Sheet (mobile friendly alternative) */}
       <KVKKSheet 
         open={isKVKKSheetOpen} 
         onOpenChange={setIsKVKKSheetOpen} 
