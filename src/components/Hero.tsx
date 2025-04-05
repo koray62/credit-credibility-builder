@@ -16,7 +16,7 @@ const Hero: React.FC = () => {
             </h1>
             
             <p className="text-gray-700 text-lg md:text-xl mb-8 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              Findeks notunuz yoksa endişelenmeyin. SkorUp ile kredi puanınızı güvenli, risksiz ve ücretsiz bir şekilde oluşturmaya başlayın. İyi bir kredi notunun hayatnıza katacağı avantalardan faydalanın.
+              Findeks notunuz yoksa endişelenmeyin. SkorUp ile kredi puanınızı güvenli, risksiz ve ücretsiz bir şekilde oluşturmaya başlayın. İyi bir kredi notunun hayatnıza katacağı avantajlardan faydalanın.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-in" style={{ animationDelay: "0.4s" }}>
