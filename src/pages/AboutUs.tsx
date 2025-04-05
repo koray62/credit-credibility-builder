@@ -109,7 +109,7 @@ const AboutUs: React.FC = () => {
                   className="bg-primary text-white"
                   asChild
                 >
-                  <a href="mailto:iletisim@skorup.com.tr">
+                  <a href="mailto:info@skorup.org">
                     Bizimle İletişime Geçin
                   </a>
                 </Button>
