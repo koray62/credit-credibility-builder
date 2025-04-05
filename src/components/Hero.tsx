@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ArrowRight, TrendingUp } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 
 const Hero: React.FC = () => {
@@ -51,9 +51,6 @@ const Hero: React.FC = () => {
                   <h3 className="text-lg font-semibold text-gray-800">Kredi Puanınız</h3>
                   <p className="text-gray-500 text-sm">Puanınızı görmek için Findeks Risk Raporunuzu yükleyin</p>
                 </div>
-                <div className="transform -rotate-45">
-                  <TrendingUp className="text-primary" size={24} />
-                </div>
               </div>
               
               <div className="flex items-center justify-center my-8">
@@ -83,13 +80,12 @@ const Hero: React.FC = () => {
                   
                   {/* Score indicator */}
                   <div 
-                    className="absolute top-0 transform -translate-y-full" 
+                    className="absolute top-0 transform -translate-y-1/2" 
                     style={{ 
                       left: `${(1315 / 1900) * 100}%`,
-                      marginLeft: '-6px'
                     }}
                   >
-                    <div className="w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent border-t-black"></div>
+                    <div className="w-3 h-3 bg-black transform rotate-45 translate-y-1"></div>
                   </div>
                 </div>
                 
