@@ -31,22 +31,29 @@ const Navbar: React.FC = () => {
     signOut();
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center">
+            <Link to="/" className="flex items-center" onClick={scrollToTop}>
               <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center">
                 SkorUp
-                <TrendingUp className="ml-1 h-5 w-5 text-primary" />
+                <TrendingUp className="ml-1 h-5 w-5 text-primary transform rotate-45" />
               </span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-primary transition-colors">Ana Sayfa</Link>
+            <Link to="/" className="text-gray-700 hover:text-primary transition-colors" onClick={scrollToTop}>Ana Sayfa</Link>
             <Link to="/basvuru" className="text-gray-700 hover:text-primary transition-colors">Başvuru</Link>
             <Link to="/surec" className="text-gray-700 hover:text-primary transition-colors">Süreç Takibi</Link>
             
@@ -82,6 +89,19 @@ const Navbar: React.FC = () => {
                     onClick={() => setIsDropdownOpen(false)}
                   >
                     Findeks
+                  </Link>
+                  <Link 
+                    to="/#faq" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary hover:text-white"
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      setTimeout(() => {
+                        const faqElement = document.getElementById('faq');
+                        if (faqElement) faqElement.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }}
+                  >
+                    Sıkça Sorulan Sorular
                   </Link>
                 </div>
               )}
@@ -129,7 +149,10 @@ const Navbar: React.FC = () => {
               <Link 
                 to="/" 
                 className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  scrollToTop();
+                }}
               >
                 Ana Sayfa
               </Link>
@@ -167,6 +190,19 @@ const Navbar: React.FC = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Findeks
+              </Link>
+              <Link 
+                to="/#faq" 
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setTimeout(() => {
+                    const faqElement = document.getElementById('faq');
+                    if (faqElement) faqElement.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }}
+              >
+                Sıkça Sorulan Sorular
               </Link>
               
               {!user ? (

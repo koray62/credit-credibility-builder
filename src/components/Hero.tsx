@@ -56,7 +56,7 @@ const Hero: React.FC = () => {
               <div className="flex items-center justify-center my-8">
                 <div className="w-48 h-48 rounded-full bg-gray-100 border-8 border-primary flex items-center justify-center relative">
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-primary-dark">1200</div>
+                    <div className="text-4xl font-bold text-primary-dark">1300</div>
                     <div className="text-gray-500 text-sm">Mevcut Puan</div>
                   </div>
                 </div>
@@ -65,14 +65,14 @@ const Hero: React.FC = () => {
               <div className="mb-6">
                 <div className="flex justify-between mb-2">
                   <span className="text-gray-600">İlerleme</span>
-                  <span className="text-gray-600">1200/1900</span>
+                  <span className="text-gray-600">1300/1900</span>
                 </div>
                 <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
                   <div 
                     className="h-full rounded-full" 
                     style={{ 
-                      width: '63%',
-                      background: 'linear-gradient(to right, #e53e3e, #ecc94b, #48bb78)'
+                      width: '68%',
+                      background: 'linear-gradient(to right, #e53e3e, #ed8936, #ecc94b, #48bb78, #2f855a)'
                     }}
                   ></div>
                 </div>
