@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, GithubIcon, LinkedinIcon, TwitterIcon, YoutubeIcon, TrendingUp } from 'lucide-react';
+import { ArrowUpRight, GithubIcon, LinkedinIcon, TwitterIcon, YoutubeIcon } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
             <Link to="/" className="flex items-center">
               <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center">
                 SkorUp
-                <TrendingUp className="ml-1 h-5 w-5 text-primary transform rotate-45" />
+                <img src="/lovable-uploads/a421e180-ad0f-46da-9cd7-3162a4530f1b.png" alt="Logo arrow" className="ml-1 h-5 w-5" />
               </span>
             </Link>
             <p className="text-gray-600 text-sm max-w-xs">

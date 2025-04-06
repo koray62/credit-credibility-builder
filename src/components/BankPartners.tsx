@@ -4,7 +4,7 @@ import React from 'react';
 const BankPartners: React.FC = () => {
   // Bu içerik için örnek banka logoları
   const banks = [
-    { name: "Denizbank", logo: "https://upload.wikimedia.org/wikipedia/tr/archive/8/86/20230125082750%21Denizbank-logo.png" },
+    { name: "Denizbank", logo: "/lovable-uploads/bbd52064-3e6d-4909-ab2e-fc63c8782541.png" },
     { name: "Örnek Banka 2", logo: "/placeholder.svg" },
     { name: "Örnek Banka 3", logo: "/placeholder.svg" },
     { name: "Örnek Banka 4", logo: "/placeholder.svg" },

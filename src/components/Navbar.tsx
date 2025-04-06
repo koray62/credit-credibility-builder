@@ -1,6 +1,7 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, ChevronDown, TrendingUp } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/hooks/useAuth';
 import UserMenu from './UserMenu';
@@ -45,7 +46,7 @@ const Navbar: React.FC = () => {
             <Link to="/" className="flex items-center" onClick={scrollToTop}>
               <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center">
                 SkorUp
-                <TrendingUp className="ml-1 h-5 w-5 text-primary transform rotate-45" />
+                <img src="/lovable-uploads/a421e180-ad0f-46da-9cd7-3162a4530f1b.png" alt="Logo arrow" className="ml-1 h-5 w-5" />
               </span>
             </Link>
           </div>

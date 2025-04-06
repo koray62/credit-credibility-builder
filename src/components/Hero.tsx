@@ -33,10 +33,7 @@ const Hero: React.FC = () => {
             </div>
             
             <div className="mt-8 p-4 bg-white rounded-lg shadow-sm border border-gray-100 animate-fade-in" style={{ animationDelay: "0.6s" }}>
-              <p className="text-gray-700 flex items-center">
-                <svg className="h-5 w-5 text-primary mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
+              <p className="text-gray-700">
                 <span><strong>Nasıl?:</strong> SkorUp aracılığıyla, kredi puanınızı oluşturmaya yönelik özel bir kredi ile anlaşmalı bankalardan kredi hesabı açarak Findeks notunuzu oluşturmaya başlayabilirsiniz. Tüm işlemler tamamen ücretsiz ve faizsizdir. </span>
               </p>
             </div>
@@ -76,7 +73,7 @@ const Hero: React.FC = () => {
                     ></div>
                   </div>
                   
-                  {/* Score indicator */}
+                  {/* Score indicator - positioned proportionally */}
                   <div 
                     className="absolute top-0 transform -translate-y-1/2" 
                     style={{ 
@@ -87,14 +84,13 @@ const Hero: React.FC = () => {
                   </div>
                 </div>
                 
-                {/* Score scale labels */}
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>0</span>
-                  <span>1000</span>
-                  <span>1200</span>
-                  <span>1350</span>
-                  <span>1550</span>
-                  <span>1900</span>
+                {/* Score scale labels - positioned proportionally */}
+                <div className="flex text-xs text-gray-500 mt-1 relative">
+                  <span className="absolute" style={{ left: '0%' }}>0</span>
+                  <span className="absolute" style={{ left: '25%', transform: 'translateX(-50%)' }}>500</span>
+                  <span className="absolute" style={{ left: '50%', transform: 'translateX(-50%)' }}>1000</span>
+                  <span className="absolute" style={{ left: '75%', transform: 'translateX(-50%)' }}>1500</span>
+                  <span className="absolute" style={{ left: '100%', transform: 'translateX(-100%)' }}>1900</span>
                 </div>
               </div>
               
