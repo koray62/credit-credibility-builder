@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
             <Link to="/" className="flex items-center">
               <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center">
                 SkorUp
-                <TrendingUp className="ml-1 h-5 w-5 text-primary" />
+                <TrendingUp className="ml-1 h-5 w-5 text-primary transform rotate-45" />
               </span>
             </Link>
             <p className="text-gray-600 text-sm max-w-xs">
@@ -76,7 +76,7 @@ const Footer: React.FC = () => {
               <li className="flex items-center justify-between group">
                 <span className="text-sm">E-posta</span>
                 <a href="mailto:info@skorup.org" className="text-primary font-medium group-hover:underline flex items-center">
-                  iletisim@skorup.com.tr
+                  info@skorup.org
                   <ArrowUpRight className="ml-1 h-3 w-3" />
                 </a>
               </li>

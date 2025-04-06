@@ -71,7 +71,7 @@ const FAQ: React.FC = () => {
         <div className="mt-12 text-center">
           <p className="text-gray-600">
             Başka sorularınız mı var?{" "}
-            <a href="#" className="text-primary font-medium hover:underline">
+            <a href="mailto:info@skorup.org" className="text-primary font-medium hover:underline">
               Bize ulaşın
             </a>
           </p>

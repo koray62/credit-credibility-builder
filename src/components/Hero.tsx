@@ -3,7 +3,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from 'lucide-react';
-import { Progress } from "@/components/ui/progress";
 
 const Hero: React.FC = () => {
   return (
@@ -72,7 +71,7 @@ const Hero: React.FC = () => {
                     <div 
                       className="h-full rounded-full" 
                       style={{ 
-                        background: 'linear-gradient(to right, #e53e3e, #ed8936, #ecc94b, #48bb78, #2f855a)'
+                        background: 'linear-gradient(to right, #ea384c, #F97316, #FEF7CD, #F2FCE2, #48bb78)'
                       }}
                     ></div>
                   </div>
@@ -91,10 +90,10 @@ const Hero: React.FC = () => {
                 {/* Score scale labels */}
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
                   <span>0</span>
-                  <span>1022</span>
+                  <span>1000</span>
                   <span>1200</span>
-                  <span>1341</span>
-                  <span>1535</span>
+                  <span>1350</span>
+                  <span>1550</span>
                   <span>1900</span>
                 </div>
               </div>

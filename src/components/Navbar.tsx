@@ -1,7 +1,6 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, TrendingUp } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/hooks/useAuth';
 import UserMenu from './UserMenu';
@@ -44,14 +43,9 @@ const Navbar: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Link to="/" className="flex items-center" onClick={scrollToTop}>
-              <span className="font-heading text-2xl font-bold text-primary flex items-center">
+              <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center">
                 SkorUp
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" 
-                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" 
-                  className="ml-1 h-5 w-5 transform -rotate-45">
-                  <path d="M5 12h14"></path>
-                  <path d="m12 5 7 7-7 7"></path>
-                </svg>
+                <TrendingUp className="ml-1 h-5 w-5 text-primary transform rotate-45" />
               </span>
             </Link>
           </div>
