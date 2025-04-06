@@ -15,6 +15,8 @@ import AboutUs from "./pages/AboutUs";
 import Blog from "./pages/Blog";
 import Findeks from "./pages/Findeks";
 import KVKK from "./pages/KVKK";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfUse from "./pages/TermsOfUse";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -47,6 +49,8 @@ const AppRoutes = () => (
       <Route path="/blog" element={<Blog />} />
       <Route path="/findeks" element={<Findeks />} />
       <Route path="/kvkk" element={<KVKK />} />
+      <Route path="/gizlilik-politikasi" element={<PrivacyPolicy />} />
+      <Route path="/kullanim-kosullari" element={<TermsOfUse />} />
       <Route path="/giris" element={<Auth />} />
       {/* Add the auth callback route */}
       <Route path="/auth/callback" element={<Auth />} />
