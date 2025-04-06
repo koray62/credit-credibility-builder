@@ -73,7 +73,7 @@ const Hero: React.FC = () => {
                     ></div>
                   </div>
                   
-                  {/* Score indicator - positioned proportionally */}
+                  {/* Score indicator - positioned proportionally based on current score */}
                   <div 
                     className="absolute top-0 transform -translate-y-1/2" 
                     style={{ 

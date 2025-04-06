@@ -46,7 +46,9 @@ const Navbar: React.FC = () => {
             <Link to="/" className="flex items-center" onClick={scrollToTop}>
               <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center">
                 SkorUp
-                <img src="/lovable-uploads/a421e180-ad0f-46da-9cd7-3162a4530f1b.png" alt="Logo arrow" className="ml-1 h-5 w-5" />
+                <div className="ml-1 bg-white rounded-full flex items-center justify-center">
+                  <img src="/lovable-uploads/a421e180-ad0f-46da-9cd7-3162a4530f1b.png" alt="Logo arrow" className="h-7 w-7" />
+                </div>
               </span>
             </Link>
           </div>
