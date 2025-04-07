@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
                 <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                   SkorUp
                 </span>
-                <div className="ml-1 bg-white rounded-full flex items-center justify-center">
+                <div className="ml-1">
                   <img 
                     src="/lovable-uploads/Arrow.png"
                     alt="Logo arrow" 
