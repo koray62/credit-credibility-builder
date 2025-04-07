@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, ChevronDown } from 'lucide-react';
@@ -44,12 +43,19 @@ const Navbar: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Link to="/" className="flex items-center" onClick={scrollToTop}>
-              <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center">
-                SkorUp
+              <div className="flex items-center">
+                <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  SkorUp
+                </span>
                 <div className="ml-1 bg-white rounded-full flex items-center justify-center">
-                  <img src="/lovable-uploads/logo.png" alt="Logo arrow" className="h-7 w-7" />
+                  <img 
+                    src="/lovable-uploads/logo.png" 
+                    alt="Logo arrow" 
+                    className="h-8 w-8" 
+                    style={{ marginLeft: "-2px" }}
+                  />
                 </div>
-              </span>
+              </div>
             </Link>
           </div>
 

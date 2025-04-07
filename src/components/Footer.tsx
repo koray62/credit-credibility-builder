@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, GithubIcon, LinkedinIcon, TwitterIcon, YoutubeIcon } from 'lucide-react';
@@ -10,12 +9,19 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <Link to="/" className="flex items-center">
-              <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center">
-                SkorUp
+              <div className="flex items-center">
+                <span className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  SkorUp
+                </span>
                 <div className="ml-1 bg-white rounded-full flex items-center justify-center">
-                  <img src="/lovable-uploads/logo.png" alt="Logo arrow" className="h-7 w-7" />
+                  <img 
+                    src="/lovable-uploads/logo.png" 
+                    alt="Logo arrow" 
+                    className="h-8 w-8" 
+                    style={{ marginLeft: "-2px" }}
+                  />
                 </div>
-              </span>
+              </div>
             </Link>
             <p className="text-gray-600 text-sm max-w-xs">
               Kredibilite oluşturmanıza yardımcı olan güvenilir finansal çözüm platformu.
