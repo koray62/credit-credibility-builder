@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
                 </span>
                 <div className="ml-1 bg-white rounded-full flex items-center justify-center">
                   <img 
-                    src="/public/lovable-uploads/a421e180-ad0f-46da-9cd7-3162a4530f1b.png"
+                    src="public/lovable-uploads/a421e180-ad0f-46da-9cd7-3162a4530f1b.png"
                     alt="Logo arrow" 
                     className="h-8 w-8" 
                     style={{ marginLeft: "-2px" }}
