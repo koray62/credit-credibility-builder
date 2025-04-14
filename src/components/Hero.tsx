@@ -60,7 +60,7 @@ const Hero: React.FC = () => {
               <div className="mb-6">
                 <div className="flex justify-between mb-2">
                   <span className="text-gray-600">İlerleme</span>
-                  <span className="text-gray-600">1315/1900</span>
+                  <span className="text-gray-600">1125/1900</span>
                 </div>
                 <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden relative">
                   {/* Progress bar with color gradient */}
