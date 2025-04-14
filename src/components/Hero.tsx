@@ -51,7 +51,7 @@ const Hero: React.FC = () => {
               <div className="flex items-center justify-center my-8">
                 <div className="w-48 h-48 rounded-full bg-gray-100 border-8 border-primary flex items-center justify-center relative">
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-primary-dark">1315</div>
+                    <div className="text-4xl font-bold text-primary-dark">1125</div>
                     <div className="text-gray-500 text-sm">Mevcut Puan</div>
                   </div>
                 </div>
@@ -77,7 +77,7 @@ const Hero: React.FC = () => {
                   <div 
                     className="absolute top-0 transform -translate-y-1/2" 
                     style={{ 
-                      left: `${(1315 / 1900) * 100}%`,
+                      left: `${(1125 / 1900) * 100}%`,
                     }}
                   >
                     <div className="w-3 h-3 bg-black transform rotate-45 translate-y-1"></div>
@@ -101,7 +101,7 @@ const Hero: React.FC = () => {
                     <svg className="h-5 w-5 text-green-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700">Hedef Puan: 1420+</span>
+                    <span className="text-gray-700">Hedef Puan: 1320+</span>
                   </div>
                   <span className="text-gray-700">12 ay içinde</span>
                 </div>
