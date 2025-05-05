@@ -1,8 +1,10 @@
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
 import { toast } from './use-toast';
+import type { Database } from '@/integrations/supabase/types';
 
 type AuthContextType = {
   user: User | null;
@@ -47,8 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .insert([{ 
             id: userId,
             full_name: name
-          }])
-          .select();
+          }]);
           
         if (insertError) {
           console.error("Error creating profile:", insertError);
@@ -70,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return true;
         }
         
-        console.log("Profile created successfully:", insertData);
+        console.log("Profile created successfully");
         return true;
       }
       

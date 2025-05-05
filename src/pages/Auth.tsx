@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
@@ -47,6 +48,7 @@ const Auth: React.FC = () => {
   const [authMode, setAuthMode] = useState<'main' | 'email-login' | 'email-signup' | 'otp-verify'>('main');
   const [otpEmail, setOtpEmail] = useState<string>('');
   const [otpUserData, setOtpUserData] = useState<any>(null);
+  const [signupInProgress, setSignupInProgress] = useState(false);
   
   // Get the return path from location state or default to home
   const from = (location.state as any)?.from || "/";
@@ -110,8 +112,7 @@ const Auth: React.FC = () => {
         .insert([{ 
           id: userId,
           full_name: userName || null
-        }])
-        .select();
+        }]);
         
       if (insertError) {
         console.error("Failed to insert profile in Auth callback:", insertError);
@@ -133,7 +134,7 @@ const Auth: React.FC = () => {
         return true;
       }
       
-      console.log("Profile created successfully in Auth callback:", insertResult);
+      console.log("Profile created successfully in Auth callback");
       return true;
     } catch (error) {
       console.error("Unexpected error in createProfile:", error);
@@ -257,6 +258,7 @@ const Auth: React.FC = () => {
   // Handle signup with email and password
   const handleEmailSignup = async (data: { email: string; password: string; firstName: string; lastName: string }) => {
     try {
+      setSignupInProgress(true);
       // Store user data for OTP verification
       setOtpUserData({
         email: data.email,
@@ -266,16 +268,23 @@ const Auth: React.FC = () => {
       });
       setOtpEmail(data.email);
       
+      console.log("Sending OTP to email:", data.email);
+      
       // Send OTP to email
-      const { error } = await supabase.auth.signInWithOtp({
+      const { data: otpData, error } = await supabase.auth.signInWithOtp({
         email: data.email,
         options: {
           shouldCreateUser: false,
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("OTP send error:", error);
+        throw error;
+      }
 
+      console.log("OTP sent successfully:", otpData);
+      
       toast({
         title: "Doğrulama kodu gönderildi",
         description: "Lütfen email adresinizi kontrol edin ve doğrulama kodunu girin.",
@@ -289,6 +298,8 @@ const Auth: React.FC = () => {
         description: error.message || "Lütfen daha sonra tekrar deneyin.",
         variant: "destructive",
       });
+    } finally {
+      setSignupInProgress(false);
     }
   };
 
@@ -297,6 +308,8 @@ const Auth: React.FC = () => {
     try {
       if (!otpUserData) throw new Error("User data missing");
 
+      console.log("Verifying OTP:", data.otp, "for email:", otpUserData.email);
+      
       // Verify OTP
       const { error: verifyError } = await supabase.auth.verifyOtp({
         email: otpUserData.email,
@@ -304,8 +317,13 @@ const Auth: React.FC = () => {
         type: 'email',
       });
 
-      if (verifyError) throw verifyError;
+      if (verifyError) {
+        console.error("OTP verification error:", verifyError);
+        throw verifyError;
+      }
 
+      console.log("OTP verified successfully, proceeding with signup");
+      
       // Create user after OTP verification
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: otpUserData.email,
@@ -319,7 +337,20 @@ const Auth: React.FC = () => {
         }
       });
 
-      if (signUpError) throw signUpError;
+      if (signUpError) {
+        console.error("SignUp error after OTP verification:", signUpError);
+        throw signUpError;
+      }
+
+      console.log("User created successfully:", signUpData);
+      
+      // Create user profile
+      if (signUpData?.user) {
+        await createProfile(
+          signUpData.user.id, 
+          `${otpUserData.firstName} ${otpUserData.lastName}`
+        );
+      }
 
       toast({
         title: "Kayıt başarılı",
@@ -500,9 +531,9 @@ const Auth: React.FC = () => {
                   <Button 
                     type="submit" 
                     className="w-full bg-primary" 
-                    disabled={isLoading}
+                    disabled={signupInProgress}
                   >
-                    {isLoading ? (
+                    {signupInProgress ? (
                       <span className="flex items-center">
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Yükleniyor...
@@ -558,7 +589,7 @@ const Auth: React.FC = () => {
                           <InputOTP maxLength={6} {...field} render={({ slots }) => (
                             <InputOTPGroup>
                               {slots.map((slot, index) => (
-                                <InputOTPSlot key={index} index={index} {...slot} className="w-12 h-12 text-xl" />
+                                <InputOTPSlot key={index} index={index} className="w-12 h-12 text-xl" />
                               ))}
                             </InputOTPGroup>
                           )} />
