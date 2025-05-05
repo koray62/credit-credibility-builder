@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
@@ -559,7 +558,7 @@ const Auth: React.FC = () => {
                           <InputOTP maxLength={6} {...field} render={({ slots }) => (
                             <InputOTPGroup>
                               {slots.map((slot, index) => (
-                                <InputOTPSlot key={index} {...slot} className="w-12 h-12 text-xl" />
+                                <InputOTPSlot key={index} index={index} {...slot} className="w-12 h-12 text-xl" />
                               ))}
                             </InputOTPGroup>
                           )} />

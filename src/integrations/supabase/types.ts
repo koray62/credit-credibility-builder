@@ -9,7 +9,147 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      credit_applications: {
+        Row: {
+          all_loans_paid: boolean | null
+          amount: number
+          application_date: string
+          created_at: string
+          "E-Mail": string | null
+          id: string
+          installment_count: number
+          kvkk_consent: boolean | null
+          marketing_consent: boolean | null
+          no_active_loans: boolean | null
+          no_legal_proceedings: boolean | null
+          notes: string | null
+          result_date: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          all_loans_paid?: boolean | null
+          amount: number
+          application_date?: string
+          created_at?: string
+          "E-Mail"?: string | null
+          id?: string
+          installment_count: number
+          kvkk_consent?: boolean | null
+          marketing_consent?: boolean | null
+          no_active_loans?: boolean | null
+          no_legal_proceedings?: boolean | null
+          notes?: string | null
+          result_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          all_loans_paid?: boolean | null
+          amount?: number
+          application_date?: string
+          created_at?: string
+          "E-Mail"?: string | null
+          id?: string
+          installment_count?: number
+          kvkk_consent?: boolean | null
+          marketing_consent?: boolean | null
+          no_active_loans?: boolean | null
+          no_legal_proceedings?: boolean | null
+          notes?: string | null
+          result_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      findeks_reports: {
+        Row: {
+          created_at: string
+          file_path: string | null
+          id: string
+          report_date: string
+          score: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_path?: string | null
+          id?: string
+          report_date?: string
+          score: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_path?: string | null
+          id?: string
+          report_date?: string
+          score?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          birth_date: string | null
+          city: string | null
+          consent_updated_at: string | null
+          district: string | null
+          education_level: string | null
+          full_name: string | null
+          id: string
+          kvkk_consent: boolean | null
+          marketing_consent: boolean | null
+          monthly_income: number | null
+          occupation: string | null
+          phone: string | null
+          tc_kimlik: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          birth_date?: string | null
+          city?: string | null
+          consent_updated_at?: string | null
+          district?: string | null
+          education_level?: string | null
+          full_name?: string | null
+          id: string
+          kvkk_consent?: boolean | null
+          marketing_consent?: boolean | null
+          monthly_income?: number | null
+          occupation?: string | null
+          phone?: string | null
+          tc_kimlik?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          birth_date?: string | null
+          city?: string | null
+          consent_updated_at?: string | null
+          district?: string | null
+          education_level?: string | null
+          full_name?: string | null
+          id?: string
+          kvkk_consent?: boolean | null
+          marketing_consent?: boolean | null
+          monthly_income?: number | null
+          occupation?: string | null
+          phone?: string | null
+          tc_kimlik?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
