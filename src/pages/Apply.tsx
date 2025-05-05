@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -71,6 +72,43 @@ const Apply: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isKVKKSheetOpen, setIsKVKKSheetOpen] = useState(false);
   const [isKVKKDialogOpen, setIsKVKKDialogOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+  // Fetch user profile when component mounts
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (error) {
+          console.error("Error fetching user profile:", error);
+          return;
+        }
+
+        if (data) {
+          setUserProfile(data);
+          
+          // Pre-fill form data with user information
+          setFormData(prev => ({
+            ...prev,
+            ad: user.user_metadata?.first_name || data.full_name?.split(' ')[0] || '',
+            soyad: user.user_metadata?.last_name || data.full_name?.split(' ').slice(1).join(' ') || '',
+            email: user.email || ''
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [user]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -85,6 +123,11 @@ const Apply: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    
+    // If the field is ad, soyad, or email and user is logged in, don't update
+    if ((name === 'ad' || name === 'soyad' || name === 'email') && user) {
+      return;
+    }
     
     if (name === 'dogumTarihi') {
       let formattedValue = value.replace(/\D/g, '');
@@ -395,7 +438,10 @@ const Apply: React.FC = () => {
                           value={formData.ad}
                           onChange={handleChange}
                           required
+                          disabled={!!user}
+                          className={user ? "bg-gray-100" : ""}
                         />
+                        {user && <p className="text-xs text-gray-500">Bu alan hesap bilgilerinizden otomatik doldurulmuştur.</p>}
                       </div>
                       
                       <div className="space-y-2">
@@ -407,7 +453,10 @@ const Apply: React.FC = () => {
                           value={formData.soyad}
                           onChange={handleChange}
                           required
+                          disabled={!!user}
+                          className={user ? "bg-gray-100" : ""}
                         />
+                        {user && <p className="text-xs text-gray-500">Bu alan hesap bilgilerinizden otomatik doldurulmuştur.</p>}
                       </div>
                       
                       <div className="space-y-2">
@@ -432,7 +481,10 @@ const Apply: React.FC = () => {
                           value={formData.email}
                           onChange={handleChange}
                           required
+                          disabled={!!user}
+                          className={user ? "bg-gray-100" : ""}
                         />
+                        {user && <p className="text-xs text-gray-500">Bu alan hesap bilgilerinizden otomatik doldurulmuştur.</p>}
                       </div>
                     </div>
                     
