@@ -1,10 +1,12 @@
-
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
 import { toast } from './use-toast';
 import type { Database } from '@/integrations/supabase/types';
+
+type ProfileType = Database['public']['Tables']['profiles']['Row'];
+type ProfileInsertType = Database['public']['Tables']['profiles']['Insert'];
 
 type AuthContextType = {
   user: User | null;
@@ -49,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .insert([{ 
             id: userId,
             full_name: name
-          }]);
+          } as ProfileInsertType]);
           
         if (insertError) {
           console.error("Error creating profile:", insertError);
@@ -60,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             .upsert([{ 
               id: userId,
               full_name: name
-            }]);
+            } as ProfileInsertType]);
             
           if (upsertError) {
             console.error("Upsert fallback also failed:", upsertError);

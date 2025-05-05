@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
@@ -26,6 +25,10 @@ import {
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { Database } from '@/integrations/supabase/types';
+
+type ProfileType = Database['public']['Tables']['profiles']['Row'];
+type ProfileInsertType = Database['public']['Tables']['profiles']['Insert'];
 
 // Email signup schema
 const signupSchema = z.object({
@@ -112,7 +115,7 @@ const Auth: React.FC = () => {
         .insert([{ 
           id: userId,
           full_name: userName || null
-        }]);
+        } as ProfileInsertType]);
         
       if (insertError) {
         console.error("Failed to insert profile in Auth callback:", insertError);
@@ -123,7 +126,7 @@ const Auth: React.FC = () => {
           .upsert([{ 
             id: userId,
             full_name: userName || null
-          }]);
+          } as ProfileInsertType]);
           
         if (upsertError) {
           console.error("Upsert fallback also failed:", upsertError);
@@ -311,7 +314,7 @@ const Auth: React.FC = () => {
       console.log("Verifying OTP:", data.otp, "for email:", otpUserData.email);
       
       // Verify OTP
-      const { error: verifyError } = await supabase.auth.verifyOtp({
+      const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({
         email: otpUserData.email,
         token: data.otp,
         type: 'email',
@@ -322,43 +325,19 @@ const Auth: React.FC = () => {
         throw verifyError;
       }
 
-      console.log("OTP verified successfully, proceeding with signup");
+      console.log("OTP verified successfully, proceeding with signup", verifyData);
       
-      // Create user after OTP verification
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: otpUserData.email,
-        password: otpUserData.password,
-        options: {
-          data: {
-            first_name: otpUserData.firstName,
-            last_name: otpUserData.lastName,
-            full_name: `${otpUserData.firstName} ${otpUserData.lastName}`
-          }
-        }
-      });
+      // After successful OTP verification, proceed with sign up
+      await signUpWithEmailAndPassword(
+        otpUserData.email,
+        otpUserData.password,
+        otpUserData.firstName,
+        otpUserData.lastName
+      );
 
-      if (signUpError) {
-        console.error("SignUp error after OTP verification:", signUpError);
-        throw signUpError;
-      }
-
-      console.log("User created successfully:", signUpData);
-      
-      // Create user profile
-      if (signUpData?.user) {
-        await createProfile(
-          signUpData.user.id, 
-          `${otpUserData.firstName} ${otpUserData.lastName}`
-        );
-      }
-
-      toast({
-        title: "Kayıt başarılı",
-        description: "Hesabınız başarıyla oluşturuldu.",
-      });
-
-      // Redirect to home page after successful signup
+      // Navigate to home page after successful signup
       navigate('/');
+      
     } catch (error: any) {
       console.error("OTP verification error:", error);
       toast({
@@ -589,7 +568,7 @@ const Auth: React.FC = () => {
                           <InputOTP maxLength={6} {...field} render={({ slots }) => (
                             <InputOTPGroup>
                               {slots.map((slot, index) => (
-                                <InputOTPSlot key={index} index={index} className="w-12 h-12 text-xl" />
+                                <InputOTPSlot key={index} {...slot} />
                               ))}
                             </InputOTPGroup>
                           )} />
@@ -620,14 +599,23 @@ const Auth: React.FC = () => {
                 <button 
                   onClick={async () => {
                     if (otpUserData?.email) {
-                      await supabase.auth.signInWithOtp({
-                        email: otpUserData.email,
-                        options: { shouldCreateUser: false }
-                      });
-                      toast({
-                        title: "Yeni kod gönderildi",
-                        description: "Lütfen email adresinizi kontrol edin.",
-                      });
+                      try {
+                        await supabase.auth.signInWithOtp({
+                          email: otpUserData.email,
+                          options: { shouldCreateUser: false }
+                        });
+                        toast({
+                          title: "Yeni kod gönderildi",
+                          description: "Lütfen email adresinizi kontrol edin.",
+                        });
+                      } catch (error) {
+                        console.error("Error resending OTP:", error);
+                        toast({
+                          title: "Kod gönderilemedi",
+                          description: "Lütfen daha sonra tekrar deneyin.",
+                          variant: "destructive",
+                        });
+                      }
                     }
                   }} 
                   className="text-sm text-primary hover:underline"
