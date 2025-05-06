@@ -34,9 +34,12 @@ const InputOTPSlot = React.forwardRef<
   React.ComponentPropsWithoutRef<"div"> & { index?: number }
 >(({ index, className, ...props }, ref) => {
   const inputOTPContext = React.useContext(OTPInputContext)
-  // Make sure we have a valid index, defaulting to the key if index is not provided
-  const slotIndex = typeof index === 'number' ? index : (props as any).key || 0
-  const { char, hasFakeCaret, isActive } = inputOTPContext.slots[slotIndex]
+  // Make sure we have a valid index, defaulting to the slot's index based on key
+  const slotIndex = typeof index === 'number' ? index : Number(props.key || 0)
+  
+  // Only try to access the slots if inputOTPContext.slots exists and has elements
+  const slot = inputOTPContext.slots[slotIndex] || { char: '', hasFakeCaret: false, isActive: false }
+  const { char, hasFakeCaret, isActive } = slot
 
   return (
     <div
