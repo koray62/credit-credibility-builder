@@ -567,8 +567,8 @@ const Auth: React.FC = () => {
                         <FormControl>
                           <InputOTP maxLength={6} {...field} render={({ slots }) => (
                             <InputOTPGroup>
-                              {slots.map((slot, index) => (
-                                <InputOTPSlot key={index} index={index} {...slot} />
+                              {slots.map((slot, i) => (
+                                <InputOTPSlot key={i} />
                               ))}
                             </InputOTPGroup>
                           )} />
