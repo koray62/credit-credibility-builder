@@ -33,10 +33,7 @@ type ProfileInsertType = Database['public']['Tables']['profiles']['Insert'];
 const signupSchema = z.object({
   email: z.string()
     .min(1, 'Email alanı zorunludur')
-    .refine((email) => {
-      // Manuel olarak basit doğrulama
-      return email.includes('@') && email.includes('.');
-    }, { message: 'Geçerli bir email adresi giriniz' }),
+    .email('Geçerli bir email adresi giriniz'),
   password: z.string().min(8, 'En az 8 karakter olmalıdır'),
   firstName: z.string().min(1, 'Ad alanı zorunludur'),
   lastName: z.string().min(1, 'Soyad alanı zorunludur')
@@ -265,7 +262,9 @@ const Auth: React.FC = () => {
   // Handle signup with email and password
   const handleEmailSignup = async (data: { email: string; password: string; firstName: string; lastName: string }) => {
     try {
+      console.log("Signup form data:", data); // Debug log to check form data
       setSignupInProgress(true);
+      
       // Store user data for OTP verification
       setOtpUserData({
         email: data.email,
@@ -490,7 +489,11 @@ const Auth: React.FC = () => {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="ornek@email.com" {...field} />
+                          <Input 
+                            type="email"
+                            placeholder="ornek@email.com" 
+                            {...field} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -504,7 +507,11 @@ const Auth: React.FC = () => {
                       <FormItem>
                         <FormLabel>Şifre</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="En az 8 karakter" {...field} />
+                          <Input 
+                            type="password" 
+                            placeholder="En az 8 karakter" 
+                            {...field} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
