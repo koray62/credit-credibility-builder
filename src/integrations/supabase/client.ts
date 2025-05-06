@@ -18,6 +18,7 @@ export const supabase = createClient<Database>(
       autoRefreshToken: true,
       detectSessionInUrl: true,
       storageKey: 'skorup-auth-key',
+      flowType: 'pkce', // Add explicit PKCE flow for better security
     }
   }
 );
