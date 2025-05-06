@@ -30,13 +30,13 @@ import type { Database } from '@/integrations/supabase/types';
 type ProfileType = Database['public']['Tables']['profiles']['Row'];
 type ProfileInsertType = Database['public']['Tables']['profiles']['Insert'];
 
-// Email signup schema
-//const signupSchema = z.object({
-//  email: z.string()
-//    .refine(email => {
-//      // Basit e-posta kontrolü
-//      return email.includes('@') && email.includes('.');
- //   }, { message: 'Geçerli bir e-posta adresi giriniz' }),
+const signupSchema = z.object({
+  email: z.string()
+    .min(1, 'Email alanı zorunludur')
+    .refine((email) => {
+      // Manuel olarak basit doğrulama
+      return email.includes('@') && email.includes('.');
+    }, { message: 'Geçerli bir email adresi giriniz' }),
   password: z.string().min(8, 'En az 8 karakter olmalıdır'),
   firstName: z.string().min(1, 'Ad alanı zorunludur'),
   lastName: z.string().min(1, 'Soyad alanı zorunludur')
