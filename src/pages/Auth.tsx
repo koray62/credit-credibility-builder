@@ -32,9 +32,10 @@ type ProfileInsertType = Database['public']['Tables']['profiles']['Insert'];
 
 // Email signup schema
 const signupSchema = z.object({
-  email: z.string().regex(
+  email: z.string()
+  .regex(
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-    'Geçerli bir email adresi giriniz'
+    'Lütfen geçerli bir e-posta adresi girin (örn: ad@ornek.com)'
   ),
   password: z.string().min(8, 'En az 8 karakter olmalıdır'),
   firstName: z.string().min(1, 'Ad alanı zorunludur'),
