@@ -1,8 +1,4 @@
-const { watch } = signupForm;
-// ...
-useEffect(() => {
-  console.log('📧 signupForm email değeri:', watch('email'));
-}, [watch('email')]);
+
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
@@ -84,6 +80,17 @@ const Auth: React.FC = () => {
     defaultValues: { email: '', password: '', firstName: '', lastName: '' },
     mode: 'onChange', // Add this to validate on change
   });
+
+  // Moved the email watch effect inside the component where signupForm is defined
+  useEffect(() => {
+    const subscription = signupForm.watch((value, { name }) => {
+      if (name === 'email') {
+        console.log('📧 signupForm email değeri:', value.email);
+      }
+    });
+    
+    return () => subscription.unsubscribe();
+  }, [signupForm]);
 
   const otpForm = useForm({
     resolver: zodResolver(otpSchema),
