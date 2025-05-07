@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
@@ -32,7 +33,7 @@ import type { Database } from '@/integrations/supabase/types';
 type ProfileType = Database['public']['Tables']['profiles']['Row'];
 type ProfileInsertType = Database['public']['Tables']['profiles']['Insert'];
 
-// Removed email validation from schemas
+// Schemas with minimal validation
 const loginSchema = z.object({
   email: z.string().min(1, 'Email alanı zorunludur'),
   password: z.string().min(1, 'Şifre alanı zorunludur'),
@@ -64,10 +65,7 @@ const Auth: React.FC = () => {
   const [otpUserData, setOtpUserData] = useState<any>(null);
   const [signupInProgress, setSignupInProgress] = useState(false);
 
-  // Redirect path
-  const from = (location.state as any)?.from || '/';
-
-  // Form with more robust validation
+  // Form setup
   const loginForm = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
@@ -77,13 +75,16 @@ const Auth: React.FC = () => {
   const signupForm = useForm({
     resolver: zodResolver(signupSchema),
     defaultValues: { email: '', password: '', firstName: '', lastName: '' },
-    mode: 'onChange', // Add this to validate on change
+    mode: 'onChange',
   });
 
   const otpForm = useForm({
     resolver: zodResolver(otpSchema),
     defaultValues: { otp: '' },
   });
+
+  // Redirect path
+  const from = (location.state as any)?.from || '/';
 
   // Profile creation helper
   const createProfile = async (userId: string, userName?: string) => {
@@ -163,7 +164,7 @@ const Auth: React.FC = () => {
 
   if (user && !isLoading) return <Navigate to={from} />;
 
-  // Handlers with improved error handling
+  // Handlers with improved debugging
   const handleEmailLogin = async (data: { email: string; password: string }) => {
     try {
       console.log("Login form submitted with data:", data);
@@ -337,6 +338,10 @@ const Auth: React.FC = () => {
                           <Input 
                             placeholder="ornek@email.com" 
                             {...field} 
+                            onChange={(e) => {
+                              console.log("Email field change:", e.target.value);
+                              field.onChange(e);
+                            }}
                           />
                         </FormControl>
                         <FormMessage />
@@ -407,7 +412,7 @@ const Auth: React.FC = () => {
                           <InputOTP maxLength={6} {...field}>
                             <InputOTPGroup>
                               {Array.from({ length: 6 }).map((_, i) => (
-                                <InputOTPSlot key={i} />
+                                <InputOTPSlot key={i} index={i} />
                               ))}
                             </InputOTPGroup>
                           </InputOTP>

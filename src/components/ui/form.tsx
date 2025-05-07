@@ -44,13 +44,12 @@ const FormField = <
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext)
   const itemContext = React.useContext(FormItemContext)
-  const { getFieldState, formState } = useFormContext() || {}
+  const { getFieldState, formState } = useFormContext() || { getFieldState: undefined, formState: {} }
 
   if (!fieldContext) {
     throw new Error("useFormField should be used within <FormField>")
   }
 
-  // Fix the TypeScript error by providing a default empty FormState object when formState is undefined
   const fieldState = getFieldState ? 
     getFieldState(fieldContext.name, formState as FormState<FieldValues>) : 
     {}

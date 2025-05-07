@@ -31,16 +31,13 @@ InputOTPGroup.displayName = "InputOTPGroup"
 
 const InputOTPSlot = React.forwardRef<
   React.ElementRef<"div">,
-  React.ComponentPropsWithoutRef<"div"> 
->(({ className, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<"div"> & { index?: number }
+>(({ className, index, ...props }, ref) => {
   const inputOTPContext = React.useContext(OTPInputContext)
   
-  // We don't use props.key directly, as it's a React special prop
-  const keyProp = props.key !== undefined ? Number(props.key) : 0
-  
-  // Safely access slot data with fallbacks
+  // Safely access slots with proper index handling
   const slots = inputOTPContext?.slots || []
-  const slot = keyProp < slots.length ? slots[keyProp] : undefined
+  const slot = index !== undefined && index < slots.length ? slots[index] : undefined
   const char = slot?.char || ''
   const hasFakeCaret = slot?.hasFakeCaret || false
   const isActive = slot?.isActive || false
