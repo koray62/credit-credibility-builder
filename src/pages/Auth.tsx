@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
@@ -75,6 +76,7 @@ const Auth: React.FC = () => {
   const signupForm = useForm({
     resolver: zodResolver(signupSchema),
     defaultValues: { email: '', password: '', firstName: '', lastName: '' },
+    mode: 'onChange', // Add this to validate on change
   });
 
   const otpForm = useForm({
@@ -171,6 +173,7 @@ const Auth: React.FC = () => {
 
   const handleEmailSignup = async (data: { email: string; password: string; firstName: string; lastName: string }) => {
     try {
+      console.log("Form submitted with data:", data); // Debug log
       setSignupInProgress(true);
       setOtpUserData(data);
       setOtpEmail(data.email);
@@ -325,7 +328,21 @@ const Auth: React.FC = () => {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="ornek@email.com" {...field} />
+                          <Input 
+                            type="email" 
+                            placeholder="ornek@email.com" 
+                            {...field} 
+                            onBlur={(e) => {
+                              // Log the current value when the field loses focus
+                              console.log("Email onBlur value:", e.target.value);
+                              field.onBlur();
+                            }}
+                            onChange={(e) => {
+                              // Log the value as it changes
+                              console.log("Email onChange value:", e.target.value);
+                              field.onChange(e);
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -344,7 +361,16 @@ const Auth: React.FC = () => {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full bg-primary" disabled={signupInProgress}>
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-primary" 
+                    disabled={signupInProgress}
+                    onClick={() => {
+                      // Log the current form state before submission
+                      console.log("Form state before submission:", signupForm.getValues());
+                      console.log("Form errors:", signupForm.formState.errors);
+                    }}
+                  >
                     {signupInProgress ? (
                       <span className="flex items-center">
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -388,13 +414,13 @@ const Auth: React.FC = () => {
                     render={({ field }) => (
                       <FormItem className="flex flex-col items-center space-y-4">
                         <FormControl>
-                          <InputOTP maxLength={6} {...field} render={({ slots }) => (
+                          <InputOTP maxLength={6} {...field}>
                             <InputOTPGroup>
-                              {slots.map((slot, i) => (
-                                <InputOTPSlot key={i} {...slot} />
+                              {[0, 1, 2, 3, 4, 5].map((index) => (
+                                <InputOTPSlot key={index} index={index} />
                               ))}
                             </InputOTPGroup>
-                          )} />
+                          </InputOTP>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
