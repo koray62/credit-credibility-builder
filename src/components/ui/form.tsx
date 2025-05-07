@@ -9,6 +9,7 @@ import {
   FieldValues,
   FormProvider,
   useFormContext,
+  FormState,
 } from "react-hook-form"
 
 import { cn } from "@/lib/utils"
@@ -49,7 +50,10 @@ const useFormField = () => {
     throw new Error("useFormField should be used within <FormField>")
   }
 
-  const fieldState = getFieldState ? getFieldState(fieldContext.name, formState || {}) : {}
+  // Fix the TypeScript error by providing a default empty FormState object when formState is undefined
+  const fieldState = getFieldState ? 
+    getFieldState(fieldContext.name, formState as FormState<FieldValues>) : 
+    {}
 
   const { id } = itemContext || {}
 
