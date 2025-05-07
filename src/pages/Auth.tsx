@@ -14,9 +14,10 @@ import { FcGoogle } from 'react-icons/fc';
 import { TrendingUp, Loader2, ArrowLeft, Mail } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Input } from '@/components/ui/input'; // Ensure Input uses React.forwardRef to receive ref properly
+import { Input } from '@/components/ui/input';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import {
+  Form,
   FormField,
   FormItem,
   FormLabel,
@@ -225,44 +226,46 @@ const Auth: React.FC = () => {
               <CardDescription>Email adresiniz ve şifrenizle giriş yapın</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={loginForm.handleSubmit(handleEmailLogin)} className="space-y-4">
-                <FormField
-                  control={loginForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input placeholder="ornek@email.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={loginForm.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Şifre</FormLabel>
-                      <FormControl>
-                        <Input type="password" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="w-full bg-primary" disabled={isLoading}>
-                  {isLoading ? (
-                    <span className="flex items-center">
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Yükleniyor...
-                    </span>
-                  ) : (
-                    'Giriş Yap'
-                  )}
-                </Button>
-              </form>
+              <Form {...loginForm}>
+                <form onSubmit={loginForm.handleSubmit(handleEmailLogin)} className="space-y-4">
+                  <FormField
+                    control={loginForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="ornek@email.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={loginForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Şifre</FormLabel>
+                        <FormControl>
+                          <Input type="password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full bg-primary" disabled={isLoading}>
+                    {isLoading ? (
+                      <span className="flex items-center">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Yükleniyor...
+                      </span>
+                    ) : (
+                      'Giriş Yap'
+                    )}
+                  </Button>
+                </form>
+              </Form>
               <div className="mt-4 text-center">
                 <button onClick={() => setAuthMode('email-signup')} className="text-sm text-primary hover:underline">
                   Hesabınız yok mu? Kaydolun
@@ -285,16 +288,44 @@ const Auth: React.FC = () => {
               <CardDescription>Bilgilerinizi girerek yeni hesap oluşturun</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={signupForm.handleSubmit(handleEmailSignup)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <Form {...signupForm}>
+                <form onSubmit={signupForm.handleSubmit(handleEmailSignup)} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={signupForm.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Ad</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={signupForm.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Soyad</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                   <FormField
                     control={signupForm.control}
-                    name="firstName"
+                    name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Ad</FormLabel>
+                        <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <Input type="email" placeholder="ornek@email.com" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -302,55 +333,29 @@ const Auth: React.FC = () => {
                   />
                   <FormField
                     control={signupForm.control}
-                    name="lastName"
+                    name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Soyad</FormLabel>
+                        <FormLabel>Şifre</FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <Input type="password" placeholder="En az 8 karakter" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                </div>
-                <FormField
-                  control={signupForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="ornek@email.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={signupForm.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Şifre</FormLabel>
-                      <FormControl>
-                        <Input type="password" placeholder="En az 8 karakter" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="w-full bg-primary" disabled={signupInProgress}>
-                  {signupInProgress ? (
-                    <span className="flex items-center">
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Yükleniyor...
-                    </span>
-                  ) : (
-                    'Hesap Oluştur'
-                  )}
-                </Button>
-              </form>
+                  <Button type="submit" className="w-full bg-primary" disabled={signupInProgress}>
+                    {signupInProgress ? (
+                      <span className="flex items-center">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Yükleniyor...
+                      </span>
+                    ) : (
+                      'Hesap Oluştur'
+                    )}
+                  </Button>
+                </form>
+              </Form>
               <div className="mt-4 text-center">
                 <button onClick={() => setAuthMode('email-login')} className="text-sm text-primary hover:underline">
                   Zaten hesabınız var mı? Giriş yapın
@@ -375,36 +380,38 @@ const Auth: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={otpForm.handleSubmit(handleVerifyOtp)} className="space-y-4">
-                <FormField
-                  control={otpForm.control}
-                  name="otp"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col items-center space-y-4">
-                      <FormControl>
-                        <InputOTP maxLength={6} {...field} render={({ slots }) => (
-                          <InputOTPGroup>
-                            {slots.map((_, i) => (
-                              <InputOTPSlot key={i} />
-                            ))}
-                          </InputOTPGroup>
-                        )} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="w-full bg-primary mt-4" disabled={isLoading}>
-                  {isLoading ? (
-                    <span className="flex items-center">
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Yükleniyor...
-                    </span>
-                  ) : (
-                    'Doğrula ve Hesap Oluştur'
-                  )}
-                </Button>
-              </form>
+              <Form {...otpForm}>
+                <form onSubmit={otpForm.handleSubmit(handleVerifyOtp)} className="space-y-4">
+                  <FormField
+                    control={otpForm.control}
+                    name="otp"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col items-center space-y-4">
+                        <FormControl>
+                          <InputOTP maxLength={6} {...field} render={({ slots }) => (
+                            <InputOTPGroup>
+                              {slots.map((slot, i) => (
+                                <InputOTPSlot key={i} {...slot} />
+                              ))}
+                            </InputOTPGroup>
+                          )} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full bg-primary mt-4" disabled={isLoading}>
+                    {isLoading ? (
+                      <span className="flex items-center">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Yükleniyor...
+                      </span>
+                    ) : (
+                      'Doğrula ve Hesap Oluştur'
+                    )}
+                  </Button>
+                </form>
+              </Form>
               <div className="mt-4 text-center">
                 <button
                   onClick={async () => {
