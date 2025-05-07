@@ -40,7 +40,7 @@ const InputOTPSlot = React.forwardRef<
   const index = parseInt(keyAsString, 10) || 0
   
   // Safely access slot data with fallbacks
-  const slots = inputOTPContext.slots || []
+  const slots = inputOTPContext?.slots || []
   const char = slots[index]?.char || ''
   const hasFakeCaret = slots[index]?.hasFakeCaret || false
   const isActive = slots[index]?.isActive || false

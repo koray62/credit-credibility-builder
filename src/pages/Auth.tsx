@@ -416,8 +416,8 @@ const Auth: React.FC = () => {
                         <FormControl>
                           <InputOTP maxLength={6} {...field}>
                             <InputOTPGroup>
-                              {[0, 1, 2, 3, 4, 5].map((index) => (
-                                <InputOTPSlot key={index} index={index} />
+                              {Array.from({ length: 6 }, (_, i) => (
+                                <InputOTPSlot key={i} />
                               ))}
                             </InputOTPGroup>
                           </InputOTP>
