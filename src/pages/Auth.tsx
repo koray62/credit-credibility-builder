@@ -32,14 +32,14 @@ import type { Database } from '@/integrations/supabase/types';
 type ProfileType = Database['public']['Tables']['profiles']['Row'];
 type ProfileInsertType = Database['public']['Tables']['profiles']['Insert'];
 
-// Fix the validation schemas to be more robust
+// Removed email validation from schemas
 const loginSchema = z.object({
-  email: z.string().email('Geçerli bir email adresi giriniz'),
+  email: z.string().min(1, 'Email alanı zorunludur'),
   password: z.string().min(1, 'Şifre alanı zorunludur'),
 });
 
 const signupSchema = z.object({
-  email: z.string().email('Geçerli bir email adresi giriniz'),
+  email: z.string().min(1, 'Email alanı zorunludur'),
   password: z.string().min(8, 'En az 8 karakter olmalıdır'),
   firstName: z.string().min(1, 'Ad alanı zorunludur'),
   lastName: z.string().min(1, 'Soyad alanı zorunludur'),
@@ -166,6 +166,7 @@ const Auth: React.FC = () => {
   // Handlers with improved error handling
   const handleEmailLogin = async (data: { email: string; password: string }) => {
     try {
+      console.log("Login form submitted with data:", data);
       await signInWithEmailAndPassword(data.email, data.password);
     } catch (error: any) {
       toast({ title: 'Giriş yapılamadı', description: error.message, variant: 'destructive' });
@@ -174,17 +175,7 @@ const Auth: React.FC = () => {
 
   const handleEmailSignup = async (data: { email: string; password: string; firstName: string; lastName: string }) => {
     try {
-      console.log("Form submitted with data:", data); // Debug log
-      
-      // Validate email before proceeding
-      if (!data.email || !data.email.includes('@')) {
-        toast({ 
-          title: 'Geçersiz email', 
-          description: 'Lütfen geçerli bir email adresi giriniz', 
-          variant: 'destructive' 
-        });
-        return;
-      }
+      console.log("Signup form submitted with data:", data);
       
       setSignupInProgress(true);
       setOtpUserData(data);
@@ -251,7 +242,6 @@ const Auth: React.FC = () => {
                         <FormLabel>Email</FormLabel>
                         <FormControl>
                           <Input 
-                            type="email" 
                             placeholder="ornek@email.com" 
                             {...field} 
                           />
@@ -345,7 +335,6 @@ const Auth: React.FC = () => {
                         <FormLabel>Email</FormLabel>
                         <FormControl>
                           <Input 
-                            type="email" 
                             placeholder="ornek@email.com" 
                             {...field} 
                           />
@@ -417,7 +406,7 @@ const Auth: React.FC = () => {
                         <FormControl>
                           <InputOTP maxLength={6} {...field}>
                             <InputOTPGroup>
-                              {Array.from({ length: 6 }, (_, i) => (
+                              {Array.from({ length: 6 }).map((_, i) => (
                                 <InputOTPSlot key={i} />
                               ))}
                             </InputOTPGroup>
