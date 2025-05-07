@@ -34,12 +34,12 @@ type ProfileInsertType = Database['public']['Tables']['profiles']['Insert'];
 
 // Removed email validation from schemas
 const loginSchema = z.object({
-  email: z.string().min(1, 'Email alanı zorunludur'),
+  email: z.string().min(1, 'Email alanı zorunludur1'),
   password: z.string().min(1, 'Şifre alanı zorunludur'),
 });
 
 const signupSchema = z.object({
-  email: z.string().min(1, 'Email alanı zorunludur'),
+  email: z.string().min(1, 'Email alanı zorunludur2'),
   password: z.string().min(8, 'En az 8 karakter olmalıdır'),
   firstName: z.string().min(1, 'Ad alanı zorunludur'),
   lastName: z.string().min(1, 'Soyad alanı zorunludur'),
