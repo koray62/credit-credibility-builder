@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
@@ -33,8 +32,14 @@ import type { Database } from '@/integrations/supabase/types';
 type ProfileType = Database['public']['Tables']['profiles']['Row'];
 type ProfileInsertType = Database['public']['Tables']['profiles']['Insert'];
 
+// Fix the validation schemas to be more robust
+const loginSchema = z.object({
+  email: z.string().email('Geçerli bir email adresi giriniz'),
+  password: z.string().min(1, 'Şifre alanı zorunludur'),
+});
+
 const signupSchema = z.object({
-  email: z.string().min(1, 'Email alanı zorunludur').email('Geçerli bir email adresi giriniz'),
+  email: z.string().email('Geçerli bir email adresi giriniz'),
   password: z.string().min(8, 'En az 8 karakter olmalıdır'),
   firstName: z.string().min(1, 'Ad alanı zorunludur'),
   lastName: z.string().min(1, 'Soyad alanı zorunludur'),
@@ -62,15 +67,11 @@ const Auth: React.FC = () => {
   // Redirect path
   const from = (location.state as any)?.from || '/';
 
-  // Forms
+  // Form with more robust validation
   const loginForm = useForm({
-    resolver: zodResolver(
-      z.object({
-        email: z.string().email('Geçerli bir email adresi giriniz'),
-        password: z.string().min(1, 'Şifre alanı zorunludur'),
-      })
-    ),
+    resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
+    mode: 'onChange',
   });
 
   const signupForm = useForm({
@@ -162,7 +163,7 @@ const Auth: React.FC = () => {
 
   if (user && !isLoading) return <Navigate to={from} />;
 
-  // Handlers
+  // Handlers with improved error handling
   const handleEmailLogin = async (data: { email: string; password: string }) => {
     try {
       await signInWithEmailAndPassword(data.email, data.password);
@@ -174,6 +175,17 @@ const Auth: React.FC = () => {
   const handleEmailSignup = async (data: { email: string; password: string; firstName: string; lastName: string }) => {
     try {
       console.log("Form submitted with data:", data); // Debug log
+      
+      // Validate email before proceeding
+      if (!data.email || !data.email.includes('@')) {
+        toast({ 
+          title: 'Geçersiz email', 
+          description: 'Lütfen geçerli bir email adresi giriniz', 
+          variant: 'destructive' 
+        });
+        return;
+      }
+      
       setSignupInProgress(true);
       setOtpUserData(data);
       setOtpEmail(data.email);
@@ -238,7 +250,11 @@ const Auth: React.FC = () => {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="ornek@email.com" {...field} />
+                          <Input 
+                            type="email" 
+                            placeholder="ornek@email.com" 
+                            {...field} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -332,16 +348,6 @@ const Auth: React.FC = () => {
                             type="email" 
                             placeholder="ornek@email.com" 
                             {...field} 
-                            onBlur={(e) => {
-                              // Log the current value when the field loses focus
-                              console.log("Email onBlur value:", e.target.value);
-                              field.onBlur();
-                            }}
-                            onChange={(e) => {
-                              // Log the value as it changes
-                              console.log("Email onChange value:", e.target.value);
-                              field.onChange(e);
-                            }}
                           />
                         </FormControl>
                         <FormMessage />
@@ -365,11 +371,6 @@ const Auth: React.FC = () => {
                     type="submit" 
                     className="w-full bg-primary" 
                     disabled={signupInProgress}
-                    onClick={() => {
-                      // Log the current form state before submission
-                      console.log("Form state before submission:", signupForm.getValues());
-                      console.log("Form errors:", signupForm.formState.errors);
-                    }}
                   >
                     {signupInProgress ? (
                       <span className="flex items-center">

@@ -35,15 +35,18 @@ const InputOTPSlot = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const inputOTPContext = React.useContext(OTPInputContext)
   
-  // Find the index based on the key prop or default to a safe fallback
-  const keyAsString = String(props.key || "")
-  const index = parseInt(keyAsString, 10) || 0
+  // Make sure key exists and is valid as a string
+  const key = props.key !== undefined ? String(props.key) : '0'
+  
+  // Get the index from the key (if it's a number) or default to 0
+  const index = /^\d+$/.test(key) ? parseInt(key, 10) : 0
   
   // Safely access slot data with fallbacks
   const slots = inputOTPContext?.slots || []
-  const char = slots[index]?.char || ''
-  const hasFakeCaret = slots[index]?.hasFakeCaret || false
-  const isActive = slots[index]?.isActive || false
+  const slot = index < slots.length ? slots[index] : undefined
+  const char = slot?.char || ''
+  const hasFakeCaret = slot?.hasFakeCaret || false
+  const isActive = slot?.isActive || false
 
   return (
     <div
