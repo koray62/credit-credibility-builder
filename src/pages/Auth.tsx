@@ -78,6 +78,22 @@ const Auth: React.FC = () => {
     mode: 'onChange',
   });
 
+  // Add watchers to track form values
+  const emailValue = signupForm.watch('email');
+  const passwordValue = signupForm.watch('password');
+  const firstNameValue = signupForm.watch('firstName');
+  const lastNameValue = signupForm.watch('lastName');
+
+  // Debug the form values on each render
+  useEffect(() => {
+    console.log('Email değeri:', emailValue);
+    console.log('Password değeri:', passwordValue);
+    console.log('First name değeri:', firstNameValue);
+    console.log('Last name değeri:', lastNameValue);
+    console.log('Form values:', signupForm.getValues());
+    console.log('Form errors:', signupForm.formState.errors);
+  }, [emailValue, passwordValue, firstNameValue, lastNameValue]);
+
   const otpForm = useForm({
     resolver: zodResolver(otpSchema),
     defaultValues: { otp: '' },
@@ -177,6 +193,7 @@ const Auth: React.FC = () => {
   const handleEmailSignup = async (data: { email: string; password: string; firstName: string; lastName: string }) => {
     try {
       console.log("Signup form submitted with data:", data);
+      console.log("Email submitted:", data.email);
       
       setSignupInProgress(true);
       setOtpUserData(data);
@@ -299,7 +316,15 @@ const Auth: React.FC = () => {
             </CardHeader>
             <CardContent>
               <Form {...signupForm}>
-                <form onSubmit={signupForm.handleSubmit(handleEmailSignup)} className="space-y-4">
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    console.log("Form submitted");
+                    console.log("Current values:", signupForm.getValues());
+                    signupForm.handleSubmit(handleEmailSignup)(e);
+                  }} 
+                  className="space-y-4"
+                >
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={signupForm.control}
@@ -308,7 +333,13 @@ const Auth: React.FC = () => {
                         <FormItem>
                           <FormLabel>Ad</FormLabel>
                           <FormControl>
-                            <Input {...field} />
+                            <Input 
+                              {...field} 
+                              onChange={(e) => {
+                                console.log("firstName change:", e.target.value);
+                                field.onChange(e);
+                              }}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -321,7 +352,13 @@ const Auth: React.FC = () => {
                         <FormItem>
                           <FormLabel>Soyad</FormLabel>
                           <FormControl>
-                            <Input {...field} />
+                            <Input 
+                              {...field} 
+                              onChange={(e) => {
+                                console.log("lastName change:", e.target.value);
+                                field.onChange(e);
+                              }}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -336,11 +373,15 @@ const Auth: React.FC = () => {
                         <FormLabel>Email</FormLabel>
                         <FormControl>
                           <Input 
+                            type="email"
                             placeholder="ornek@email.com" 
                             {...field} 
+                            value={field.value}
                             onChange={(e) => {
                               console.log("Email field change:", e.target.value);
                               field.onChange(e);
+                              // Force a form value update
+                              signupForm.setValue('email', e.target.value, { shouldValidate: true });
                             }}
                           />
                         </FormControl>
@@ -355,16 +396,30 @@ const Auth: React.FC = () => {
                       <FormItem>
                         <FormLabel>Şifre</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="En az 8 karakter" {...field} />
+                          <Input 
+                            type="password" 
+                            placeholder="En az 8 karakter" 
+                            {...field} 
+                            onChange={(e) => {
+                              console.log("Password change:", e.target.value);
+                              field.onChange(e);
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
-                    )}
-                  />
+                    />
+                  </FormField>
                   <Button 
                     type="submit" 
                     className="w-full bg-primary" 
                     disabled={signupInProgress}
+                    onClick={() => {
+                      console.log("Submit button clicked");
+                      console.log("Form values:", signupForm.getValues());
+                      console.log("Form errors:", signupForm.formState.errors);
+                      console.log("Form state:", signupForm.formState);
+                    }}
                   >
                     {signupInProgress ? (
                       <span className="flex items-center">
