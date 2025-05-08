@@ -408,8 +408,8 @@ const Auth: React.FC = () => {
                         </FormControl>
                         <FormMessage />
                       </FormItem>
-                    />
-                  </FormField>
+                    )}
+                  />
                   <Button 
                     type="submit" 
                     className="w-full bg-primary" 
