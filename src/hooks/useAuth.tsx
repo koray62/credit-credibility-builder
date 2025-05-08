@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User } from '@supabase/supabase-js';
@@ -344,8 +345,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       
       setIsLoading(false);
-      return data;
-      
+      // Remove the return statement to match the Promise<void> return type
     } catch (error) {
       console.error('Email signup error:', error);
       setIsLoading(false);
