@@ -46,10 +46,6 @@ const signupSchema = z.object({
   lastName: z.string().min(1, 'Soyad alanı zorunludur'),
 });
 
-const otpSchema = z.object({
-  otp: z.string().length(6, 'OTP kodu 6 haneli olmalıdır'),
-});
-
 const Auth: React.FC = () => {
   const {
     user,
@@ -60,10 +56,14 @@ const Auth: React.FC = () => {
   } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [authMode, setAuthMode] = useState<'main' | 'email-login' | 'email-signup' | 'otp-verify'>('main');
-  const [otpEmail, setOtpEmail] = useState<string>('');
-  const [otpUserData, setOtpUserData] = useState<any>(null);
+  const [authMode, setAuthMode] = useState<'main' | 'email-login' | 'email-signup' | 'email-verification'>('main');
   const [signupInProgress, setSignupInProgress] = useState(false);
+  const [signupData, setSignupData] = useState<{
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+  } | null>(null);
 
   // Form setup
   const loginForm = useForm({
@@ -93,11 +93,6 @@ const Auth: React.FC = () => {
     console.log('Form values:', signupForm.getValues());
     console.log('Form errors:', signupForm.formState.errors);
   }, [emailValue, passwordValue, firstNameValue, lastNameValue]);
-
-  const otpForm = useForm({
-    resolver: zodResolver(otpSchema),
-    defaultValues: { otp: '' },
-  });
 
   // Redirect path
   const from = (location.state as any)?.from || '/';
@@ -196,41 +191,26 @@ const Auth: React.FC = () => {
       console.log("Email submitted:", data.email);
       
       setSignupInProgress(true);
-      setOtpUserData(data);
-      setOtpEmail(data.email);
+      setSignupData(data);
 
-      const { error } = await supabase.auth.signInWithOtp({
-        email: data.email,
-        options: { shouldCreateUser: true },
+      // Use direct signUp instead of OTP
+      await signUpWithEmailAndPassword(
+        data.email,
+        data.password,
+        data.firstName,
+        data.lastName
+      );
+      
+      setAuthMode('email-verification');
+      toast({ 
+        title: 'Doğrulama emaili gönderildi', 
+        description: 'Emailinizdeki linke tıklayarak üyeliğinizi tamamlayın.' 
       });
-      if (error) throw error;
-      toast({ title: 'Doğrulama kodu gönderildi', description: 'Emailinizi kontrol edin.' });
-      setAuthMode('otp-verify');
+      
     } catch (error: any) {
       toast({ title: 'Kayıt oluşturulamadı', description: error.message, variant: 'destructive' });
     } finally {
       setSignupInProgress(false);
-    }
-  };
-
-  const handleVerifyOtp = async (data: { otp: string }) => {
-    try {
-      if (!otpUserData) throw new Error('Eksik kullanıcı verisi');
-      const { error: verifyError } = await supabase.auth.verifyOtp({
-        email: otpUserData.email,
-        token: data.otp,
-        type: 'email',
-      });
-      if (verifyError) throw verifyError;
-      await signUpWithEmailAndPassword(
-        otpUserData.email,
-        otpUserData.password,
-        otpUserData.firstName,
-        otpUserData.lastName
-      );
-      navigate('/');
-    } catch (error: any) {
-      toast({ title: 'Doğrulama başarısız', description: error.message, variant: 'destructive' });
     }
   };
 
@@ -260,6 +240,7 @@ const Auth: React.FC = () => {
                         <FormLabel>Email</FormLabel>
                         <FormControl>
                           <Input 
+                            type="email"
                             placeholder="ornek@email.com" 
                             {...field} 
                           />
@@ -441,7 +422,7 @@ const Auth: React.FC = () => {
           </>
         );
 
-      case 'otp-verify':
+      case 'email-verification':
         return (
           <>
             <CardHeader className="space-y-1">
@@ -452,60 +433,31 @@ const Auth: React.FC = () => {
                 <CardTitle className="text-2xl font-bold">Email Doğrulama</CardTitle>
               </div>
               <CardDescription>
-                <span className="font-medium">{otpEmail}</span> adresine gönderilen 6 haneli kodu girin
+                <span className="font-medium">{signupData?.email}</span> adresine doğrulama bağlantısı gönderdik
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Form {...otpForm}>
-                <form onSubmit={otpForm.handleSubmit(handleVerifyOtp)} className="space-y-4">
-                  <FormField
-                    control={otpForm.control}
-                    name="otp"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col items-center space-y-4">
-                        <FormControl>
-                          <InputOTP maxLength={6} {...field}>
-                            <InputOTPGroup>
-                              {Array.from({ length: 6 }).map((_, i) => (
-                                <InputOTPSlot key={i} index={i} />
-                              ))}
-                            </InputOTPGroup>
-                          </InputOTP>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full bg-primary mt-4" disabled={isLoading}>
-                    {isLoading ? (
-                      <span className="flex items-center">
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Yükleniyor...
-                      </span>
-                    ) : (
-                      'Doğrula ve Hesap Oluştur'
-                    )}
-                  </Button>
-                </form>
-              </Form>
-              <div className="mt-4 text-center">
-                <button
-                  onClick={async () => {
-                    if (otpUserData?.email) {
-                      try {
-                        await supabase.auth.signInWithOtp({
-                          email: otpUserData.email,
-                          options: { shouldCreateUser: true },
-                        });
-                        toast({ title: 'Yeni kod gönderildi', description: 'Emailinizi kontrol edin.' });
-                      } catch {
-                        toast({ title: 'Kod gönderilemedi', description: 'Tekrar deneyin.', variant: 'destructive' });
-                      }
-                    }
-                  }}
-                  className="text-sm text-primary hover:underline"
-                >
-                  Kodu tekrar gönder
+            <CardContent className="text-center space-y-4">
+              <p>Lütfen email adresinizi kontrol edin ve gelen bağlantıya tıklayarak hesabınızı doğrulayın.</p>
+              <Button
+                onClick={() => {
+                  if (signupData?.email) {
+                    supabase.auth.resend({
+                      email: signupData.email,
+                      type: 'signup'
+                    }).then(() => {
+                      toast({ title: 'Email tekrar gönderildi', description: 'Lütfen gelen kutunuzu kontrol edin.' });
+                    }).catch(() => {
+                      toast({ title: 'Email gönderilemedi', description: 'Lütfen daha sonra tekrar deneyin.', variant: 'destructive' });
+                    });
+                  }
+                }}
+                variant="outline"
+              >
+                Doğrulama emailini tekrar gönder
+              </Button>
+              <div className="mt-4">
+                <button onClick={() => setAuthMode('email-login')} className="text-sm text-primary hover:underline">
+                  Giriş sayfasına dön
                 </button>
               </div>
             </CardContent>

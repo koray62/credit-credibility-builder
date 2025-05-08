@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User } from '@supabase/supabase-js';
@@ -44,7 +43,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         // If we encounter an error, attempt to create a profile
         const { data: userData, error: userError } = await supabase.auth.getUser();
-        const name = userName || userData?.user?.user_metadata?.name || null;
+        const name = userName || userData?.user?.user_metadata?.full_name || 
+                    `${userData?.user?.user_metadata?.first_name || ''} ${userData?.user?.user_metadata?.last_name || ''}`.trim();
         
         // Create profile if it doesn't exist
         const { data: insertData, error: insertError } = await supabase
@@ -104,11 +104,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Create profile using a Promise to avoid race conditions and deadlocks
           // Use requestAnimationFrame instead of setTimeout to reduce flicker
           requestAnimationFrame(() => {
-            const name = newSession.user?.user_metadata?.full_name || 
+            const fullName = newSession.user?.user_metadata?.full_name || 
                         `${newSession.user?.user_metadata?.first_name || ''} ${newSession.user?.user_metadata?.last_name || ''}`.trim();
                         
             // Use a Promise to handle profile creation without blocking
-            ensureProfileExists(newSession.user.id, name)
+            ensureProfileExists(newSession.user.id, fullName)
               .catch(error => {
                 console.error("Error ensuring profile exists:", error);
               });
@@ -124,6 +124,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             title: "Çıkış yapıldı",
             description: "Başarıyla çıkış yaptınız.",
           });
+        } else if (event === 'USER_UPDATED') {
+          console.log("User updated:", newSession?.user);
+          if (newSession?.user) {
+            ensureProfileExists(newSession.user.id);
+          }
         }
       }
     );
@@ -284,11 +289,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Modified sign up with email and password to prevent message channel errors
+  // Modified sign up with email and password to properly set user metadata
   const signUpWithEmailAndPassword = async (email: string, password: string, firstName: string, lastName: string) => {
     setIsLoading(true);
     try {
       console.log("Attempting to sign up with email/password...");
+      console.log("Registration data:", { email, firstName, lastName });
+      
+      const fullName = `${firstName} ${lastName}`.trim();
       
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -297,8 +305,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           data: {
             first_name: firstName,
             last_name: lastName,
-            full_name: `${firstName} ${lastName}`
-          }
+            full_name: fullName
+          },
+          emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       });
       
@@ -315,28 +324,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (data?.user) {
         console.log("User signed up with email:", data.user.id);
+        console.log("User metadata:", data.user.user_metadata);
         
-        // Directly navigate without waiting for profile creation
-        navigate('/');
+        // We don't navigate immediately as the user needs to verify their email
         
-        // Ensure profile exists in background
+        // Ensure profile exists in background with the full name
         requestAnimationFrame(() => {
-          ensureProfileExists(data.user.id, `${firstName} ${lastName}`).catch(error => {
+          ensureProfileExists(data.user.id, fullName).catch(error => {
             console.error("Error ensuring profile exists:", error);
           });
         });
         
         toast({
           title: "Kayıt başarılı",
-          description: "Hesabınız başarıyla oluşturuldu.",
+          description: "Doğrulama emaili gönderildi. Lütfen email adresinizi kontrol edin.",
         });
       } else {
         console.log("No user data returned from signup");
-        setIsLoading(false);
       }
+      
+      setIsLoading(false);
+      return data;
+      
     } catch (error) {
       console.error('Email signup error:', error);
       setIsLoading(false);
+      throw error;
     }
   };
 
