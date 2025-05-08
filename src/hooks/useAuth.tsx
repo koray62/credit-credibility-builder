@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User } from '@supabase/supabase-js';
@@ -290,7 +289,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Modified sign up with email and password to properly set user metadata
+  // Modified sign up with email and password to properly send verification
   const signUpWithEmailAndPassword = async (email: string, password: string, firstName: string, lastName: string) => {
     setIsLoading(true);
     try {
@@ -299,6 +298,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       const fullName = `${firstName} ${lastName}`.trim();
       
+      // Make sure we explicitly set the email confirmation options
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -345,7 +345,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       
       setIsLoading(false);
-      // Remove the return statement to match the Promise<void> return type
     } catch (error) {
       console.error('Email signup error:', error);
       setIsLoading(false);
