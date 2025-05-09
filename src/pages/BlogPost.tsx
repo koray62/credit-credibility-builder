@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -12,12 +11,12 @@ import {
   CheckCircle2, 
   XCircle,
   FileText,
-  BadgeInfo
+  BadgeInfo,
+  ArrowRight
 } from 'lucide-react';
 import { 
   Card, 
-  CardContent, 
-  CardFooter 
+  CardContent
 } from "@/components/ui/card";
 import { 
   Accordion, 
@@ -346,6 +345,230 @@ const BlogPost: React.FC = () => {
           </div>
         </div>
       )
+    },
+    
+    "hic-kredi-kullanmadim": {
+      slug: "hic-kredi-kullanmadim",
+      title: "Hiç Kredi Kullanmadım, Nasıl Kredibilite Oluşturabilirim?",
+      author: "Ayşe Yılmaz",
+      date: "5 Haziran 2023",
+      readTime: "5 dk okuma",
+      image: "/placeholder.svg",
+      content: (
+        <div className="space-y-6">
+          <p className="text-lg leading-relaxed text-gray-700">
+            Kredi notu deyince aklınıza hemen borçlanmak geliyorsa yalnız değilsiniz. Ancak ilginç bir gerçek var: 
+            Hiç borçlanmamış olmak da finansal sistem gözünde riskli görülebilir. Çünkü kredi notunuzun oluşabilmesi 
+            için sistemin sizi tanıması, yani finansal geçmişinizi analiz edebilmesi gerekir.
+          </p>
+          <p className="text-lg leading-relaxed text-gray-700">
+            Peki hiç kredi ya da kredi kartı kullanmadıysanız, krediye erişiminizi engelleyen bu görünmez duvarı nasıl aşabilirsiniz?
+          </p>
+          <p className="text-lg leading-relaxed text-gray-700">
+            Bu yazıda, hiç kredi kullanmamış bireylerin finansal itibarı nasıl inşa edebileceğini adım adım anlatıyoruz.
+          </p>
+          
+          <div className="border-y border-gray-200 py-6">
+            <h2 className="text-2xl font-bold mb-4 text-primary">Kredi Notu Olmayanlar: "Görünmeyen Müşteriler"</h2>
+            <p className="text-lg leading-relaxed text-gray-700 mb-4">
+              Kredi notu, kişisel finans geçmişinizin sayısal ifadesidir. Ancak sistemde hiç yer almayan bireyler için 
+              bu not hesaplanamaz. Bu durum, sizin riskli olduğunuz anlamına gelmese de ölçülemeyen bir profil olduğunuz 
+              için bankalar açısından temkinli yaklaşılması gereken biri olarak değerlendirilirsiniz.
+            </p>
+            <p className="text-lg leading-relaxed text-gray-700 mb-3">
+              Kredi notu oluşturamamanızın nedenleri neler olabilir?
+            </p>
+            <ul className="list-disc pl-6 space-y-2 text-lg text-gray-700 mb-4">
+              <li>Hiç kredi veya kredi kartı almamış olmanız</li>
+              <li>Son 12 ay ayda aktif bir kredili ürününüzün olmaması</li>
+              <li>Sadece nakit ağırlıklı bir yaşam sürdürüyor olmanız</li>
+              <li>Yasal takibe intikal eden kredilerinizin olması</li>
+            </ul>
+            <p className="text-lg font-medium text-primary-dark">
+              Finansal sistem sizi tanımıyor olabilir, ama bu durum değiştirilebilir.
+            </p>
+          </div>
+          
+          <div className="border-b border-gray-200 py-6">
+            <h2 className="text-2xl font-bold mb-4 text-primary">Kredibilite Nedir ve Neden Önemlidir?</h2>
+            <p className="text-lg leading-relaxed text-gray-700 mb-4">
+              Kredibilite, finansal taahhütlerinizi yerine getirme konusundaki güvenilirliğinizdir. 
+              Sadece bankalar için değil; ev sahipleri, işverenler, GSM operatörleri, hatta bazı özel 
+              okul kayıtları bile kredibilitenizi dikkate alabilir.
+            </p>
+            <p className="text-lg leading-relaxed text-gray-700 mb-3">
+              Güçlü bir kredibilite:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 text-lg text-gray-700">
+              <li>Bankalardan kolay ve hızlı onay alma şansı sağlar</li>
+              <li>Daha düşük faizli kredi teklifleri getirir</li>
+              <li>Yüksek limitli kredi kartlarına erişim imkânı sunar</li>
+              <li>Finansal özgüven ve bağımsızlık kazandırır</li>
+              <li>Araç kiralama, senetle alışveriş yapma, şimdi al sonra öde imkanlarından faydalanma vb gibi hayatınızı kolaylaştıracak pek çok hizmete ulaşabilmenizi sağlar</li>
+            </ul>
+            <p className="text-lg leading-relaxed text-gray-700 mt-4">
+              Hiç kredi kullanmamış olmanız bu avantajlardan mahrum kalmanıza yol açabilir. Ancak aşağıdaki adımlarla bunu aşmak mümkün.
+            </p>
+          </div>
+          
+          <div className="bg-primary-light bg-opacity-20 rounded-xl p-6 border border-primary-light my-8">
+            <h2 className="text-2xl font-bold mb-4 text-primary flex items-center">
+              <span className="bg-primary text-white p-2 rounded-full mr-3">💡</span> 
+              Kredibilitenizi Oluşturmak İçin: SkorUp Yanınızda
+            </h2>
+            <p className="text-lg leading-relaxed text-gray-700 mb-4">
+              Kredi notunuz yoksa ya da çok düşükse, bu sizi bankalar için görünmez yapabilir. 
+              Ama artık bu görünmezliği adım adım aşmanıza yardımcı olacak bir dijital rehber var:
+            </p>
+            
+            <div className="bg-white rounded-lg p-5 shadow-sm mb-5">
+              <div className="flex items-center mb-3">
+                <div className="bg-primary rounded-full p-2 text-white mr-3">🎯</div>
+                <h3 className="text-xl font-semibold text-primary">SkorUp – Kredibilite Asistanı</h3>
+              </div>
+              
+              <h4 className="font-medium text-gray-800 mb-2">SkorUp Nedir?</h4>
+              <p className="mb-4 text-gray-700">
+                SkorUp, kredi geçmişi olmayan ya da düşük kredi notuna sahip bireylerin kredibilite 
+                inşa etmesini kolaylaştıran kişiselleştirilmiş bir dijital asistandır. Sizi analiz eder, 
+                bulunduğunuz noktadan başlayarak kredi notu oluşturmanız ve artırmanız için size özel adımlar önerir.
+              </p>
+              
+              <h4 className="font-medium text-gray-800 mb-2">Ne İşe Yarar?</h4>
+              <p className="mb-3 text-gray-700">SkorUp sayesinde:</p>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 mb-4">
+                <li>Kredi notu oluşturmak için hangi adımları atmanız gerektiğini öğrenirsiniz</li>
+                <li>Bankalara görünür hale gelmenizi sağlayan stratejilerle tanışırsınız</li>
+                <li>Para biriktirme disiplini kazanırken aynı zamanda kredi notunuzu yükseltirsiniz</li>
+                <li>Kredibilitenizi zamanla artırarak daha kolay kredi alabilir, daha düşük faiz oranlarından yararlanabilirsiniz</li>
+              </ul>
+            </div>
+            
+            <div className="bg-white rounded-lg p-5 shadow-sm mb-5">
+              <h4 className="font-medium text-gray-800 mb-2">SkorUp Kimler İçin Uygun?</h4>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700">
+                <li>Hiç kredi kullanmamış, kredi sistemine yeni dahil olacak bireyler</li>
+                <li>Öğrenciler veya yeni mezunlar</li>
+                <li>Çalışmaya yeni başlayanlar</li>
+                <li>Kredi notu düşük olduğu için başvuruları reddedilenler</li>
+                <li>Faiz hassasiyeti olanlar</li>
+              </ul>
+              <p className="mt-4 text-primary-dark font-medium">
+                Eğer "nereden başlayacağımı bilmiyorum" diyorsanız, SkorUp sizin için hem pusula hem yol haritası olacak.
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-lg p-5 shadow-sm">
+              <h4 className="font-medium text-gray-800 mb-3">Nasıl Başlanır?</h4>
+              <ol className="list-decimal pl-6 space-y-3 text-gray-700">
+                <li>SkorUp platformuna kayıt olun.</li>
+                <li>Birikim yapmak istediğiniz aylık ödeme tutarını belirleyin.</li>
+                <li>Birikimi kaç ay yapmak istediğinizi belirtin.</li>
+                <li>SkorUp başvurunuzu anlaşmalı bankaya ilettikten sonra sıfır faizli kredi tutarınız blokeli hesabınıza geçsin.</li>
+                <li>Vade sonunda bloke çözülerek hem yaptığınız birikim kullanımınıza açılsın hem de kredi notunuz oluşsun.</li>
+              </ol>
+            </div>
+            
+            <div className="mt-6 text-center">
+              <p className="text-lg font-semibold text-primary-dark mb-4">
+                Sonuç: Dijital Destekle Kredibiliteyi Güçlendirin
+              </p>
+              <p className="mb-4 text-gray-700">
+                Hiç kredi kullanmamış olmak artık bir engel değil. SkorUp gibi akıllı çözümler, bu yolu daha güvenli ve verimli hale getiriyor.
+              </p>
+              <p className="mb-4 text-gray-700">
+                Krediye erişimin ilk adımı kredibilite inşa etmektir ve bunu doğru bir rehberle yapmak, süreci hem hızlandırır hem kolaylaştırır.
+              </p>
+              <p className="mb-5 text-gray-700">
+                Kredibilitenizi bugünden inşa etmeye başlamak için SkorUp'ı deneyin.
+                Size özel yol haritanız bir tık uzağınızda.
+              </p>
+              
+              <a 
+                href="https://www.skorup.com.tr" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="inline-flex items-center text-white bg-primary hover:bg-primary-dark transition-colors px-6 py-3 rounded-lg font-medium"
+              >
+                SkorUp ile tanışın ve ilk adımı atın <ArrowRight className="ml-2" size={16} />
+              </a>
+            </div>
+          </div>
+          
+          <div className="py-6 border-b border-gray-200">
+            <h2 className="text-2xl font-bold mb-4 text-primary">Kredi Notu Ne Zaman Oluşmaya Başlar?</h2>
+            <p className="text-lg leading-relaxed text-gray-700 mb-4">
+              İlk kredinizi aldıktan ve 3 ay düzenli ödeme yaptıktan sonra, kredi notunuz oluşmaya başlar. 
+              Ancak bu notun güvenilir seviyelere çıkması için en az 12 aylık düzenli davranış gerekir.
+            </p>
+            <div className="bg-yellow-50 p-5 rounded-lg border border-yellow-200">
+              <p className="font-medium text-yellow-800">
+                <strong>Not:</strong> Kredi notunuzun oluşup oluşmadığını www.findeks.com adresinden sorgulayabilirsiniz. 
+                İlk sorgulamanızda notunuz oluşmamışsa, "risk raporu oluşturulamadı" şeklinde bilgi alabilirsiniz. Bu durum geçicidir.
+              </p>
+            </div>
+          </div>
+          
+          <div className="py-6">
+            <h2 className="text-2xl font-bold mb-6 text-primary">Sık Yapılan Hatalar ve Dikkat Edilmesi Gerekenler</h2>
+            <div className="bg-red-50 rounded-lg p-5 border border-red-100 space-y-3 mb-6">
+              <div className="flex items-start">
+                <XCircle className="text-red-500 mr-2 mt-1 flex-shrink-0" size={20} />
+                <p className="text-gray-700">
+                  <strong>Kredi kartı ve kredili mevduat hesaplarındaki limitin tamamını kullanmak:</strong> Risk algısını artırır.
+                </p>
+              </div>
+              <div className="flex items-start">
+                <XCircle className="text-red-500 mr-2 mt-1 flex-shrink-0" size={20} />
+                <p className="text-gray-700">
+                  <strong>Sık kredi başvurusu yapmak:</strong> Kredi notu oluşmamışken çok sayıda başvuru, sistem tarafından "çaresiz borç arayışı" olarak yorumlanabilir.
+                </p>
+              </div>
+              <div className="flex items-start">
+                <XCircle className="text-red-500 mr-2 mt-1 flex-shrink-0" size={20} />
+                <p className="text-gray-700">
+                  <strong>Aile fertleri adına kredi almak:</strong> Başkası üzerinden kredi kullanmak sizin kredibilitenize katkı sağlamaz.
+                </p>
+              </div>
+              <div className="flex items-start">
+                <XCircle className="text-red-500 mr-2 mt-1 flex-shrink-0" size={20} />
+                <p className="text-gray-700">
+                  <strong>Kredi taksitlerini vadesinden önce yatırmak:</strong> Ekstra bir fayda sağlamaz
+                </p>
+              </div>
+              <div className="flex items-start">
+                <XCircle className="text-red-500 mr-2 mt-1 flex-shrink-0" size={20} />
+                <p className="text-gray-700">
+                  <strong>Ek kart kullanımı:</strong> Kredi notuna bir etkisi yoktur. Sadece asıl kart sahibinin kredi notunu etkiler.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="py-6 bg-primary bg-opacity-5 rounded-xl p-6">
+            <h2 className="text-2xl font-bold mb-4 text-primary">Sonuç: Görünür Olun, Güven Kazanın</h2>
+            <p className="text-lg leading-relaxed text-gray-700 mb-4">
+              Hiç kredi kullanmamış olmak, finansal okuryazarlığınızın düşük olduğu anlamına gelmez. 
+              Ancak sistemin sizi tanıyabilmesi için belirli finansal davranışlar göstermeniz gerekir.
+            </p>
+            <p className="text-lg leading-relaxed text-gray-700 mb-3">Küçük adımlarla başlayarak:</p>
+            <ul className="list-disc pl-6 space-y-2 text-lg text-gray-700 mb-5">
+              <li>Düzenli bir ödeme birikim yapma disiplini gösterebilir,</li>
+              <li>Bütçenize uygun ödemelerle ödeme alışkanlığınızı ispat edebilir,</li>
+              <li>Yükselen kredi notunuz ile profilinizi güçlendirebilirsiniz.</li>
+            </ul>
+            <p className="text-lg leading-relaxed text-gray-700">
+              Bu sayede siz de güçlü bir kredi notu oluşturabilir, gelecekteki büyük finansal hedefleriniz için güvenle yol alabilirsiniz.
+            </p>
+            <div className="mt-6 bg-primary-dark bg-opacity-10 p-4 rounded-lg border border-primary-dark border-opacity-20">
+              <p className="text-lg font-medium text-primary-dark text-center">
+                Unutmayın: Kredibilite bir günde oluşmaz ama doğru stratejilerle birkaç ayda inşa edilebilir.
+                Adım atmak için en doğru zaman, şimdi.
+              </p>
+            </div>
+          </div>
+        </div>
+      )
     }
   };
 
@@ -463,7 +686,7 @@ const BlogPost: React.FC = () => {
                       </a>
                       <a href="#" className="text-gray-400 hover:text-primary">
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                          <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+                          <path fillRule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.51 0 10-4.48 10-10S17.51 2 12 2zm6.605 4.61a8.502 8.502 0 011.93 5.314c-.281-.054-3.101-.629-5.943-.271-.065-.141-.12-.293-.184-.445a25.416 25.416 0 00-.564-1.236c3.145-1.28 4.577-3.124 4.761-3.362zM12 3.475c2.17 0 4.154.813 5.662 2.148-.152.216-1.443 1.941-4.48 3.08-1.399-2.57-2.95-4.675-3.189-5A8.687 8.687 0 0112 3.475zm-3.633.803a53.896 53.896 0 013.167 4.935c-3.992 1.063-7.517 1.04-7.896 1.04a8.581 8.581 0 014.729-5.975zM3.453 12.01v-.26c.37.01 4.512.065 8.775-1.215.25.477.477.965.694 1.453-.109.033-.228.065-.336.098-4.404 1.42-6.747 5.303-6.942 5.629a8.522 8.522 0 01-2.19-5.705zM12 20.547a8.482 8.482 0 01-5.239-1.8c.152-.315 1.888-3.656 6.703-5.337.022-.01.033-.01.054-.022a35.318 35.318 0 011.823 6.475 8.4 8.4 0 01-3.341.684zm4.761-1.465c-.086-.52-.542-3.015-1.659-6.084 2.679-.423 5.022.271 5.314.369a8.468 8.468 0 01-3.655 5.715z" clipRule="evenodd" />
                         </svg>
                       </a>
                       <a href="#" className="text-gray-400 hover:text-primary">

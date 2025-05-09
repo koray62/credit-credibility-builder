@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -83,12 +84,13 @@ const Blog: React.FC = () => {
     },
     {
       title: "Hiç Kredi Kullanmadım, Nasıl Kredibilite Oluşturabilirim?",
-      excerpt: "Hiç kredi kullanmadıysanız veya uzun süredir kredi kullanmıyorsanız, finansal sisteme entegre olmanın yolları.",
+      excerpt: "Hiç kredi kullanmadıysanız veya uzun süredir kredi kullanmıyorsanız, SkorUp ile finansal sisteme entegre olmanın yolları.",
       author: "Ayşe Yılmaz",
       date: "5 Haziran 2023",
       readTime: "5 dk okuma",
       image: "/placeholder.svg",
-      slug: "hic-kredi-kullanmadim"
+      slug: "hic-kredi-kullanmadim",
+      featured: false
     },
     {
       title: "Gençler İçin Finansal Okuryazarlık Rehberi",
