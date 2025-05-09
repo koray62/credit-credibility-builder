@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -70,14 +69,14 @@ const BlogPost: React.FC<BlogPostProps> = ({
 };
 
 const Blog: React.FC = () => {
-  // Örnek blog yazıları
+  // Blog posts data
   const blogPosts = [
     {
       title: "Kredi Notu Nedir? Nasıl Hesaplanır?",
       excerpt: "Kredi notu, bankalardan kredi alırken en önemli faktörlerden biridir. Peki nasıl hesaplanır ve nasıl yükseltilir?",
       author: "Koray Kaya",
       date: "10 Haziran 2023",
-      readTime: "6 dk okuma",
+      readTime: "8 dk okuma",
       image: "/placeholder.svg",
       slug: "kredi-notu-nedir",
       featured: true

@@ -13,6 +13,7 @@ import Process from "./pages/Process";
 import SuccessPage from "./pages/SuccessPage";
 import AboutUs from "./pages/AboutUs";
 import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost"; // Import the new BlogPost component
 import Findeks from "./pages/Findeks";
 import KVKK from "./pages/KVKK";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -47,6 +48,7 @@ const AppRoutes = () => (
       <Route path="/basvuru-basarili" element={<SuccessPage />} />
       <Route path="/biz-kimiz" element={<AboutUs />} />
       <Route path="/blog" element={<Blog />} />
+      <Route path="/blog/:slug" element={<BlogPost />} /> {/* Add route for blog post detail */}
       <Route path="/findeks" element={<Findeks />} />
       <Route path="/kvkk" element={<KVKK />} />
       <Route path="/gizlilik-politikasi" element={<PrivacyPolicy />} />
