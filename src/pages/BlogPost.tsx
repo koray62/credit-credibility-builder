@@ -59,9 +59,9 @@ const BlogPost: React.FC = () => {
                 
                 {/* Post Content */}
                 <div className="p-6 md:p-8">
-                  <article className="prose prose-lg max-w-none">
-                    {post.content}
-                  </article>
+                  <article className="prose prose-lg max-w-none"
+                    dangerouslySetInnerHTML={{ __html: post.content }}
+                  />
                 </div>
                 
                 {/* Post Footer */}
