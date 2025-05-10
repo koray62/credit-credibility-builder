@@ -88,7 +88,7 @@ const Blog: React.FC = () => {
       author: "Ayşe Yılmaz",
       date: "5 Haziran 2023",
       readTime: "5 dk okuma",
-      image: "/placeholder.svg",
+      image: "/public/lovable-uploads/65caeb40-2ffd-4d59-a62c-797362e58e08.png",
       slug: "hic-kredi-kullanmadim",
       featured: false
     },
