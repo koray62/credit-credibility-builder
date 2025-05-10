@@ -1,20 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-
-interface AuthorInfo {
-  name: string;
-  role?: string; // Make role optional
-  bio: string;
-  avatar?: string; // Also make avatar optional for better flexibility
-}
-
-interface RelatedPost {
-  slug: string;
-  title: string;
-  date: string;
-  image: string;
-}
+import { AuthorInfo, RelatedPost } from '../../services/blogService';
 
 interface BlogPostSidebarProps {
   author: AuthorInfo;

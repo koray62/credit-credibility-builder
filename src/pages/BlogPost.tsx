@@ -33,7 +33,7 @@ const BlogPost: React.FC = () => {
 
   // Get author info and related posts
   const authorInfo = getAuthorInfo(post.author);
-  const relatedPosts = getRelatedPosts();
+  const relatedPosts = getRelatedPosts(slug);
 
   return (
     <div className="min-h-screen flex flex-col">
