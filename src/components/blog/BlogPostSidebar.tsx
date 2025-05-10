@@ -4,8 +4,9 @@ import { Link } from 'react-router-dom';
 
 interface AuthorInfo {
   name: string;
-  role: string;
+  role?: string; // Make role optional
   bio: string;
+  avatar?: string; // Also make avatar optional for better flexibility
 }
 
 interface RelatedPost {
@@ -28,11 +29,11 @@ const BlogPostSidebar: React.FC<BlogPostSidebarProps> = ({ author, relatedPosts 
         <h3 className="text-lg font-semibold mb-4 pb-2 border-b">Yazar Hakkında</h3>
         <div className="flex items-center">
           <div className="w-16 h-16 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden mr-4">
-            <img src="/placeholder.svg" alt={author.name} className="w-full h-full object-cover" />
+            <img src={author.avatar || "/placeholder.svg"} alt={author.name} className="w-full h-full object-cover" />
           </div>
           <div>
             <h4 className="font-medium text-gray-900">{author.name}</h4>
-            <p className="text-sm text-gray-600 mt-1">{author.role}</p>
+            {author.role && <p className="text-sm text-gray-600 mt-1">{author.role}</p>}
           </div>
         </div>
         <p className="text-gray-600 mt-4">{author.bio}</p>

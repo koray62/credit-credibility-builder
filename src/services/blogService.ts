@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 // Blog post data structure
@@ -14,6 +15,7 @@ export interface BlogPostType {
 // Author data structure
 interface AuthorInfo {
   name: string;
+  role: string; // Add the role property
   bio: string;
   avatar: string;
 }
@@ -537,6 +539,7 @@ export const getAuthorInfo = (authorName: string): AuthorInfo => {
   // This would normally come from a database
   return {
     name: authorName,
+    role: "Finans Uzmanı", // Add a default role
     bio: "Finans ve ekonomi konularında uzman yazar.",
     avatar: "/placeholder.svg"
   };
