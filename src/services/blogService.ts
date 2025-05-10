@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 // Blog post data structure
@@ -706,11 +707,12 @@ export const getBlogPosts = (): Record<string, BlogPostType> => {
               <div class="bg-primary bg-opacity-5 p-5 rounded-lg border border-primary border-opacity-20">
                 <h3 class="text-lg font-semibold mb-3 flex items-center text-primary">
                   <span class="bg-primary text-white p-1 rounded-full mr-2 text-sm inline-flex items-center justify-center" style="width: 24px; height: 24px;">3</span>
-                  Sürekli Eğitim
+                  SkorUp ile Kredi Notu Oluşturun
                 </h3>
                 <p class="text-gray-700">
-                  Finans dünyası sürekli değişiyor. Kitaplar, podcast'ler, çevrimiçi kurslar ve güvenilir finans blogları ile 
-                  kendinizi sürekli geliştirin.
+                  Kredi geçmişiniz yoksa ya da düşük bir kredi notunuz varsa, SkorUp ile kolayca kredibilite oluşturabilirsiniz. 
+                  SkorUp sayesinde birikim yaparken aynı zamanda bankalara görünür hale gelir, kredi notunuzu yükseltebilir ve 
+                  gelecekte daha iyi kredi fırsatlarından yararlanabilirsiniz.
                 </p>
               </div>
             </div>
@@ -723,6 +725,7 @@ export const getBlogPosts = (): Record<string, BlogPostType> => {
               <li>Aboneliklerinizi düzenli gözden geçirin</li>
               <li>Gelir artışlarınızı hayat standardınızı yükseltmek yerine tasarrufa yönlendirin</li>
               <li>Para konusunda açık iletişim kurabileceğiniz arkadaşlar edinin</li>
+              <li>SkorUp gibi dijital asistanlarla finansal geleceğinizi güvence altına alın</li>
             </ul>
           </div>
           
@@ -738,7 +741,8 @@ export const getBlogPosts = (): Record<string, BlogPostType> => {
             </p>
             <p class="font-medium text-primary-dark">
               Z kuşağının akıllıca para yönetimi ile, önceki nesillerin düştüğü finansal hatalardan kaçınması mümkün.
-              Doğru bilgi ve araçlarla, bugünden sağlam bir finansal temel inşa edebilirsiniz.
+              Doğru bilgi ve araçlarla, bugünden sağlam bir finansal temel inşa edebilirsiniz. SkorUp uygulaması 
+              ile ilk adımı atmak için hemen başvurun.
             </p>
           </div>
         </div>
