@@ -12,7 +12,7 @@ export const additionalBlogPosts = {
       <div class="space-y-6">
         <p class="text-lg leading-relaxed text-gray-700">
           Findeks raporu, finansal sağlığınızın röntgeni gibidir. 
-          Bu içerikte Findeks raporunuzu nasıl yorumlayacağınızı ve kredi puanınızı yükseltmek için 
+          Bu içerikte Findeks raporunuzu nasıl yorumlayacağınızı ve Risk Raporunuzda hatalı bilgiler olması durumunda  
           neler yapabileceğinizi detaylı olarak ele alıyoruz.
         </p>
         
@@ -216,7 +216,7 @@ export const additionalBlogPosts = {
           <h2 class="text-2xl font-bold mb-4 text-primary">Risk Raporundaki Bilgilerin Hatalı Olduğunu Düşünen Kişiler Ne Yapmalıdır?</h2>
           <div class="bg-blue-50 p-6 rounded-lg border border-blue-100">
             <p class="text-lg text-blue-800">
-              Üye/kişi, Risk Raporunda kendisine ait olmadığını düşündüğü bir kredili ürün ya da doğru olmadığını düşündüğü bir 
+              Rapor sahibi kişi, Risk Raporunda kendisine ait olmadığını düşündüğü bir kredili ürün ya da doğru olmadığını düşündüğü bir 
               veri fark ettiğinde <a href="https://www.findeks.com/findeks-hakkinda/risk-raporu-teyit-itiraz" class="text-blue-600 hover:underline font-medium">https://www.findeks.com/findeks-hakkinda/risk-raporu-teyit-itiraz</a> adresindeki 
               Risk Raporu İtiraz Sistemi üzerinden talebini iletebilir. KKB Kredi Kayıt Bürosu A.Ş. aracılığıyla itirazına, itiraza 
               konu edilen bilgiyi paylaşan ilgili banka veya finansal kuruluş tarafından incelenmesi ve ilgili banka veya finansal 
