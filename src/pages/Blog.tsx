@@ -103,7 +103,8 @@ const Blog: React.FC = () => {
     },
     {
       title: "Findeks Raporu Nedir? Nasıl Yorumlanır?",
-      excerpt: "Findeks raporunuzdaki verileri doğru bir şekilde yorumlamak ve kredi puanınızı yükseltmek için püf noktaları.",
+      excerpt: "Findeks raporu, finansal sağlığınızın röntgeni gibidir. Bu içerikte Findeks raporunuzu nasıl yorumlayacağınızı ve
+        Risk Raporunuzda hatalı bilgiler olması durumunda neler yapabileceğinizi detaylı olarak ele alıyoruz.",
       author: "Zeynep Kara",
       date: "28 Mayıs 2023",
       readTime: "7 dk okuma",
