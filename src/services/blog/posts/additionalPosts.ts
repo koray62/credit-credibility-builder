@@ -40,7 +40,7 @@ export const additionalBlogPosts = {
             Finansal ilişkiler açısından değerlendirilecek olursa; '1' en riskli not sayılırken, '1900' en az riskli nottur.
           </p>
           <p class="text-lg leading-relaxed text-gray-700 mb-4">
-            Üyelerimiz, kendilerine ait Findeks Kredi Notu'nu alabileceği gibi, diğer şahısların da Findeks Kredi Notlarını 
+            Findeks üyeleri, kendilerine ait Findeks Kredi Notu'nu alabileceği gibi, diğer şahısların da Findeks Kredi Notlarını 
             talep edebilir. Diğer kişiler için talep yapılması durumunda talep karşı tarafa Findeks tarafından SMS olarak 
             iletilir ve karşı tarafın onay vermesiyle Findeks Kredi Notu bilgisi talep eden Findeks Üye'sinin erişimine açılır.
           </p>
@@ -154,7 +154,7 @@ export const additionalBlogPosts = {
           </div>
           
           <p class="text-lg leading-relaxed text-gray-700 mt-6 mb-4">
-            Üyelerimiz, kendilerine ait Risk Raporu'nu düzenli alarak; hangi bankada kendileri adına açılmış ne tip kredili 
+            Kişiler, kendilerine ait Risk Raporu'nu düzenli alarak; hangi bankada kendileri adına açılmış ne tip kredili 
             hesaplar var, bu hesapların ödemelerinde gecikmeler olmuş mu, borçluluk/limit oranı ne durumda gibi finansal 
             bilgilerini takip ederek finansal hayatlarını kontrol altında tutabilirler. Ayrıca herhangi bir borç ilişkisine 
             gireceklerinde, ilgili şahıs veya firmalardan Risk Raporu talep ederek, alacaklarının tahsil edilip edilememe durumu 
@@ -199,7 +199,7 @@ export const additionalBlogPosts = {
           </div>
           
           <p class="mt-4 text-gray-700 italic">
-            Böylece Üyelerimiz; kendisinin veya diğer şahıs ya da firmaların finansal performans değerlendirmesini yapabilir.
+            Böylece kişiler; kendisinin veya diğer şahıs ya da firmaların finansal performans değerlendirmesini yapabilir.
           </p>
         </div>
         
