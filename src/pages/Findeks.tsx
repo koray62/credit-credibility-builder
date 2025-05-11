@@ -153,27 +153,27 @@ const Findeks: React.FC = () => {
                         </thead>
                         <tbody>
                           <tr>
-                            <td className="border border-gray-300 px-4 py-2">1400-1900</td>
+                            <td className="border border-gray-300 px-4 py-2">1661-1900</td>
                             <td className="border border-gray-300 px-4 py-2">Çok Düşük Risk</td>
                             <td className="border border-gray-300 px-4 py-2">Çok Yüksek</td>
                           </tr>
                           <tr className="bg-gray-50">
-                            <td className="border border-gray-300 px-4 py-2">1100-1399</td>
+                            <td className="border border-gray-300 px-4 py-2">1521-1660</td>
                             <td className="border border-gray-300 px-4 py-2">Düşük Risk</td>
                             <td className="border border-gray-300 px-4 py-2">Yüksek</td>
                           </tr>
                           <tr>
-                            <td className="border border-gray-300 px-4 py-2">900-1099</td>
+                            <td className="border border-gray-300 px-4 py-2">1241-1520</td>
                             <td className="border border-gray-300 px-4 py-2">Orta Risk</td>
                             <td className="border border-gray-300 px-4 py-2">Orta</td>
                           </tr>
                           <tr className="bg-gray-50">
-                            <td className="border border-gray-300 px-4 py-2">500-899</td>
+                            <td className="border border-gray-300 px-4 py-2">1101-1240</td>
                             <td className="border border-gray-300 px-4 py-2">Yüksek Risk</td>
                             <td className="border border-gray-300 px-4 py-2">Düşük</td>
                           </tr>
                           <tr>
-                            <td className="border border-gray-300 px-4 py-2">0-499</td>
+                            <td className="border border-gray-300 px-4 py-2">1-1100</td>
                             <td className="border border-gray-300 px-4 py-2">Çok Yüksek Risk</td>
                             <td className="border border-gray-300 px-4 py-2">Çok Düşük</td>
                           </tr>
