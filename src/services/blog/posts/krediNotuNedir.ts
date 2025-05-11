@@ -147,23 +147,23 @@ export const krediNotuNedirPost = {
             </thead>
             <tbody class="divide-y divide-gray-200">
               <tr class="bg-red-50">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">1 – 699</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">1 – 1100</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Çok Riskli</td>
               </tr>
               <tr class="bg-orange-50">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">700 – 1099</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">1101 – 1240</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Orta Riskli</td>
               </tr>
               <tr class="bg-yellow-50">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">1100 – 1499</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">1241 – 1520</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Az Riskli</td>
               </tr>
               <tr class="bg-green-50">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">1500 – 1699</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">1521 – 1660</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">İyi</td>
               </tr>
               <tr class="bg-emerald-50">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">1700 – 1900</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">1661 – 1900</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Çok İyi</td>
               </tr>
             </tbody>
