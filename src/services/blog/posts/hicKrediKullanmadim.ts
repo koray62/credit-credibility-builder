@@ -6,7 +6,7 @@ export const hicKrediKullanmadimPost = {
   author: "Ayşe Yılmaz",
   date: "5 Haziran 2023",
   readTime: "5 dk okuma",
-  image: "/lovable-uploads/65caeb40-2ffd-4d59-a62c-797362e58e08.png",
+  image: "/lovable-uploads/4b6c0408-8f48-4935-9c6b-02fbb66cac00.png",
   content: `
     <div class="space-y-6">
       <p class="text-lg leading-relaxed text-gray-700">
