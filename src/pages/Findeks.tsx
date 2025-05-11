@@ -186,7 +186,7 @@ const Findeks: React.FC = () => {
                       <li><strong>Ödemelerinizi Zamanında Yapın:</strong> En önemli faktör, kredilerinizin ve kredi kartlarınızın ödemelerini zamanında yapmaktır.</li>
                       <li><strong>Borç Oranınızı Düşük Tutun:</strong> Kredi limitinizin %30'undan fazlasını kullanmamaya çalışın.</li>
                       <li><strong>Kredi Geçmişi Oluşturun:</strong> Eğer hiç kredi kullanmadıysanız, KrediBuild programımız ile güvenli bir şekilde kredi geçmişi oluşturabilirsiniz.</li>
-                      <li><strong>Gereksiz Yere Kredi Başvurusu Yapmayın:</strong> Her kredi başvurusu puanınızı düşürebilir.</li>
+                      <li><strong>Eski kredi kartlarınızı kapatmayın:</strong> Kredi tarihçeniz ne kadar eski ise kredi notunuza katkısı o kadar yüksek olur.</li>
                       <li><strong>Düzenli Olarak Kredi Raporunuzu Kontrol Edin:</strong> Hataları fark etmek ve düzeltmek için düzenli kontrol önemlidir.</li>
                     </ol>
                   </div>
