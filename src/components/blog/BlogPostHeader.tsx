@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { CalendarIcon, Clock, User } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface BlogPostHeaderProps {
   title: string;
@@ -18,12 +19,14 @@ const BlogPostHeader: React.FC<BlogPostHeaderProps> = ({
   return (
     <>
       {/* Featured Image */}
-      <div className="h-64 md:h-96 w-full overflow-hidden">
-        <img 
-          src={image} 
-          alt={title} 
-          className="w-full h-full object-cover" 
-        />
+      <div className="w-full overflow-hidden">
+        <AspectRatio ratio={16/9}>
+          <img 
+            src={image} 
+            alt={title} 
+            className="w-full h-full object-cover" 
+          />
+        </AspectRatio>
       </div>
       
       {/* Meta Information */}
