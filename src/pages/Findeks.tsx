@@ -246,7 +246,7 @@ const Findeks: React.FC = () => {
                     </li>
                     <li className="flex items-center">
                       <CheckCircle className="w-5 h-5 mr-2 flex-shrink-0" />
-                      <span>Sadece 1000 TL işlem komisyonu</span>
+                      <span>Kredi tutarından kesilen 1000 TL işlem ücreti</span>
                     </li>
                     <li className="flex items-center">
                       <CheckCircle className="w-5 h-5 mr-2 flex-shrink-0" />
