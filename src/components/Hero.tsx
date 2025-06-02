@@ -5,6 +5,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from 'lucide-react';
 
 const Hero: React.FC = () => {
+  // For new users, show 0 score instead of 1125
+  const currentScore = 0;
+  const maxScore = 1900;
+  const scorePercentage = (currentScore / maxScore) * 100;
+
   return (
     <section className="bg-gradient-to-b from-primary-light to-white pt-16 pb-24 md:pt-24 md:pb-32">
       <div className="container mx-auto px-4">
@@ -51,7 +56,7 @@ const Hero: React.FC = () => {
               <div className="flex items-center justify-center my-8">
                 <div className="w-48 h-48 rounded-full bg-gray-100 border-8 border-primary flex items-center justify-center relative">
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-primary-dark">1125</div>
+                    <div className="text-4xl font-bold text-primary-dark">{currentScore}</div>
                     <div className="text-gray-500 text-sm">Mevcut Puan</div>
                   </div>
                 </div>
@@ -60,7 +65,7 @@ const Hero: React.FC = () => {
               <div className="mb-6">
                 <div className="flex justify-between mb-2">
                   <span className="text-gray-600">İlerleme</span>
-                  <span className="text-gray-600">1125/1900</span>
+                  <span className="text-gray-600">{currentScore}/{maxScore}</span>
                 </div>
                 <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden relative">
                   {/* Progress bar with color gradient */}
@@ -77,7 +82,7 @@ const Hero: React.FC = () => {
                   <div 
                     className="absolute top-0 transform -translate-y-1/2" 
                     style={{ 
-                      left: `${(1125 / 1900) * 100}%`,
+                      left: `${scorePercentage}%`,
                     }}
                   >
                     <div className="w-3 h-3 bg-black transform rotate-45 translate-y-1"></div>

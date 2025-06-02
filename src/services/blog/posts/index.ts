@@ -4,6 +4,7 @@ import { krediNotuNedirPost } from './krediNotuNedir';
 import { hicKrediKullanmadimPost } from './hicKrediKullanmadim';
 import { genclerIcinFinansalOkuryazarlikPost } from './genclerIcinFinansalOkuryazarlik';
 import { finansalDisiplinPost } from './finansalDisiplin';
+import { evHanimlariIcinRehberPost } from './evHanimlariIcinRehber';
 import { additionalBlogPosts } from './additionalPosts';
 
 // Export all blog posts as a single object
@@ -12,5 +13,6 @@ export const allBlogPosts = {
   "hic-kredi-kullanmadim": hicKrediKullanmadimPost,
   "gencler-icin-finansal-okuryazarlik": genclerIcinFinansalOkuryazarlikPost,
   "finansal-disiplin": finansalDisiplinPost,
+  "ev-hanimlari-icin-rehber": evHanimlariIcinRehberPost,
   ...additionalBlogPosts
 };
