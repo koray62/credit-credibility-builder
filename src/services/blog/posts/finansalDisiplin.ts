@@ -1,4 +1,3 @@
-
 // Blog post data for "Finansal Disiplin"
 export const finansalDisiplinPost = {
   slug: "finansal-disiplin",
