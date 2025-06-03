@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ProfileModal from './ProfileModal';
 
 const UserMenu = () => {
   const { user, signOut } = useAuth();
@@ -44,12 +45,7 @@ const UserMenu = () => {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>Hesabım</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <Link to="/profil">
-          <DropdownMenuItem className="cursor-pointer">
-            <User className="mr-2 h-4 w-4" />
-            <span>Profil</span>
-          </DropdownMenuItem>
-        </Link>
+        <ProfileModal />
         <Link to="/surec">
           <DropdownMenuItem className="cursor-pointer">
             <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
