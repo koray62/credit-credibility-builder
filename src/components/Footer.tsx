@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, GithubIcon, LinkedinIcon, TwitterIcon, YoutubeIcon } from 'lucide-react';
@@ -92,13 +93,6 @@ const Footer: React.FC = () => {
                 <span className="text-sm">Telefon</span>
                 <a href="tel:+905001234567" className="text-primary font-medium group-hover:underline flex items-center">
                   0850 123 4567
-                  <ArrowUpRight className="ml-1 h-3 w-3" />
-                </a>
-              </li>
-              <li className="flex items-center justify-between group">
-                <span className="text-sm">Adres</span>
-                <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" className="text-primary font-medium group-hover:underline flex items-center">
-                  Haritada Gör
                   <ArrowUpRight className="ml-1 h-3 w-3" />
                 </a>
               </li>

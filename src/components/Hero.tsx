@@ -49,7 +49,12 @@ const Hero: React.FC = () => {
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">Kredi Puanınız</h3>
-                  <p className="text-gray-500 text-sm">Puanınızı görmek için Findeks Risk Raporunuzu yükleyin</p>
+                  <p className="text-gray-500 text-sm">
+                    Puanınızı görmek için Findeks Risk Raporunuzu{' '}
+                    <Link to="/findeks" className="text-primary hover:underline font-medium">
+                      yükleyin
+                    </Link>
+                  </p>
                 </div>
               </div>
               

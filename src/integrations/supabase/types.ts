@@ -104,6 +104,7 @@ export type Database = {
           consent_updated_at: string | null
           district: string | null
           education_level: string | null
+          findeks_score: number | null
           full_name: string | null
           id: string
           kvkk_consent: boolean | null
@@ -121,6 +122,7 @@ export type Database = {
           consent_updated_at?: string | null
           district?: string | null
           education_level?: string | null
+          findeks_score?: number | null
           full_name?: string | null
           id: string
           kvkk_consent?: boolean | null
@@ -138,6 +140,7 @@ export type Database = {
           consent_updated_at?: string | null
           district?: string | null
           education_level?: string | null
+          findeks_score?: number | null
           full_name?: string | null
           id?: string
           kvkk_consent?: boolean | null
