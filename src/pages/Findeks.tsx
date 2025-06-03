@@ -1,19 +1,13 @@
+
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Button } from "@/components/ui/button";
 import { TrendingUp, HelpCircle, FileText, Upload, CheckCircle, AlertTriangle } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
-import { useFindeksScore } from '@/hooks/useFindeksScore';
 
 const Findeks: React.FC = () => {
-  const { user } = useAuth();
-  const { refreshScore } = useFindeksScore();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -22,102 +16,16 @@ const Findeks: React.FC = () => {
     }
   };
 
-  const extractScoreFromPDF = async (file: File): Promise<number | null> => {
-    // This is a simplified version - in a real implementation you would:
-    // 1. Upload the file to Supabase Storage
-    // 2. Use a PDF parsing service or OCR to extract the score
-    // 3. Return the extracted score
-    
-    // For demonstration, we'll simulate score extraction based on file name or content
-    const fileName = file.name.toLowerCase();
-    
-    // Simulate different scores based on file characteristics
-    if (fileName.includes('1500') || fileName.includes('good')) {
-      return 1550;
-    } else if (fileName.includes('1200') || fileName.includes('medium')) {
-      return 1280;
-    } else if (fileName.includes('900') || fileName.includes('low')) {
-      return 950;
-    }
-    
-    // Generate a random realistic Findeks score for demo
-    return Math.floor(Math.random() * (1800 - 800) + 800);
-  };
-
-  const handleUpload = async () => {
-    if (!selectedFile || !user) {
-      toast({
-        title: "Hata",
-        description: "Lütfen bir dosya seçin ve giriş yapın.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (selectedFile.type !== 'application/pdf') {
-      setUploadStatus('error');
-      toast({
-        title: "Hata",
-        description: "Lütfen PDF formatında bir dosya seçin.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setUploadStatus('uploading');
-    setIsProcessing(true);
-
-    try {
-      // Extract score from PDF (in real implementation, this would be more sophisticated)
-      const extractedScore = await extractScoreFromPDF(selectedFile);
-
-      if (!extractedScore) {
-        throw new Error('Score could not be extracted from PDF');
-      }
-
-      // Save the report to database
-      const { error: insertError } = await supabase
-        .from('findeks_reports')
-        .insert({
-          user_id: user.id,
-          file_name: selectedFile.name,
-          file_url: `temp/${selectedFile.name}`, // In real implementation, upload to storage first
-          score: extractedScore,
-          processed: true,
-          extracted_data: {
-            file_size: selectedFile.size,
-            upload_date: new Date().toISOString(),
-            extracted_score: extractedScore
-          }
-        });
-
-      if (insertError) {
-        console.error('Error saving report:', insertError);
-        throw insertError;
-      }
-
-      setUploadStatus('success');
-      
-      // Refresh the score in the hook
+  const handleUpload = () => {
+    if (selectedFile) {
+      // Dosya yükleme simülasyonu
       setTimeout(() => {
-        refreshScore();
-      }, 1000);
-
-      toast({
-        title: "Başarılı!",
-        description: `Findeks raporunuz başarıyla yüklendi. Skorunuz: ${extractedScore}`,
-      });
-
-    } catch (error) {
-      console.error('Error processing file:', error);
-      setUploadStatus('error');
-      toast({
-        title: "Hata",
-        description: "Dosya işlenirken bir hata oluştu. Lütfen tekrar deneyin.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsProcessing(false);
+        if (selectedFile.type === 'application/pdf') {
+          setUploadStatus('success');
+        } else {
+          setUploadStatus('error');
+        }
+      }, 1500);
     }
   };
 
@@ -171,28 +79,21 @@ const Findeks: React.FC = () => {
                         className="hidden"
                         accept=".pdf"
                         onChange={handleFileChange}
-                        disabled={uploadStatus === 'uploading' || !user}
                       />
                       <label htmlFor="file-upload">
-                        <Button variant="outline" className="mr-2" asChild disabled={uploadStatus === 'uploading' || !user}>
+                        <Button variant="outline" className="mr-2" asChild>
                           <span>Dosya Seç</span>
                         </Button>
                       </label>
                       
                       <Button 
                         onClick={handleUpload} 
-                        disabled={!selectedFile || uploadStatus === 'uploading' || isProcessing || !user}
+                        disabled={!selectedFile}
                         className="bg-primary hover:bg-primary-dark text-white"
                       >
-                        {uploadStatus === 'uploading' || isProcessing ? 'Yükleniyor...' : 'Yükle'}
+                        Yükle
                       </Button>
                     </div>
-                    
-                    {!user && (
-                      <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-yellow-800 text-sm">
-                        Dosya yüklemek için giriş yapmanız gerekiyor.
-                      </div>
-                    )}
                     
                     {selectedFile && (
                       <div className="mt-4 text-sm">
@@ -203,7 +104,7 @@ const Findeks: React.FC = () => {
                     {uploadStatus === 'success' && (
                       <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3 text-green-800 text-sm flex items-center">
                         <CheckCircle className="w-5 h-5 mr-2" />
-                        <span>Dosyanız başarıyla yüklendi ve skorunuz güncellendi!</span>
+                        <span>Dosyanız başarıyla yüklendi!</span>
                       </div>
                     )}
                     
