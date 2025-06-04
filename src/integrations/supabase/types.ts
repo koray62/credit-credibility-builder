@@ -71,6 +71,8 @@ export type Database = {
           created_at: string
           file_path: string | null
           id: string
+          ocr_extracted_score: number | null
+          ocr_processed: boolean | null
           report_date: string
           score: number
           updated_at: string
@@ -80,6 +82,8 @@ export type Database = {
           created_at?: string
           file_path?: string | null
           id?: string
+          ocr_extracted_score?: number | null
+          ocr_processed?: boolean | null
           report_date?: string
           score: number
           updated_at?: string
@@ -89,12 +93,61 @@ export type Database = {
           created_at?: string
           file_path?: string | null
           id?: string
+          ocr_extracted_score?: number | null
+          ocr_processed?: boolean | null
           report_date?: string
           score?: number
           updated_at?: string
           user_id?: string
         }
         Relationships: []
+      }
+      ocr_processing: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          error_message: string | null
+          extracted_score: number | null
+          findeks_report_id: string
+          id: string
+          processed_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          error_message?: string | null
+          extracted_score?: number | null
+          findeks_report_id: string
+          id?: string
+          processed_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          error_message?: string | null
+          extracted_score?: number | null
+          findeks_report_id?: string
+          id?: string
+          processed_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ocr_processing_findeks_report_id_fkey"
+            columns: ["findeks_report_id"]
+            isOneToOne: false
+            referencedRelation: "findeks_reports"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {

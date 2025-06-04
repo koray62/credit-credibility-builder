@@ -1,34 +1,11 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Button } from "@/components/ui/button";
-import { TrendingUp, HelpCircle, FileText, Upload, CheckCircle, AlertTriangle } from 'lucide-react';
+import { TrendingUp, HelpCircle, CheckCircle } from 'lucide-react';
+import FindeksUploader from '../components/FindeksUploader';
 
 const Findeks: React.FC = () => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
-      setUploadStatus('idle');
-    }
-  };
-
-  const handleUpload = () => {
-    if (selectedFile) {
-      // Dosya yükleme simülasyonu
-      setTimeout(() => {
-        if (selectedFile.type === 'application/pdf') {
-          setUploadStatus('success');
-        } else {
-          setUploadStatus('error');
-        }
-      }, 1500);
-    }
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -47,75 +24,7 @@ const Findeks: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Rapor Yükleme */}
               <div className="lg:col-span-2">
-                <div className="bg-white rounded-xl shadow-md p-6 md:p-8 mb-8">
-                  <h2 className="text-2xl font-bold mb-6 flex items-center">
-                    <FileText className="mr-2 text-primary" />
-                    Findeks Raporu Yükleme
-                  </h2>
-                  
-                  <div className="mb-6">
-                    <p className="text-gray-600 mb-4">
-                      Findeks raporunuzu PDF formatında yükleyerek, kredi puanınızı ve finansal durumunuzu daha iyi anlayabilirsiniz.
-                      Yüklenen raporlar sadece sizin erişiminize açık olacaktır.
-                    </p>
-                    
-                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-blue-800 text-sm flex items-start">
-                      <HelpCircle className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" />
-                      <p>
-                        Findeks raporunuzu <a href="https://www.findeks.com" target="_blank" rel="noopener noreferrer" className="text-primary font-medium hover:underline">findeks.com</a> adresinden alabilirsiniz. Raporu aldıktan sonra PDF olarak indirip bu sayfaya yükleyebilirsiniz.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                    <p className="mt-2 text-sm font-medium text-gray-700">PDF formatında dosyanızı seçin</p>
-                    <p className="mt-1 text-xs text-gray-500">En fazla 10MB</p>
-                    
-                    <div className="mt-4">
-                      <input
-                        type="file"
-                        id="file-upload"
-                        className="hidden"
-                        accept=".pdf"
-                        onChange={handleFileChange}
-                      />
-                      <label htmlFor="file-upload">
-                        <Button variant="outline" className="mr-2" asChild>
-                          <span>Dosya Seç</span>
-                        </Button>
-                      </label>
-                      
-                      <Button 
-                        onClick={handleUpload} 
-                        disabled={!selectedFile}
-                        className="bg-primary hover:bg-primary-dark text-white"
-                      >
-                        Yükle
-                      </Button>
-                    </div>
-                    
-                    {selectedFile && (
-                      <div className="mt-4 text-sm">
-                        <p className="font-medium text-gray-700">Seçilen dosya: {selectedFile.name}</p>
-                      </div>
-                    )}
-                    
-                    {uploadStatus === 'success' && (
-                      <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3 text-green-800 text-sm flex items-center">
-                        <CheckCircle className="w-5 h-5 mr-2" />
-                        <span>Dosyanız başarıyla yüklendi!</span>
-                      </div>
-                    )}
-                    
-                    {uploadStatus === 'error' && (
-                      <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3 text-red-800 text-sm flex items-center">
-                        <AlertTriangle className="w-5 h-5 mr-2" />
-                        <span>Yükleme başarısız. Lütfen PDF formatında bir dosya seçin.</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <FindeksUploader />
                 
                 <div className="bg-white rounded-xl shadow-md p-6 md:p-8">
                   <h2 className="text-2xl font-bold mb-6 flex items-center">
