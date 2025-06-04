@@ -27,7 +27,7 @@ async function extractScoreFromImage(base64Image: string): Promise<OCRResult> {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: "gpt-4o",
+        model: "gpt-4.1-nano",
         messages: [
           {
             role: "user",
