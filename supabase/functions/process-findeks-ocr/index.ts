@@ -5,7 +5,7 @@
 import { serve } from "https://deno.land/std@0.201.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
-// PDF ► JPEG dönüştürme:
+// PDF ► PNG dönüştürme:
 import {
   getDocument,
   GlobalWorkerOptions,
@@ -35,17 +35,19 @@ interface OCRResult {
 }
 
 /* -------------------------------------------------- */
-/*  Yardımcı – PDF ilk sayfayı JPEG-base64 yap        */
+/*  Yardımcı – PDF ilk sayfayı PNG-dataURI yap        */
 /* -------------------------------------------------- */
-async function pdfFirstPageToBase64(pdfBytes: Uint8Array): Promise<string> {
+async function pdfFirstPageToDataURI(pdfBytes: Uint8Array): Promise<string> {
   const pdf = await getDocument({ data: pdfBytes }).promise;
   const page = await pdf.getPage(1);
-  const viewport = page.getViewport({ scale: 2 }); // gerekirse 1-1.5 yap
+  const viewport = page.getViewport({ scale: 2 }); // çözünürlüğü gerekirse düşür
   const canvas = createCanvas(viewport.width, viewport.height);
   const ctx = canvas.getContext("2d");
 
   await page.render({ canvasContext: ctx, viewport }).promise;
-  return canvas.toDataURL("image/jpeg", 0.92).split(",")[1]; // başlığı at
+
+  // PNG en sorunsuz; header'ı koru (data:image/png;base64,…)
+  return canvas.toDataURL(); // default = image/png
 }
 
 /* -------------------------------------------------- */
@@ -67,26 +69,27 @@ async function extractScoreFromImage(base64Input: string): Promise<OCRResult> {
     const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
     if (!openaiApiKey) throw new Error("OpenAI API key not configured");
 
-    /* ---------- 1️⃣  PDF mi resim mi? ---------- */
-    let base64Image = base64Input;
+    /* ---------- 1️⃣  PDF mi, resim mi? ---------- */
+    let dataURI = base64Input; // data:image/png;base64,…  veya PDF
 
-    // data:application/pdf;base64,JVBER…  veya  JVBER…
+    // data:application/pdf;base64,…  veya  JVBER…
     const pdfRegex = /^data:application\/pdf;base64,|^JVBER/i;
     if (pdfRegex.test(base64Input)) {
-      console.log("🔄 PDF algılandı, JPEG'e dönüştürülüyor…");
+      console.log("🔄 PDF algılandı, PNG'e dönüştürülüyor…");
 
       const rawPdfBase64 = base64Input.includes(",")
         ? base64Input.split(",")[1]
         : base64Input;
 
-      base64Image = await pdfFirstPageToBase64(
+      dataURI = await pdfFirstPageToDataURI(
         base64ToUint8Array(rawPdfBase64),
       );
-      console.log("✅ Dönüştürme tamam; uzunluk:", base64Image.length);
+      console.log("✅ Dönüştürme tamam; dataURI uzunluğu:", dataURI.length);
     }
 
     /* ---------- 2️⃣  20 MB sınırı ---------- */
-    const bytesApprox = base64Image.length * 0.75; // base64≈%33 şişkin
+    // data URI üst bilgisi ≈ 30–50 bayt; kabaca %75 çarpanla byte’a dön
+    const bytesApprox = (dataURI.length - dataURI.indexOf(",") - 1) * 0.75;
     if (bytesApprox > 20_000_000) {
       throw new Error("Dönüştürülen görüntü 20 MB sınırını aşıyor");
     }
@@ -107,12 +110,12 @@ async function extractScoreFromImage(base64Input: string): Promise<OCRResult> {
               {
                 type: "text",
                 text:
-                  "Bu Findeks kredi raporu görselinden sadece kredi notunu (score) çıkar. Sadece sayıyı döndür; bulunamazsa NOT_FOUND yaz.",
+                  "Bu Findeks kredi raporu görselinden sadece kredi notunu (score) çıkar. Yalnızca sayıyı döndür; bulunamazsa NOT_FOUND yaz.",
               },
               {
                 type: "image_url",
                 image_url: {
-                  url: `data:image/jpeg;base64,${base64Image}`,
+                  url: dataURI, // tam data URI (mime + base64)
                   detail: "auto",
                 },
               },
@@ -123,7 +126,7 @@ async function extractScoreFromImage(base64Input: string): Promise<OCRResult> {
       }),
     });
 
-    // Hata yakalama – ayrıntı logla
+    // Hata yakalama – ayrıntılı logla
     if (!response.ok) {
       let payload: unknown;
       try {
@@ -135,7 +138,7 @@ async function extractScoreFromImage(base64Input: string): Promise<OCRResult> {
       throw new Error(`OpenAI API error: ${response.status}`);
     }
 
-    /* ---------- 4️⃣  Cevap işle ---------- */
+    /* ---------- 4️⃣  Cevabı işle ---------- */
     const data = await response.json();
     const extractedText = data.choices?.[0]?.message?.content?.trim();
 
