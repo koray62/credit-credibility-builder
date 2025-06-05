@@ -1,92 +1,92 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
+/* -------------------------------------------------- */
+/*  CORS                                              */
+/* -------------------------------------------------- */
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
 
+/* -------------------------------------------------- */
+/*  OCR helper                                        */
+/* -------------------------------------------------- */
 interface OCRResult {
   score?: number;
   confidence?: number;
   error?: string;
 }
 
-async function extractScoreFromImage(
-  base64Image: string,
-): Promise<OCRResult> {
+async function extractScoreFromImage(base64Image: string): Promise<OCRResult> {
   try {
     const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
-    if (!openaiApiKey) {
-      throw new Error("OpenAI API key not configured");
-    }
+    if (!openaiApiKey) throw new Error("OpenAI API key not configured");
 
-    const response = await fetch(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${openaiApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini", // ✅ geçerli vision modeli
-          messages: [
-            {
-              role: "user",
-              content: [
-                {
-                  type: "text",
-                  text:
-                    "Bu Findeks kredi raporu görselinden sadece kredi notunu (score) çıkar. Sadece sayısal değeri döndür, başka hiçbir metin ekleme. Eğer kredi notu bulunamazsa 'NOT_FOUND' yaz.",
-                },
-                {
-                  type: "image_url",
-                  image_url: {
-                    url: `data:image/jpeg;base64,${base64Image}`,
-                    detail: "auto",
-                  },
-                },
-              ],
-            },
-          ],
-          max_tokens: 10, // tek sayı için yeterli
-        }),
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${openaiApiKey}`,
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        model: "gpt-4o", // ✅ Vision erişimi olan evrensel model
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text:
+                  "Bu Findeks kredi raporu görselinden sadece kredi notunu (score) çıkar. Sadece sayıyı döndür; bulunamazsa NOT_FOUND yaz.",
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:image/jpeg;base64,${base64Image}`,
+                  detail: "auto", // opsiyonel – şimdilik auto
+                },
+              },
+            ],
+          },
+        ],
+        max_tokens: 10,
+      }),
+    });
 
-    // 🔍 Ayrıntılı hata yakalama
+    /* ---------- ayrıntılı hata yakalama ---------- */
     if (!response.ok) {
-      let errorPayload: unknown;
+      let payload: unknown;
       try {
-        errorPayload = await response.json();
+        payload = await response.json();
       } catch {
-        errorPayload = await response.text();
+        payload = await response.text();
       }
-      console.error("OpenAI API error details:", response.status, errorPayload);
+      console.error("OpenAI API error details:", response.status, payload);
       throw new Error(`OpenAI API error: ${response.status}`);
     }
 
     const data = await response.json();
     const extractedText = data.choices?.[0]?.message?.content?.trim();
 
-    if (!extractedText || extractedText === "NOT_FOUND") {
+    if (!extractedText || extractedText === "NOT_FOUND")
       return { error: "Kredi notu bulunamadı" };
-    }
 
     const score = parseInt(extractedText);
-    if (isNaN(score) || score < 0 || score > 1900) {
+    if (isNaN(score) || score < 0 || score > 1900)
       return { error: "Geçersiz kredi notu tespit edildi" };
-    }
 
     return { score, confidence: 0.95 };
-  } catch (error) {
-    console.error("OCR Error:", error);
-    return { error: (error as Error).message };
+  } catch (err) {
+    console.error("OCR Error:", err);
+    return { error: (err as Error).message };
   }
 }
 
+/* -------------------------------------------------- */
+/*  HTTP handler                                      */
+/* -------------------------------------------------- */
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -95,34 +95,26 @@ serve(async (req) => {
   try {
     const { reportId, base64Image, userId } = await req.json();
 
-    if (!reportId || !base64Image || !userId) {
+    if (!reportId || !base64Image || !userId)
       throw new Error("Report ID, base64 image, and user ID are required");
-    }
 
-    console.log(
-      "Processing OCR for user:",
-      userId,
-      "report:",
-      reportId,
-    );
+    console.log("Processing OCR:", { userId, reportId });
 
-    // OCR işlemini başlat
+    /* ---------- OCR ---------- */
     const ocrResult = await extractScoreFromImage(base64Image);
 
-    // Supabase ayarları
+    /* ---------- Supabase ---------- */
     const supabaseUrl = "https://wxfzuexhsgyeruqrmdow.supabase.co";
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    if (!supabaseServiceKey) {
-      throw new Error("Supabase service key not configured");
-    }
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseKey) throw new Error("Supabase service key not configured");
 
-    const supabaseHeaders = {
-      Authorization: `Bearer ${supabaseServiceKey}`,
+    const sbHeaders = {
+      Authorization: `Bearer ${supabaseKey}`,
+      apikey: supabaseKey,
       "Content-Type": "application/json",
-      apikey: supabaseServiceKey,
     };
 
-    // OCR sonucunu kaydet
+    /* ---------- OCR kaydı ---------- */
     const ocrRecord = {
       findeks_report_id: reportId,
       user_id: userId,
@@ -133,30 +125,19 @@ serve(async (req) => {
       processed_at: new Date().toISOString(),
     };
 
-    console.log("Saving OCR record:", ocrRecord);
+    await fetch(`${supabaseUrl}/rest/v1/ocr_processing`, {
+      method: "POST",
+      headers: sbHeaders,
+      body: JSON.stringify(ocrRecord),
+    });
 
-    const ocrResponse = await fetch(
-      `${supabaseUrl}/rest/v1/ocr_processing`,
-      {
-        method: "POST",
-        headers: supabaseHeaders,
-        body: JSON.stringify(ocrRecord),
-      },
-    );
-
-    if (!ocrResponse.ok) {
-      const errorText = await ocrResponse.text();
-      console.error("Failed to save OCR result:", errorText);
-      throw new Error("Failed to save OCR result");
-    }
-
-    // Eğer başarılıysa findeks raporunu güncelle
+    /* ---------- Rapor güncelle ---------- */
     if (ocrResult.score) {
-      const updateReportResponse = await fetch(
+      await fetch(
         `${supabaseUrl}/rest/v1/findeks_reports?id=eq.${reportId}`,
         {
           method: "PATCH",
-          headers: supabaseHeaders,
+          headers: sbHeaders,
           body: JSON.stringify({
             ocr_processed: true,
             ocr_extracted_score: ocrResult.score,
@@ -164,13 +145,9 @@ serve(async (req) => {
           }),
         },
       );
-
-      if (!updateReportResponse.ok) {
-        const errorText = await updateReportResponse.text();
-        console.error("Failed to update findeks report:", errorText);
-      }
     }
 
+    /* ---------- yanıt ---------- */
     return new Response(
       JSON.stringify({
         success: !ocrResult.error,
@@ -182,10 +159,10 @@ serve(async (req) => {
         status: 200,
       },
     );
-  } catch (error) {
-    console.error("Function error:", error);
+  } catch (err) {
+    console.error("Function error:", err);
     return new Response(
-      JSON.stringify({ success: false, error: (error as Error).message }),
+      JSON.stringify({ success: false, error: (err as Error).message }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 500,
