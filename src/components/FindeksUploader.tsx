@@ -1,72 +1,106 @@
-/**
- *  PDF ► JPEG dönüşümünü TARAYICI tarafında yapan React bileşeni.
- *  - pdfjs-dist worker'ı CDN'den çeker.
- *  - İlk sayfayı JPEG'e çevirip base64 + raporId + userId ile Edge Function'a gönderir.
- */
-import React, { useState } from "react";
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
-import "pdfjs-dist/legacy/build/pdf.worker.min.js"; // worker script
 
-GlobalWorkerOptions.workerSrc =
-  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js";
+import React, { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Upload, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
+import { useFindeksUpload } from '@/hooks/useFindeksUpload';
 
-async function pdfToJpegBase64(file: File): Promise<string> {
-  const pdf = await getDocument(await file.arrayBuffer()).promise;
-  const page = await pdf.getPage(1);
-  const vp = page.getViewport({ scale: 1.5 });
-  const canvas = document.createElement("canvas");
-  canvas.width = vp.width;
-  canvas.height = vp.height;
-  await page.render({
-    canvasContext: canvas.getContext("2d")!,
-    viewport: vp,
-  }).promise;
-  // data:image/jpeg;base64,AAA...  ► sadece base64 kısmı
-  return canvas.toDataURL("image/jpeg", 0.9).split(",")[1];
-}
+const FindeksUploader: React.FC = () => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const { uploadFindeksReport, isUploading, isProcessing } = useFindeksUpload();
 
-export default function FindeksPdfUpload() {
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
-
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.type !== "application/pdf") {
-      alert("Lütfen PDF seçin"); return;
-    }
-    setLoading(true);
-    setResult(null);
-
-    try {
-      const base64Image = await pdfToJpegBase64(file);
-      const resp = await fetch("/functions/v1/process-findeks-ocr", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          reportId: crypto.randomUUID(),
-          userId: "current-user-id",        // kendi kullanıcı id'niz
-          base64Image,
-        }),
-      });
-      const data = await resp.json();
-      if (data.success) {
-        setResult(`Skor: ${data.score}`);
-      } else {
-        setResult(`Hata: ${data.error}`);
-      }
-    } catch (err: any) {
-      setResult("İşlem hatası: " + err.message);
-    } finally {
-      setLoading(false);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
     }
   };
 
+  const handleUpload = async () => {
+    if (selectedFile) {
+      await uploadFindeksReport(selectedFile);
+      setSelectedFile(null);
+      // Input'u temizle
+      const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
+    }
+  };
+
+  const isLoading = isUploading || isProcessing;
+
   return (
-    <div style={{ border: "1px solid #ccc", padding: 16, borderRadius: 8 }}>
-      <input type="file" accept="application/pdf" onChange={handleChange} />
-      {loading && <p>Yükleniyor…</p>}
-      {result && <p>{result}</p>}
+    <div className="bg-white rounded-xl shadow-md p-6 md:p-8 mb-8">
+      <h2 className="text-2xl font-bold mb-6 flex items-center">
+        <Upload className="mr-2 text-primary" />
+        Findeks Raporu Yükleme
+      </h2>
+      
+      <div className="mb-6">
+        <p className="text-gray-600 mb-4">
+          Findeks raporunuzu PDF formatında yükleyerek, kredi puanınızı otomatik olarak çıkaracağız ve 
+          hesabınızda güncelleyeceğiz. Yüklenen raporlar sadece sizin erişiminize açık olacaktır.
+        </p>
+        
+        <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-blue-800 text-sm flex items-start">
+          <CheckCircle className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" />
+          <p>
+            <strong>Otomatik Puan Çıkarma:</strong> Raporunuzu yükledikten sonra, yapay zeka teknolojisi 
+            kullanarak Findeks notunuzu otomatik olarak tespit edip hesabınızda güncelleyeceğiz.
+          </p>
+        </div>
+      </div>
+      
+      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+        <Upload className="mx-auto h-12 w-12 text-gray-400" />
+        <p className="mt-2 text-sm font-medium text-gray-700">PDF formatında dosyanızı seçin</p>
+        <p className="mt-1 text-xs text-gray-500">En fazla 10MB</p>
+        
+        <div className="mt-4">
+          <input
+            type="file"
+            id="file-upload"
+            className="hidden"
+            accept=".pdf"
+            onChange={handleFileChange}
+            disabled={isLoading}
+          />
+          <label htmlFor="file-upload">
+            <Button variant="outline" className="mr-2" asChild disabled={isLoading}>
+              <span>Dosya Seç</span>
+            </Button>
+          </label>
+          
+          <Button 
+            onClick={handleUpload} 
+            disabled={!selectedFile || isLoading}
+            className="bg-primary hover:bg-primary-dark text-white"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                {isUploading ? 'Yükleniyor...' : 'İşleniyor...'}
+              </>
+            ) : (
+              'Yükle ve İşle'
+            )}
+          </Button>
+        </div>
+        
+        {selectedFile && !isLoading && (
+          <div className="mt-4 text-sm">
+            <p className="font-medium text-gray-700">Seçilen dosya: {selectedFile.name}</p>
+          </div>
+        )}
+        
+        {isProcessing && (
+          <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3 text-blue-800 text-sm flex items-center">
+            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+            <span>Rapor işleniyor, lütfen bekleyin...</span>
+          </div>
+        )}
+      </div>
     </div>
   );
-}
+};
+
+export default FindeksUploader;
