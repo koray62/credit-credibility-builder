@@ -1,6 +1,5 @@
 /******************************************************************
  *  Findeks OCR – PDF ► JPEG ► Supabase Storage ► OpenAI Vision
- *  Deno Edge Function (Supabase)
  ******************************************************************/
 import { serve } from "https://deno.land/std@0.201.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
@@ -11,27 +10,20 @@ import {
   GlobalWorkerOptions,
 } from "npm:pdfjs-dist@4.2.67/legacy/build/pdf.mjs";
 
-/* -------------------------------------------------- */
-/*  Worker (PDF.js)                                   */
-/* -------------------------------------------------- */
 GlobalWorkerOptions.workerSrc =
   "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.2.67/build/pdf.worker.mjs";
 
-/* -------------------------------------------------- */
-/*  Env / Config                                      */
-/* -------------------------------------------------- */
-const SUPABASE_URL  = "https://wxfzuexhsgyeruqrmdow.supabase.co";
-const STORAGE_BUCKET = "public";          // herkesçe erişilebilir
-const STORAGE_PATH   = "ocr-cache";       // JPEG’lerin klasörü
-
+/* ---------- config ---------- */
+const SUPABASE_URL   = "https://wxfzuexhsgyeruqrmdow.supabase.co";
+const STORAGE_BUCKET = "public";
+const STORAGE_PATH   = "ocr-cache";
 const corsHeaders = {
-  "Access-Control-Allow-Origin":  "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
-/* -------------------------------------------------- */
-/*  Yardımcı Fonksiyonlar                             */
-/* -------------------------------------------------- */
+/* ---------- helpers ---------- */
 function base64ToUint8(b64: string): Uint8Array {
   const bin = atob(b64);
   return Uint8Array.from({ length: bin.length }, (_, i) => bin.charCodeAt(i));
@@ -39,10 +31,11 @@ function base64ToUint8(b64: string): Uint8Array {
 
 async function pdfPageToJpegBytes(pdfBytes: Uint8Array): Promise<Uint8Array> {
   const pdf   = await getDocument({ data: pdfBytes }).promise;
-  const page  = await pdf.getPage(1);            // 1. sayfa yeterli
-  const view  = page.getViewport({ scale: 1.4 }); // ~150-200 DPI
+  const page  = await pdf.getPage(1);
+  const view  = page.getViewport({ scale: 1.4 });
   const canvas = createCanvas(view.width, view.height);
-  await page.render({ canvasContext: canvas.getContext("2d"), viewport: view }).promise;
+  await page.render({ canvasContext: canvas.getContext("2d"), viewport: view })
+    .promise;
   return canvas.toBuffer("image/jpeg", { quality: 0.9 });
 }
 
@@ -51,68 +44,82 @@ async function uploadToSupabase(img: Uint8Array, fileName: string): Promise<stri
   if (!svcKey) throw new Error("Supabase service key yok (env).");
 
   const objectPath = `${STORAGE_PATH}/${fileName}`;
-  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${objectPath}`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${svcKey}`,
-      apikey:       svcKey,
-      "Content-Type": "image/jpeg",
+  const res = await fetch(
+    `${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${objectPath}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${svcKey}`,
+        apikey: svcKey,
+        "Content-Type": "image/jpeg",
+        "x-upsert": "true",
+        "cache-control": "public, max-age=31536000",
+      },
+      body: img,
     },
-    body: img,
-  });
-
+  );
   if (!res.ok) throw new Error(`Storage yükleme hatası (${res.status}).`);
-  // Public bucket => doğrudan erişim URL’i:
-  return `${SUPABASE_URL}/storage/v1/object/public/${objectPath}`;
+
+  /*  render/image endpoint → 200 & Content-Type: image/jpeg */
+  return `${SUPABASE_URL}/storage/v1/render/image/public/${objectPath}`;
 }
 
-/* -------------------------------------------------- */
-/*  OCR İşlevi                                        */
-/* -------------------------------------------------- */
+/* ---------- OCR ---------- */
 interface OCRResult { score?: number; confidence?: number; error?: string; }
 
 async function extractScore(base64OrPdf: string): Promise<OCRResult> {
   try {
-    /* ---------- 1) Görseli hazırlama (public URL) ---------- */
-    let imageUrl = base64OrPdf; // fallback (eğer doğrudan url gelirse)
-    const isPDF  = /^data:application\/pdf;base64,|^JVBER/i.test(base64OrPdf);
-    const isImg  = /^data:image\//i.test(base64OrPdf);
+    /* 1) Görseli hazırlama */
+    let imageUrl = base64OrPdf;
+    const isPDF = /^data:application\/pdf;base64,|^JVBER/i.test(base64OrPdf);
+    const isImg = /^data:image\//i.test(base64OrPdf);
 
     if (isPDF || isImg) {
-      const rawB64 = base64OrPdf.includes(",") ? base64OrPdf.split(",")[1] : base64OrPdf;
+      const rawB64 = base64OrPdf.includes(",")
+        ? base64OrPdf.split(",")[1]
+        : base64OrPdf;
+
       const jpegBytes = isPDF
         ? await pdfPageToJpegBytes(base64ToUint8(rawB64))
-        : base64ToUint8(rawB64);                // zaten image/jpeg|png
+        : base64ToUint8(rawB64);
 
-      if (jpegBytes.length > 5_000_000) throw new Error("Görsel 5 MB sınırını aşıyor.");
-
-      const fileName = `${crypto.randomUUID()}.jpg`;
-      imageUrl = await uploadToSupabase(jpegBytes, fileName);
+      if (jpegBytes.length > 5_000_000) {
+        throw new Error("Görsel 5 MB sınırını aşıyor.");
+      }
+      imageUrl = await uploadToSupabase(jpegBytes, `${crypto.randomUUID()}.jpg`);
     }
 
-    /* ---------- 2) OpenAI Vision ---------- */
-        const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY");
+    /* 2) OpenAI Vision */
+    const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY");
     if (!OPENAI_KEY) throw new Error("OPENAI_API_KEY yok (env).");
-    console.log(""C:\Users\KorayKaya\Downloads\FindeksRapor_126_6008374BA4N_1748942956466.pdf"", imageUrl);
+
+    console.log("👉 imageUrl:", imageUrl);
+
     const resp = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
-      headers: { Authorization: `Bearer ${OPENAI_KEY}`, "Content-Type": "application/json" },
+      headers: {
+        Authorization: `Bearer ${OPENAI_KEY}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         model: "gpt-4o",
         messages: [{
           role: "user",
           content: [
             { type: "text",
-              text: "Bu Findeks kredi raporu görselinden sadece kredi notunu (score) çıkar. Yalnızca sayıyı döndür; bulunamazsa NOT_FOUND yaz." },
-            { type: "image_url", image_url: { url: imageUrl, detail: "auto" } }
-          ]
+              text: "Bu Findeks kredi raporu görselinden sadece kredi notunu çıkar. Yalnızca sayıyı yaz; bulunamazsa NOT_FOUND yaz." },
+            { type: "image_url", image_url: { url: imageUrl, detail: "auto" } },
+          ],
         }],
         max_tokens: 10,
       }),
     });
 
-    if (!resp.ok) {
-      console.error("OpenAI hata:", resp.status, await resp.text());
+    if (resp.ok) {
+      console.log("✅ OpenAI OK");
+    } else {
+      const raw = await resp.text();
+      console.error("🟥 RAW:", resp.status, raw.slice(0, 500));
       throw new Error(`OpenAI API error ${resp.status}`);
     }
 
@@ -121,30 +128,30 @@ async function extractScore(base64OrPdf: string): Promise<OCRResult> {
     if (!txt || txt === "NOT_FOUND") return { error: "Score bulunamadı" };
 
     const score = parseInt(txt, 10);
-    if (Number.isNaN(score) || score < 0 || score > 1900) return { error: "Geçersiz score" };
+    if (Number.isNaN(score) || score < 0 || score > 1900) {
+      return { error: "Geçersiz score" };
+    }
     return { score, confidence: 0.95 };
   } catch (err) {
     return { error: (err as Error).message };
   }
 }
 
-/* -------------------------------------------------- */
-/*  HTTP Handler (Supabase Function)                  */
-/* -------------------------------------------------- */
+/* ---------- HTTP handler ---------- */
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
 
   try {
     const { reportId, base64Image, userId } = await req.json();
-    if (!reportId || !base64Image || !userId)
-      throw new Error("reportId, base64Image ve userId zorunludur.");
+    if (!reportId || !base64Image || !userId) {
+      throw new Error("reportId, base64Image ve userId zorunlu.");
+    }
 
-    // OCR
     const ocr = await extractScore(base64Image);
 
-    // --- Burada Supabase’e kayıt / güncelleme adımlarınız aynı kalabilir ---
-    // findeks_reports & ocr_processing tablolarını güncelleyin.
-    // (Önceki kodunuzdaki fetch çağrılarını olduğu gibi kopyalayabilirsiniz.)
+    /* — Supabase kayıt/güncelleme adımlarınız burada — */
 
     return new Response(
       JSON.stringify({ success: !ocr.error, score: ocr.score, error: ocr.error }),
