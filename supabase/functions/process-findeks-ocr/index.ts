@@ -93,7 +93,7 @@ async function extractScore(base64OrPdf: string): Promise<OCRResult> {
     /* ---------- 2) OpenAI Vision ---------- */
         const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY");
     if (!OPENAI_KEY) throw new Error("OPENAI_API_KEY yok (env).");
-    console.log("👉 imageUrl being sent to OpenAI:", imageUrl);
+    console.log(""C:\Users\KorayKaya\Downloads\FindeksRapor_126_6008374BA4N_1748942956466.pdf"", imageUrl);
     const resp = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${OPENAI_KEY}`, "Content-Type": "application/json" },
