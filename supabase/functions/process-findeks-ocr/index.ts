@@ -1,58 +1,56 @@
 // supabase/functions/process-findeks-ocr/index.ts
 //-------------------------------------------------
-// Deno Edge Function – Findeks OCR
+//  Deno Edge Function – Findeks OCR
 //-------------------------------------------------
 import { serve } from "https://deno.land/std@0.201.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
-// PDF ► JPEG dönüştürme için:
+// PDF ► JPEG dönüştürme:
 import {
   getDocument,
   GlobalWorkerOptions,
 } from "npm:pdfjs-dist@4.2.67/legacy/build/pdf.mjs";
 import { createCanvas } from "https://deno.land/x/canvas@1.4.1/mod.ts";
 
-// Worker dosyasını CDN’den göster (Edge ortamında şart)
+// Worker’ı CDN’den göster
 GlobalWorkerOptions.workerSrc =
   "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.2.67/build/pdf.worker.mjs";
 
-//-------------------------------------------------
-// CORS
-//-------------------------------------------------
+/* -------------------------------------------------- */
+/*  CORS                                              */
+/* -------------------------------------------------- */
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
 
-//-------------------------------------------------
-// Türler
-//-------------------------------------------------
+/* -------------------------------------------------- */
+/*  Türler                                            */
+/* -------------------------------------------------- */
 interface OCRResult {
   score?: number;
   confidence?: number;
   error?: string;
 }
 
-//-------------------------------------------------
-// Yardımcı: PDF ilk sayfayı JPEG-base64’e çevir
-//-------------------------------------------------
+/* -------------------------------------------------- */
+/*  Yardımcı – PDF ilk sayfayı JPEG-base64 yap        */
+/* -------------------------------------------------- */
 async function pdfFirstPageToBase64(pdfBytes: Uint8Array): Promise<string> {
   const pdf = await getDocument({ data: pdfBytes }).promise;
-  const page = await pdf.getPage(2); // 2. sayfa
-  const viewport = page.getViewport({ scale: 2 }); // çözünürlüğü ↑2
+  const page = await pdf.getPage(1);
+  const viewport = page.getViewport({ scale: 2 }); // gerekirse 1-1.5 yap
   const canvas = createCanvas(viewport.width, viewport.height);
   const ctx = canvas.getContext("2d");
 
   await page.render({ canvasContext: ctx, viewport }).promise;
-
-  // <data:image/jpeg;base64,AAA...> ⇒ sadece base64 kısmı
-  return canvas.toDataURL("image/jpeg", 0.92).split(",")[1];
+  return canvas.toDataURL("image/jpeg", 0.92).split(",")[1]; // başlığı at
 }
 
-//-------------------------------------------------
-// Yardımcı: base64 dizesini Uint8Array’e çevir
-//-------------------------------------------------
+/* -------------------------------------------------- */
+/*  Yardımcı – base64 → Uint8Array                    */
+/* -------------------------------------------------- */
 function base64ToUint8Array(b64: string): Uint8Array {
   const binary = atob(b64);
   const len = binary.length;
@@ -61,34 +59,39 @@ function base64ToUint8Array(b64: string): Uint8Array {
   return bytes;
 }
 
-//-------------------------------------------------
-// OCR ana fonksiyon
-//-------------------------------------------------
-async function extractScoreFromImage(
-  base64Input: string,
-): Promise<OCRResult> {
+/* -------------------------------------------------- */
+/*  OCR ana fonksiyon                                 */
+/* -------------------------------------------------- */
+async function extractScoreFromImage(base64Input: string): Promise<OCRResult> {
   try {
     const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
     if (!openaiApiKey) throw new Error("OpenAI API key not configured");
 
-    //-------------------------------------------------
-    // 1️⃣  PDF mi, resim mi kontrol et
-    //-------------------------------------------------
+    /* ---------- 1️⃣  PDF mi resim mi? ---------- */
     let base64Image = base64Input;
 
-    // PDF dosyaları "%PDF" ile başlar (base64: "JVBER")
-    if (base64Input.slice(0, 5) === "JVBER") {
+    // data:application/pdf;base64,JVBER…  veya  JVBER…
+    const pdfRegex = /^data:application\/pdf;base64,|^JVBER/i;
+    if (pdfRegex.test(base64Input)) {
       console.log("🔄 PDF algılandı, JPEG'e dönüştürülüyor…");
-      const jpegBase64 = await pdfFirstPageToBase64(
-        base64ToUint8Array(base64Input),
+
+      const rawPdfBase64 = base64Input.includes(",")
+        ? base64Input.split(",")[1]
+        : base64Input;
+
+      base64Image = await pdfFirstPageToBase64(
+        base64ToUint8Array(rawPdfBase64),
       );
-      base64Image = jpegBase64;
-      console.log("✅ Dönüştürme tamam");
+      console.log("✅ Dönüştürme tamam; uzunluk:", base64Image.length);
     }
 
-    //-------------------------------------------------
-    // 2️⃣  OpenAI Vision çağrısı
-    //-------------------------------------------------
+    /* ---------- 2️⃣  20 MB sınırı ---------- */
+    const bytesApprox = base64Image.length * 0.75; // base64≈%33 şişkin
+    if (bytesApprox > 20_000_000) {
+      throw new Error("Dönüştürülen görüntü 20 MB sınırını aşıyor");
+    }
+
+    /* ---------- 3️⃣  OpenAI Vision ---------- */
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -120,7 +123,7 @@ async function extractScoreFromImage(
       }),
     });
 
-    // Hata yakalama – ayrıntıları logla
+    // Hata yakalama – ayrıntı logla
     if (!response.ok) {
       let payload: unknown;
       try {
@@ -132,9 +135,7 @@ async function extractScoreFromImage(
       throw new Error(`OpenAI API error: ${response.status}`);
     }
 
-    //-------------------------------------------------
-    // 3️⃣  Cevabı işle
-    //-------------------------------------------------
+    /* ---------- 4️⃣  Cevap işle ---------- */
     const data = await response.json();
     const extractedText = data.choices?.[0]?.message?.content?.trim();
 
@@ -154,9 +155,9 @@ async function extractScoreFromImage(
   }
 }
 
-//-------------------------------------------------
-// HTTP Handler
-//-------------------------------------------------
+/* -------------------------------------------------- */
+/*  HTTP handler                                      */
+/* -------------------------------------------------- */
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -164,17 +165,16 @@ serve(async (req) => {
 
   try {
     const { reportId, base64Image, userId } = await req.json();
-
     if (!reportId || !base64Image || !userId) {
       throw new Error("Report ID, base64 image, and user ID are required");
     }
 
-    console.log("▶️  OCR süreci başlıyor:", { userId, reportId });
+    console.log("▶️  OCR süreci:", { userId, reportId });
 
-    // -------------- OCR --------------
+    // OCR
     const ocrResult = await extractScoreFromImage(base64Image);
 
-    // -------------- Supabase --------------
+    // Supabase
     const supabaseUrl = "https://wxfzuexhsgyeruqrmdow.supabase.co";
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!supabaseKey) throw new Error("Supabase service key not configured");
@@ -218,7 +218,7 @@ serve(async (req) => {
       );
     }
 
-    // -------------- Yanıt --------------
+    // Yanıt
     return new Response(
       JSON.stringify({
         success: !ocrResult.error,
