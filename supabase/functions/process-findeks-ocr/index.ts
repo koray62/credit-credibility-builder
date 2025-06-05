@@ -27,7 +27,7 @@ async function extractScoreFromImage(base64Image: string): Promise<OCRResult> {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: "gpt-4.1-nano",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "user",
@@ -50,6 +50,8 @@ async function extractScoreFromImage(base64Image: string): Promise<OCRResult> {
     })
 
     if (!response.ok) {
+      const errorText = await response.text()
+      console.error('OpenAI API error:', response.status, errorText)
       throw new Error(`OpenAI API error: ${response.status}`)
     }
 
@@ -78,11 +80,13 @@ serve(async (req) => {
   }
 
   try {
-    const { reportId, base64Image } = await req.json()
+    const { reportId, base64Image, userId } = await req.json()
     
-    if (!reportId || !base64Image) {
-      throw new Error('Report ID and base64 image are required')
+    if (!reportId || !base64Image || !userId) {
+      throw new Error('Report ID, base64 image, and user ID are required')
     }
+
+    console.log('Processing OCR for user:', userId, 'report:', reportId)
 
     // OCR işlemini başlat
     const ocrResult = await extractScoreFromImage(base64Image)
@@ -104,12 +108,15 @@ serve(async (req) => {
     // OCR sonucunu kaydet
     const ocrRecord = {
       findeks_report_id: reportId,
+      user_id: userId,
       status: ocrResult.error ? 'failed' : 'completed',
       extracted_score: ocrResult.score || null,
       confidence_score: ocrResult.confidence || null,
       error_message: ocrResult.error || null,
       processed_at: new Date().toISOString()
     }
+
+    console.log('Saving OCR record:', ocrRecord)
 
     const ocrResponse = await fetch(`${supabaseUrl}/rest/v1/ocr_processing`, {
       method: 'POST',
@@ -118,6 +125,8 @@ serve(async (req) => {
     })
 
     if (!ocrResponse.ok) {
+      const errorText = await ocrResponse.text()
+      console.error('Failed to save OCR result:', errorText)
       throw new Error('Failed to save OCR result')
     }
 
@@ -134,7 +143,8 @@ serve(async (req) => {
       })
 
       if (!updateReportResponse.ok) {
-        console.error('Failed to update findeks report')
+        const errorText = await updateReportResponse.text()
+        console.error('Failed to update findeks report:', errorText)
       }
     }
 

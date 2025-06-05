@@ -66,6 +66,11 @@ export const useFindeksUpload = () => {
   };
 
   const processWithOCR = async (file: File, reportId: string) => {
+    if (!user) {
+      toast.error('Kullanıcı oturumu bulunamadı');
+      return;
+    }
+
     setIsProcessing(true);
     
     try {
@@ -76,17 +81,23 @@ export const useFindeksUpload = () => {
         throw new Error('PDF görsel dönüştürme başarısız');
       }
 
+      console.log('Calling OCR function with user ID:', user.id);
+
       // OCR edge function'ını çağır
       const { data, error } = await supabase.functions.invoke('process-findeks-ocr', {
         body: {
           reportId,
-          base64Image
+          base64Image,
+          userId: user.id
         }
       });
 
       if (error) {
+        console.error('Edge function error:', error);
         throw error;
       }
+
+      console.log('OCR function response:', data);
 
       if (data.success && data.score) {
         toast.success(`Findeks notunuz başarıyla güncellendi: ${data.score}`);
@@ -96,7 +107,7 @@ export const useFindeksUpload = () => {
 
     } catch (error) {
       console.error('OCR processing error:', error);
-      toast.error('Rapor işleme başarısız');
+      toast.error('Rapor işleme başarısız: ' + (error.message || 'Bilinmeyen hata'));
     } finally {
       setIsProcessing(false);
     }
