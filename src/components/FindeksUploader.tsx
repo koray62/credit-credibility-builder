@@ -1,24 +1,19 @@
 /**
- *  FindeksPdfUpload – PDF ► JPEG (2. Sayfa) ► Edge Function
- *  --------------------------------------------------------
- *  - pdfjs-dist worker'ı CDN'den yüklenir.
- *  - PDF'in **2. sayfası** canvasa render edilir, JPEG base64 alınır.
- *  - Edge Function (process-findeks-ocr) çağrılır.
+ *  PDF ► JPEG dönüşümünü TARAYICI tarafında yapan React bileşeni.
+ *  - pdfjs-dist worker'ı CDN'den çeker.
+ *  - İlk sayfayı JPEG'e çevirip base64 + raporId + userId ile Edge Function'a gönderir.
  */
 import React, { useState } from "react";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
-import "pdfjs-dist/legacy/build/pdf.worker.min.js";
+import "pdfjs-dist/legacy/build/pdf.worker.min.js"; // worker script
 
 GlobalWorkerOptions.workerSrc =
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js";
 
-/* ------------ PDF ► JPEG base64 (2. sayfa) ------------ */
-async function pdfSecondPageToJpeg(file: File): Promise<string> {
+async function pdfToJpegBase64(file: File): Promise<string> {
   const pdf = await getDocument(await file.arrayBuffer()).promise;
-  const total = pdf.numPages;
-  if (total < 2) throw new Error("PDF yalnızca 1 sayfa içeriyor");
-  const page = await pdf.getPage(2);               // ← 2. sayfa
-  const vp = page.getViewport({ scale: 1.5 });     // 150-200 DPI
+  const page = await pdf.getPage(1);
+  const vp = page.getViewport({ scale: 1.5 });
   const canvas = document.createElement("canvas");
   canvas.width = vp.width;
   canvas.height = vp.height;
@@ -26,7 +21,7 @@ async function pdfSecondPageToJpeg(file: File): Promise<string> {
     canvasContext: canvas.getContext("2d")!,
     viewport: vp,
   }).promise;
-  /* data:image/jpeg;base64,AAA…  →   sadece base64 bölümü */
+  // data:image/jpeg;base64,AAA...  ► sadece base64 kısmı
   return canvas.toDataURL("image/jpeg", 0.9).split(",")[1];
 }
 
@@ -38,27 +33,28 @@ export default function FindeksPdfUpload() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.type !== "application/pdf") {
-      alert("Lütfen PDF seçin");
-      return;
+      alert("Lütfen PDF seçin"); return;
     }
     setLoading(true);
     setResult(null);
 
     try {
-      const base64Image = await pdfSecondPageToJpeg(file);
-
+      const base64Image = await pdfToJpegBase64(file);
       const resp = await fetch("/functions/v1/process-findeks-ocr", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           reportId: crypto.randomUUID(),
-          userId: "current-user-id",
+          userId: "current-user-id",        // kendi kullanıcı id'niz
           base64Image,
         }),
       });
       const data = await resp.json();
-      if (data.success) setResult(`Skor: ${data.score}`);
-      else setResult(`Hata: ${data.error}`);
+      if (data.success) {
+        setResult(`Skor: ${data.score}`);
+      } else {
+        setResult(`Hata: ${data.error}`);
+      }
     } catch (err: any) {
       setResult("İşlem hatası: " + err.message);
     } finally {
