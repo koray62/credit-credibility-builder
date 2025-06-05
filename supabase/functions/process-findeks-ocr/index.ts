@@ -10,6 +10,7 @@ import {
   GlobalWorkerOptions,
 } from "npm:pdfjs-dist@4.2.67/legacy/build/pdf.mjs";
 
+/* ---------- PDF.js worker ---------- */
 GlobalWorkerOptions.workerSrc =
   "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.2.67/build/pdf.worker.mjs";
 
@@ -17,6 +18,7 @@ GlobalWorkerOptions.workerSrc =
 const SUPABASE_URL   = "https://wxfzuexhsgyeruqrmdow.supabase.co";
 const STORAGE_BUCKET = "public";
 const STORAGE_PATH   = "ocr-cache";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -32,7 +34,7 @@ function base64ToUint8(b64: string): Uint8Array {
 async function pdfPageToJpegBytes(pdfBytes: Uint8Array): Promise<Uint8Array> {
   const pdf   = await getDocument({ data: pdfBytes }).promise;
   const page  = await pdf.getPage(1);
-  const view  = page.getViewport({ scale: 1.4 });
+  const view  = page.getViewport({ scale: 1.4 });          // ~150-200 DPI
   const canvas = createCanvas(view.width, view.height);
   await page.render({ canvasContext: canvas.getContext("2d"), viewport: view })
     .promise;
@@ -50,9 +52,9 @@ async function uploadToSupabase(img: Uint8Array, fileName: string): Promise<stri
       method: "PUT",
       headers: {
         Authorization: `Bearer ${svcKey}`,
-        apikey: svcKey,
+        apikey:        svcKey,
         "Content-Type": "image/jpeg",
-        "x-upsert": "true",
+        "x-upsert":     "true",
         "cache-control": "public, max-age=31536000",
       },
       body: img,
@@ -60,24 +62,24 @@ async function uploadToSupabase(img: Uint8Array, fileName: string): Promise<stri
   );
   if (!res.ok) throw new Error(`Storage yükleme hatası (${res.status}).`);
 
-  /*  render/image endpoint → 200 & Content-Type: image/jpeg */
+  /* render endpoint = Content-Type: image/jpeg ve 200 */
   return `${SUPABASE_URL}/storage/v1/render/image/public/${objectPath}`;
 }
 
-/* ---------- OCR ---------- */
+/* ---------- OCR ana işlev ---------- */
 interface OCRResult { score?: number; confidence?: number; error?: string; }
 
-async function extractScore(base64OrPdf: string): Promise<OCRResult> {
+async function extractScore(dataUriOrPdf: string): Promise<OCRResult> {
   try {
-    /* 1) Görseli hazırlama */
-    let imageUrl = base64OrPdf;
-    const isPDF = /^data:application\/pdf;base64,|^JVBER/i.test(base64OrPdf);
-    const isImg = /^data:image\//i.test(base64OrPdf);
+    /* 1) Görseli hazırlama ------------------------------------------- */
+    let imageUrl = dataUriOrPdf;
+    const isPDF  = /^data:application\/pdf;base64,|^JVBER/i.test(dataUriOrPdf);
+    const isImg  = /^data:image\//i.test(dataUriOrPdf);
 
     if (isPDF || isImg) {
-      const rawB64 = base64OrPdf.includes(",")
-        ? base64OrPdf.split(",")[1]
-        : base64OrPdf;
+      const rawB64    = dataUriOrPdf.includes(",")
+        ? dataUriOrPdf.split(",")[1]
+        : dataUriOrPdf;
 
       const jpegBytes = isPDF
         ? await pdfPageToJpegBytes(base64ToUint8(rawB64))
@@ -89,7 +91,18 @@ async function extractScore(base64OrPdf: string): Promise<OCRResult> {
       imageUrl = await uploadToSupabase(jpegBytes, `${crypto.randomUUID()}.jpg`);
     }
 
-    /* 2) OpenAI Vision */
+    /* 2) URL’nin gerçekten resim olup olmadığını HEAD ile kontrol et ---- */
+    try {
+      const head = await fetch(imageUrl, { method: "HEAD" });
+      console.log(
+        "🔎 HEAD status:", head.status,
+        "CT:", head.headers.get("content-type"),
+      );
+    } catch (e) {
+      console.error("🔎 HEAD request FAILED:", (e as Error).message);
+    }
+
+    /* 3) OpenAI Vision ------------------------------------------------- */
     const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY");
     if (!OPENAI_KEY) throw new Error("OPENAI_API_KEY yok (env).");
 
@@ -151,7 +164,7 @@ serve(async (req) => {
 
     const ocr = await extractScore(base64Image);
 
-    /* — Supabase kayıt/güncelleme adımlarınız burada — */
+    /* — Supabase'e kayıt/güncelleme adımlarınız (değişmedi) — */
 
     return new Response(
       JSON.stringify({ success: !ocr.error, score: ocr.score, error: ocr.error }),
