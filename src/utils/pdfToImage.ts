@@ -1,8 +1,8 @@
 
 import * as pdfjsLib from 'pdfjs-dist';
 
-// PDF.js worker'ını doğru şekilde konfigüre et
-pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+// PDF.js worker'ını Supabase'den yükle
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.269/pdf.worker.min.js';
 
 export async function convertPdfToImage(file: File): Promise<string | null> {
   try {
@@ -14,7 +14,9 @@ export async function convertPdfToImage(file: File): Promise<string | null> {
     // PDF dokümanını yükle
     const loadingTask = pdfjsLib.getDocument({ 
       data: arrayBuffer,
-      verbosity: 0 // Verbose logging'i kapat
+      verbosity: 0,
+      useWorkerFetch: false,
+      isEvalSupported: false
     });
     
     const pdf = await loadingTask.promise;
@@ -33,7 +35,7 @@ export async function convertPdfToImage(file: File): Promise<string | null> {
     }
     
     // Viewport ayarla (OCR için optimize edilmiş scale)
-    const viewport = page.getViewport({ scale: 1.5 });
+    const viewport = page.getViewport({ scale: 2.0 });
     canvas.height = viewport.height;
     canvas.width = viewport.width;
     
@@ -47,8 +49,8 @@ export async function convertPdfToImage(file: File): Promise<string | null> {
     
     console.log('Page rendered to canvas');
     
-    // Canvas'ı base64'e çevir (JPEG formatı, yüksek kalite)
-    const base64 = canvas.toDataURL('image/jpeg', 0.92);
+    // Canvas'ı base64'e çevir (PNG formatı, yüksek kalite)
+    const base64 = canvas.toDataURL('image/png');
     
     // Base64 string'in geçerli olup olmadığını kontrol et
     if (!base64 || !base64.startsWith('data:image/')) {
@@ -60,71 +62,6 @@ export async function convertPdfToImage(file: File): Promise<string | null> {
     
   } catch (error) {
     console.error('PDF to image conversion error:', error);
-    
-    // Daha detaylı hata mesajı
-    if (error.message?.includes('Setting up fake worker failed')) {
-      console.error('PDF.js worker setup failed. Trying alternative approach...');
-      
-      // Worker olmadan deneme
-      try {
-        return await convertWithoutWorker(file);
-      } catch (fallbackError) {
-        console.error('Fallback conversion also failed:', fallbackError);
-        return null;
-      }
-    }
-    
-    return null;
-  }
-}
-
-// Worker olmadan PDF dönüştürme (fallback)
-async function convertWithoutWorker(file: File): Promise<string | null> {
-  try {
-    console.log('Attempting conversion without worker...');
-    
-    // Farklı bir yaklaşım: PDF.js'i minimal konfigürasyonla kullan
-    const arrayBuffer = await file.arrayBuffer();
-    
-    // PDF.js'i worker olmadan konfigüre et
-    const oldWorkerSrc = pdfjsLib.GlobalWorkerOptions.workerSrc;
-    pdfjsLib.GlobalWorkerOptions.workerSrc = null;
-    
-    const pdf = await pdfjsLib.getDocument({ 
-      data: arrayBuffer,
-      useWorkerFetch: false,
-      isEvalSupported: false,
-      useSystemFonts: true
-    }).promise;
-    
-    const page = await pdf.getPage(1);
-    const viewport = page.getViewport({ scale: 1.5 });
-    
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    
-    if (!context) {
-      throw new Error('Canvas context failed');
-    }
-    
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-    
-    await page.render({
-      canvasContext: context,
-      viewport: viewport
-    }).promise;
-    
-    // Worker konfigürasyonunu geri yükle
-    pdfjsLib.GlobalWorkerOptions.workerSrc = oldWorkerSrc;
-    
-    const base64 = canvas.toDataURL('image/jpeg', 0.92);
-    console.log('Fallback conversion successful');
-    
-    return base64;
-    
-  } catch (error) {
-    console.error('Fallback conversion failed:', error);
     return null;
   }
 }

@@ -31,6 +31,7 @@ export const useFindeksUpload = () => {
         .upload(fileName, file);
 
       if (uploadError) {
+        console.error('Storage upload error:', uploadError);
         throw uploadError;
       }
 
@@ -47,6 +48,7 @@ export const useFindeksUpload = () => {
         .single();
 
       if (reportError) {
+        console.error('Database insert error:', reportError);
         throw reportError;
       }
 
@@ -59,7 +61,7 @@ export const useFindeksUpload = () => {
 
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error('Dosya yükleme başarısız');
+      toast.error('Dosya yükleme başarısız: ' + (error.message || 'Bilinmeyen hata'));
       return null;
     } finally {
       setIsUploading(false);
@@ -75,6 +77,8 @@ export const useFindeksUpload = () => {
     setIsProcessing(true);
     
     try {
+      console.log('Starting OCR processing...');
+      
       // PDF'i canvas'a çevir ve base64 olarak al
       const base64Image = await convertPdfToImage(file);
       
@@ -82,7 +86,7 @@ export const useFindeksUpload = () => {
         throw new Error('PDF görsel dönüştürme başarısız');
       }
 
-      console.log('Calling OCR function with user ID:', user.id);
+      console.log('PDF converted to image, calling OCR function...');
 
       // OCR edge function'ını çağır
       const { data, error } = await supabase.functions.invoke('process-findeks-ocr', {
@@ -95,15 +99,15 @@ export const useFindeksUpload = () => {
 
       if (error) {
         console.error('Edge function error:', error);
-        throw error;
+        throw new Error(error.message || 'OCR servisi hatası');
       }
 
       console.log('OCR function response:', data);
 
-      if (data.success && data.score) {
+      if (data?.success && data.score) {
         toast.success(`Findeks notunuz başarıyla güncellendi: ${data.score}`);
       } else {
-        toast.error(data.error || 'OCR işlemi başarısız');
+        throw new Error(data?.error || 'OCR işlemi başarısız');
       }
 
     } catch (error) {
