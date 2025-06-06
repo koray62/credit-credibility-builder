@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import { convertPdfToImage } from '@/utils/pdfToImage';
 
 export const useFindeksUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
@@ -111,22 +112,6 @@ export const useFindeksUpload = () => {
     } finally {
       setIsProcessing(false);
     }
-  };
-
-  const convertPdfToImage = async (file: File): Promise<string | null> => {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        if (e.target?.result) {
-          // PDF'den ilk sayfayı base64 olarak al
-          const base64 = (e.target.result as string).split(',')[1];
-          resolve(base64);
-        } else {
-          resolve(null);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
   };
 
   return {

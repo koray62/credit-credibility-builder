@@ -1,131 +1,196 @@
-/******************************************************************
- *  Findeks OCR  (JPEG/PNG base64 ► Supabase Storage ► OpenAI Vision)
- *  Bu fonksiyon TARAYICIDAN gelen JPEG/PNG base64'i alır.
- *  (PDF → JPEG dönüşümü tarayıcıda yapılır, bkz. React bileşeni.)
- ******************************************************************/
+
 import { serve } from "https://deno.land/std@0.201.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
-
-/* ---------- Supabase ayarları ---------- */
-const SUPABASE_URL   = "https://wxfzuexhsgyeruqrmdow.supabase.co";
-const STORAGE_BUCKET = "public";
-const STORAGE_PATH   = "ocr-cache";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-/* ---------- yardımcı ---------- */
-function base64ToUint8(b64: string): Uint8Array {
-  const bin = atob(b64);
-  return Uint8Array.from({ length: bin.length }, (_, i) => bin.charCodeAt(i));
-}
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
 
-async function uploadToSupabase(jpeg: Uint8Array, fileName: string): Promise<string> {
-  const svcKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!svcKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY env yok");
-
-  const path = `${STORAGE_PATH}/${fileName}`;
-  const r = await fetch(`${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${path}`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${svcKey}`,
-      apikey: svcKey,
-      "Content-Type": "image/jpeg",
-      "x-upsert": "true",
-      "cache-control": "public, max-age=31536000",
-    },
-    body: jpeg,
-  });
-  if (!r.ok) throw new Error(`Upload hata ${r.status}`);
-  console.log("⬆️  UPLOAD OK:", path);
-
-  /* render endpoint → doğrudan 200 image/jpeg */
-  return `${SUPABASE_URL}/storage/v1/render/image/public/${path}`;
-}
-
-/* ---------- OCR ---------- */
-interface OCRResult { score?: number; confidence?: number; error?: string; }
-
-async function extractScore(imgB64: string): Promise<OCRResult> {
   try {
-    if (!/^data:image\//.test(imgB64) && !/^[A-Za-z0-9+/]+={0,2}$/.test(imgB64)) {
-      return { error: "Beklenen JPEG/PNG base64 gelmedi" };
+    const { reportId, base64Image, userId } = await req.json();
+    
+    if (!reportId || !base64Image || !userId) {
+      throw new Error("reportId, base64Image, userId gerekli");
     }
 
-    const cleanB64 = imgB64.includes(",") ? imgB64.split(",")[1] : imgB64;
-    const imgBytes = base64ToUint8(cleanB64);
-    if (imgBytes.length > 5_000_000) return { error: "Görsel 5 MB sınırını aşıyor" };
+    console.log('Processing OCR for user:', userId, 'report:', reportId);
 
-    const imgUrl = await uploadToSupabase(imgBytes, `${crypto.randomUUID()}.jpg`);
-    console.log("👉 imageUrl:", imgUrl);
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-    /* OpenAI Vision çağrısı ----------------------------------------- */
+    // Insert OCR processing record
+    const { data: ocrRecord, error: ocrError } = await supabase
+      .from('ocr_processing')
+      .insert({
+        user_id: userId,
+        findeks_report_id: reportId,
+        status: 'processing'
+      })
+      .select()
+      .single();
+
+    if (ocrError) {
+      console.error('OCR record creation error:', ocrError);
+      throw new Error(`OCR kaydı oluşturulamadı: ${ocrError.message}`);
+    }
+
+    try {
+      // Extract score from image using OpenAI
+      const extractedScore = await extractScoreFromImage(base64Image);
+      
+      if (extractedScore.error) {
+        throw new Error(extractedScore.error);
+      }
+
+      // Update OCR processing record with success
+      await supabase
+        .from('ocr_processing')
+        .update({
+          status: 'completed',
+          extracted_score: extractedScore.score,
+          confidence_score: extractedScore.confidence,
+          processed_at: new Date().toISOString()
+        })
+        .eq('id', ocrRecord.id);
+
+      // Update findeks_reports table with extracted score
+      await supabase
+        .from('findeks_reports')
+        .update({
+          score: extractedScore.score,
+          ocr_processed: true,
+          ocr_extracted_score: extractedScore.score
+        })
+        .eq('id', reportId);
+
+      console.log('OCR processing completed successfully');
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          score: extractedScore.score,
+          confidence: extractedScore.confidence 
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+
+    } catch (processingError) {
+      console.error('OCR Error:', processingError);
+      
+      // Update OCR processing record with error
+      await supabase
+        .from('ocr_processing')
+        .update({
+          status: 'failed',
+          error_message: processingError.message,
+          processed_at: new Date().toISOString()
+        })
+        .eq('id', ocrRecord.id);
+
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: processingError.message 
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+  } catch (error) {
+    console.error('General error:', error);
+    return new Response(
+      JSON.stringify({ success: false, error: error.message }),
+      { 
+        headers: { ...corsHeaders, "Content-Type": "application/json" }, 
+        status: 500 
+      }
+    );
+  }
+});
+
+async function extractScoreFromImage(base64Image: string) {
+  try {
     const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY");
-    if (!OPENAI_KEY) throw new Error("OPENAI_API_KEY env yok");
+    if (!OPENAI_KEY) {
+      throw new Error("OPENAI_API_KEY environment variable bulunamadı");
+    }
 
-    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+    // Clean the base64 string and validate format
+    let cleanBase64 = base64Image;
+    if (base64Image.includes(',')) {
+      cleanBase64 = base64Image.split(',')[1];
+    }
+
+    // Validate base64 format
+    if (!/^[A-Za-z0-9+/]+={0,2}$/.test(cleanBase64)) {
+      throw new Error("Geçersiz base64 format");
+    }
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${OPENAI_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o",
+        model: "gpt-4o-mini",
         messages: [{
           role: "user",
           content: [
-            { type: "text",
-              text: "Bu Findeks kredi raporu görselinden sadece kredi notunu çıkar. Sadece sayıyı yaz; bulunamazsa NOT_FOUND yaz." },
-            { type: "image_url", image_url: { url: imgUrl, detail: "auto" } },
+            { 
+              type: "text",
+              text: "Bu Findeks kredi raporu görselinden sadece kredi notunu çıkar. Görüntüde kredi notu varsa sadece sayıyı yaz (örnek: 1450). Eğer kredi notu bulunamazsa 'NOT_FOUND' yaz. Başka hiçbir şey yazma."
+            },
+            { 
+              type: "image_url", 
+              image_url: { 
+                url: `data:image/jpeg;base64,${cleanBase64}`,
+                detail: "high"
+              } 
+            },
           ],
         }],
-        max_tokens: 10,
+        max_tokens: 50,
+        temperature: 0
       }),
     });
 
-    if (!resp.ok) {
-      console.error("🟥 RAW:", resp.status, await resp.text());
-      throw new Error(`OpenAI error ${resp.status}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('OpenAI API error:', response.status, errorText);
+      throw new Error(`OpenAI API error: ${response.status}`);
     }
-    console.log("✅ OpenAI OK");
 
-    const txt = (await resp.json()).choices?.[0]?.message?.content?.trim();
-    if (!txt || txt === "NOT_FOUND") return { error: "Score bulunamadı" };
-    const score = parseInt(txt, 10);
-    if (Number.isNaN(score) || score < 0 || score > 1900) return { error: "Geçersiz score" };
+    const data = await response.json();
+    const extractedText = data.choices?.[0]?.message?.content?.trim();
+    
+    console.log('OpenAI response:', extractedText);
 
-    return { score, confidence: 0.95 };
-  } catch (err) {
-    return { error: (err as Error).message };
+    if (!extractedText || extractedText === "NOT_FOUND") {
+      return { error: "Kredi notu bulunamadı" };
+    }
+
+    const score = parseInt(extractedText, 10);
+    if (Number.isNaN(score) || score < 0 || score > 1900) {
+      return { error: `Geçersiz kredi notu: ${extractedText}` };
+    }
+
+    return { 
+      score, 
+      confidence: 0.95 
+    };
+
+  } catch (error) {
+    console.error('Score extraction error:', error);
+    return { error: error.message };
   }
 }
-
-/* ---------- HTTP handler ---------- */
-serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-
-  try {
-    const { reportId, base64Image, userId } = await req.json();
-    if (!reportId || !base64Image || !userId) {
-      throw new Error("reportId, base64Image, userId zorunlu");
-    }
-
-    const ocr = await extractScore(base64Image);
-
-    /* — Burada findeks_reports & ocr_processing tablolarınızı
-         önceki kodunuzdaki gibi güncelleyebilirsiniz — */
-
-    return new Response(
-      JSON.stringify({ success: !ocr.error, score: ocr.score, error: ocr.error }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
-  } catch (e) {
-    return new Response(
-      JSON.stringify({ success: false, error: (e as Error).message }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 },
-    );
-  }
-});
