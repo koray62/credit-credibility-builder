@@ -23,9 +23,19 @@ serve(async (req) => {
     console.log('Processing OCR for user:', userId, 'report:', reportId);
     console.log('Base64 image length:', base64Image.length);
 
+    // Validate base64 image format
+    if (!base64Image.startsWith('data:image/')) {
+      throw new Error('Geçersiz görsel formatı');
+    }
+
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Supabase konfigürasyonu eksik');
+    }
+    
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Insert OCR processing record
@@ -144,59 +154,75 @@ async function extractScoreFromImage(base64Image: string) {
 
     console.log('Base64 cleaned, length:', cleanBase64.length);
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${OPENAI_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [{
-          role: "user",
-          content: [
-            { 
-              type: "text",
-              text: "Bu Findeks kredi raporu görselinden sadece kredi notunu çıkar. Kredi notu genellikle büyük rakamlarla yazılır ve 'Kredi Notu' veya 'Score' kelimesinin yanında bulunur. Sadece sayıyı yaz (örnek: 1450). Eğer kredi notu bulunamazsa 'NOT_FOUND' yaz. Başka hiçbir şey yazma."
-            },
-            { 
-              type: "image_url", 
-              image_url: { 
-                url: `data:image/jpeg;base64,${cleanBase64}`,
-                detail: "high"
-              } 
-            },
-          ],
-        }],
-        max_tokens: 50,
-        temperature: 0
-      }),
-    });
+    // Add timeout to the fetch request
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', response.status, errorText);
-      throw new Error(`OpenAI API hatası: ${response.status} - ${errorText}`);
+    try {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${OPENAI_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [{
+            role: "user",
+            content: [
+              { 
+                type: "text",
+                text: "Bu Findeks kredi raporu görselinden sadece kredi notunu çıkar. Kredi notu genellikle büyük rakamlarla yazılır ve 'Kredi Notu' veya 'Score' kelimesinin yanında bulunur. Sadece sayıyı yaz (örnek: 1450). Eğer kredi notu bulunamazsa 'NOT_FOUND' yaz. Başka hiçbir şey yazma."
+              },
+              { 
+                type: "image_url", 
+                image_url: { 
+                  url: base64Image.startsWith('data:') ? base64Image : `data:image/jpeg;base64,${cleanBase64}`,
+                  detail: "high"
+                } 
+              },
+            ],
+          }],
+          max_tokens: 50,
+          temperature: 0
+        }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('OpenAI API error:', response.status, errorText);
+        throw new Error(`OpenAI API hatası: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      const extractedText = data.choices?.[0]?.message?.content?.trim();
+      
+      console.log('OpenAI response:', extractedText);
+
+      if (!extractedText || extractedText === "NOT_FOUND") {
+        return { error: "Kredi notu bulunamadı" };
+      }
+
+      const score = parseInt(extractedText, 10);
+      if (Number.isNaN(score) || score < 0 || score > 1900) {
+        return { error: `Geçersiz kredi notu: ${extractedText}` };
+      }
+
+      return { 
+        score, 
+        confidence: 0.95 
+      };
+
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      if (fetchError.name === 'AbortError') {
+        throw new Error('OpenAI API isteği zaman aşımına uğradı');
+      }
+      throw fetchError;
     }
-
-    const data = await response.json();
-    const extractedText = data.choices?.[0]?.message?.content?.trim();
-    
-    console.log('OpenAI response:', extractedText);
-
-    if (!extractedText || extractedText === "NOT_FOUND") {
-      return { error: "Kredi notu bulunamadı" };
-    }
-
-    const score = parseInt(extractedText, 10);
-    if (Number.isNaN(score) || score < 0 || score > 1900) {
-      return { error: `Geçersiz kredi notu: ${extractedText}` };
-    }
-
-    return { 
-      score, 
-      confidence: 0.95 
-    };
 
   } catch (error) {
     console.error('Score extraction error:', error);
