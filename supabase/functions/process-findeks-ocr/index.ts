@@ -21,6 +21,7 @@ serve(async (req) => {
     }
 
     console.log('Processing OCR for user:', userId, 'report:', reportId);
+    console.log('Base64 image length:', base64Image.length);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -43,6 +44,8 @@ serve(async (req) => {
       throw new Error(`OCR kaydı oluşturulamadı: ${ocrError.message}`);
     }
 
+    console.log('OCR record created:', ocrRecord.id);
+
     try {
       // Extract score from image using OpenAI
       const extractedScore = await extractScoreFromImage(base64Image);
@@ -50,6 +53,8 @@ serve(async (req) => {
       if (extractedScore.error) {
         throw new Error(extractedScore.error);
       }
+
+      console.log('Score extracted successfully:', extractedScore.score);
 
       // Update OCR processing record with success
       await supabase
@@ -124,6 +129,8 @@ async function extractScoreFromImage(base64Image: string) {
       throw new Error("OPENAI_API_KEY environment variable bulunamadı");
     }
 
+    console.log('Preparing image for OpenAI...');
+
     // Clean the base64 string and validate format
     let cleanBase64 = base64Image;
     if (base64Image.includes(',')) {
@@ -131,9 +138,11 @@ async function extractScoreFromImage(base64Image: string) {
     }
 
     // Validate base64 format
-    if (!/^[A-Za-z0-9+/]+={0,2}$/.test(cleanBase64)) {
-      throw new Error("Geçersiz base64 format");
+    if (!cleanBase64 || cleanBase64.length < 100) {
+      throw new Error("Base64 görsel verisi çok kısa veya geçersiz");
     }
+
+    console.log('Base64 cleaned, length:', cleanBase64.length);
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -148,7 +157,7 @@ async function extractScoreFromImage(base64Image: string) {
           content: [
             { 
               type: "text",
-              text: "Bu Findeks kredi raporu görselinden sadece kredi notunu çıkar. Görüntüde kredi notu varsa sadece sayıyı yaz (örnek: 1450). Eğer kredi notu bulunamazsa 'NOT_FOUND' yaz. Başka hiçbir şey yazma."
+              text: "Bu Findeks kredi raporu görselinden sadece kredi notunu çıkar. Kredi notu genellikle büyük rakamlarla yazılır ve 'Kredi Notu' veya 'Score' kelimesinin yanında bulunur. Sadece sayıyı yaz (örnek: 1450). Eğer kredi notu bulunamazsa 'NOT_FOUND' yaz. Başka hiçbir şey yazma."
             },
             { 
               type: "image_url", 
@@ -167,7 +176,7 @@ async function extractScoreFromImage(base64Image: string) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('OpenAI API error:', response.status, errorText);
-      throw new Error(`OpenAI API error: ${response.status}`);
+      throw new Error(`OpenAI API hatası: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
