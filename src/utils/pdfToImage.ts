@@ -1,9 +1,20 @@
 
-// Set up PDF.js worker using a more reliable CDN
-const pdfjsLib = await import('pdfjs-dist');
+let pdfjsLib: any = null;
 
-// Use unpkg CDN which is more reliable
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@4.0.269/build/pdf.worker.min.js';
+// Initialize PDF.js library
+async function initializePdfJs() {
+  if (!pdfjsLib) {
+    try {
+      pdfjsLib = await import('pdfjs-dist');
+      // Use unpkg CDN which is more reliable
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@4.0.269/build/pdf.worker.min.js';
+    } catch (error) {
+      console.error('Failed to initialize PDF.js:', error);
+      throw new Error('PDF.js initialization failed');
+    }
+  }
+  return pdfjsLib;
+}
 
 export async function convertPdfToImage(file: File): Promise<string | null> {
   try {
@@ -15,6 +26,9 @@ export async function convertPdfToImage(file: File): Promise<string | null> {
       return null;
     }
     
+    // Initialize PDF.js
+    const pdfLib = await initializePdfJs();
+    
     const arrayBuffer = await file.arrayBuffer();
     console.log('ArrayBuffer created, size:', arrayBuffer.byteLength);
     
@@ -22,7 +36,7 @@ export async function convertPdfToImage(file: File): Promise<string | null> {
     await new Promise(resolve => setTimeout(resolve, 100));
     
     // PDF dokümanını yükle with more options
-    const loadingTask = pdfjsLib.getDocument({ 
+    const loadingTask = pdfLib.getDocument({ 
       data: arrayBuffer,
       verbosity: 0,
       useWorkerFetch: false,
@@ -80,15 +94,16 @@ export async function convertPdfToImage(file: File): Promise<string | null> {
     console.error('PDF to image conversion error:', error);
     
     // If it's a worker error, try alternative approach
-    if (error.message && error.message.includes('worker')) {
+    if (error instanceof Error && error.message && error.message.includes('worker')) {
       console.log('Trying alternative worker configuration...');
       
       try {
+        const pdfLib = await initializePdfJs();
         // Try with different worker URL
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.269/pdf.worker.min.js';
+        pdfLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.269/pdf.worker.min.js';
         
         const arrayBuffer = await file.arrayBuffer();
-        const loadingTask = pdfjsLib.getDocument({ 
+        const loadingTask = pdfLib.getDocument({ 
           data: arrayBuffer,
           verbosity: 0,
           useWorkerFetch: false,
