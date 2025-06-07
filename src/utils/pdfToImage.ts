@@ -1,17 +1,16 @@
 
 let pdfjsLib: any = null;
 
-// Initialize PDF.js library with local worker
+// Initialize PDF.js library without external worker to avoid CORS and path issues
 async function initializePdfJs() {
   if (!pdfjsLib) {
     try {
       pdfjsLib = await import('pdfjs-dist');
       
-      // Use local worker to avoid CORS issues completely
-      const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.min.js?url');
-      pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker.default;
+      // Disable worker to avoid CORS and path issues
+      pdfjsLib.GlobalWorkerOptions.workerSrc = '';
       
-      console.log('PDF.js initialized successfully with local worker');
+      console.log('PDF.js initialized successfully without worker');
     } catch (error) {
       console.error('Failed to initialize PDF.js:', error);
       throw new Error('PDF.js initialization failed');
@@ -41,7 +40,8 @@ export async function convertPdfToImage(file: File): Promise<string | null> {
       const loadingTask = pdfLib.getDocument({ 
         data: arrayBuffer,
         verbosity: 0,
-        useSystemFonts: true
+        useSystemFonts: true,
+        disableWorker: true // Explicitly disable worker
       });
       
       const pdf = await loadingTask.promise;
