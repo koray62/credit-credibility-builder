@@ -14,19 +14,13 @@ serve(async (req) => {
   }
 
   try {
-    const { reportId, base64Image, userId } = await req.json();
+    const { reportId, filePath, userId } = await req.json();
     
-    if (!reportId || !base64Image || !userId) {
-      throw new Error("reportId, base64Image, userId gerekli");
+    if (!reportId || !filePath || !userId) {
+      throw new Error("reportId, filePath, userId gerekli");
     }
 
-    console.log('Processing OCR for user:', userId, 'report:', reportId);
-    console.log('Base64 image length:', base64Image.length);
-
-    // Validate base64 image format
-    if (!base64Image.startsWith('data:image/')) {
-      throw new Error('Geçersiz görsel formatı');
-    }
+    console.log('Processing OCR for user:', userId, 'report:', reportId, 'file:', filePath);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -57,8 +51,26 @@ serve(async (req) => {
     console.log('OCR record created:', ocrRecord.id);
 
     try {
-      // Extract score from image using OpenAI
-      const extractedScore = await extractScoreFromImage(base64Image);
+      // Download PDF file from storage
+      const { data: fileData, error: downloadError } = await supabase.storage
+        .from('findeks-reports')
+        .download(filePath);
+
+      if (downloadError || !fileData) {
+        throw new Error(`PDF dosyası indirilemedi: ${downloadError?.message}`);
+      }
+
+      console.log('PDF file downloaded, size:', fileData.size);
+
+      // Convert PDF blob to base64
+      const arrayBuffer = await fileData.arrayBuffer();
+      const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+      const base64WithPrefix = `data:application/pdf;base64,${base64}`;
+
+      console.log('PDF converted to base64, length:', base64WithPrefix.length);
+
+      // Extract score using OpenAI
+      const extractedScore = await extractScoreFromPDF(base64WithPrefix);
       
       if (extractedScore.error) {
         throw new Error(extractedScore.error);
@@ -132,31 +144,31 @@ serve(async (req) => {
   }
 });
 
-async function extractScoreFromImage(base64Image: string) {
+async function extractScoreFromPDF(base64PDF: string) {
   try {
     const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY");
     if (!OPENAI_KEY) {
       throw new Error("OPENAI_API_KEY environment variable bulunamadı");
     }
 
-    console.log('Preparing image for OpenAI...');
+    console.log('Preparing PDF for OpenAI...');
 
-    // Clean the base64 string and validate format
-    let cleanBase64 = base64Image;
-    if (base64Image.includes(',')) {
-      cleanBase64 = base64Image.split(',')[1];
+    // Clean the base64 string
+    let cleanBase64 = base64PDF;
+    if (base64PDF.includes(',')) {
+      cleanBase64 = base64PDF.split(',')[1];
     }
 
     // Validate base64 format
     if (!cleanBase64 || cleanBase64.length < 100) {
-      throw new Error("Base64 görsel verisi çok kısa veya geçersiz");
+      throw new Error("Base64 PDF verisi çok kısa veya geçersiz");
     }
 
     console.log('Base64 cleaned, length:', cleanBase64.length);
 
     // Add timeout to the fetch request
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 second timeout
 
     try {
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -166,18 +178,18 @@ async function extractScoreFromImage(base64Image: string) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "gpt-4o-mini",
+          model: "gpt-4o",
           messages: [{
             role: "user",
             content: [
               { 
                 type: "text",
-                text: "Bu Findeks kredi raporu görselinden sadece kredi notunu çıkar. Kredi notu genellikle büyük rakamlarla yazılır ve 'Kredi Notu' veya 'Score' kelimesinin yanında bulunur. Sadece sayıyı yaz (örnek: 1450). Eğer kredi notu bulunamazsa 'NOT_FOUND' yaz. Başka hiçbir şey yazma."
+                text: "Bu Findeks kredi raporu PDF'inden sadece kredi notunu çıkar. Kredi notu genellikle büyük rakamlarla yazılır ve 'Kredi Notu' veya 'Score' kelimesinin yanında bulunur. Sadece sayıyı yaz (örnek: 1450). Eğer kredi notu bulunamazsa 'NOT_FOUND' yaz. Başka hiçbir şey yazma."
               },
               { 
                 type: "image_url", 
                 image_url: { 
-                  url: base64Image.startsWith('data:') ? base64Image : `data:image/jpeg;base64,${cleanBase64}`,
+                  url: base64PDF,
                   detail: "high"
                 } 
               },

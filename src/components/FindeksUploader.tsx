@@ -44,8 +44,9 @@ const FindeksUploader: React.FC = () => {
         <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-blue-800 text-sm flex items-start">
           <CheckCircle className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" />
           <p>
-            <strong>Otomatik Puan Çıkarma:</strong> Raporunuzu yükledikten sonra, yapay zeka teknolojisi 
-            kullanarak Findeks notunuzu otomatik olarak tespit edip hesabınızda güncelleyeceğiz.
+            <strong>Yeni Geliştirilmiş Sistem:</strong> PDF raporunuz güvenli bir şekilde sunucularımıza yüklenir 
+            ve yapay zeka teknolojisi kullanarak kredi notunuz otomatik olarak tespit edilip hesabınızda güncellenir. 
+            Artık browser uyumluluk sorunları yaşanmayacak.
           </p>
         </div>
       </div>
@@ -89,13 +90,14 @@ const FindeksUploader: React.FC = () => {
         {selectedFile && !isLoading && (
           <div className="mt-4 text-sm">
             <p className="font-medium text-gray-700">Seçilen dosya: {selectedFile.name}</p>
+            <p className="text-gray-500">Boyut: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
           </div>
         )}
         
         {isProcessing && (
           <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3 text-blue-800 text-sm flex items-center">
             <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-            <span>Rapor işleniyor, lütfen bekleyin...</span>
+            <span>PDF güvenli sunucularımızda işleniyor, lütfen bekleyin...</span>
           </div>
         )}
       </div>

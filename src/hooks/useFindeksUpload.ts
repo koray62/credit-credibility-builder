@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
-import { convertPdfToImage } from '@/utils/pdfToImage';
 
 export const useFindeksUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
@@ -24,6 +23,8 @@ export const useFindeksUpload = () => {
     setIsUploading(true);
 
     try {
+      console.log('Starting PDF upload...', file.name, 'Size:', file.size);
+
       // Dosyayı storage'a yükle
       const fileName = `${user.id}/${Date.now()}-${file.name}`;
       const { data: uploadData, error: uploadError } = await supabase.storage
@@ -34,6 +35,8 @@ export const useFindeksUpload = () => {
         console.error('Storage upload error:', uploadError);
         throw uploadError;
       }
+
+      console.log('File uploaded successfully:', uploadData.path);
 
       // Findeks raporu kaydını oluştur
       const { data: reportData, error: reportError } = await supabase
@@ -52,10 +55,12 @@ export const useFindeksUpload = () => {
         throw reportError;
       }
 
+      console.log('Report record created:', reportData.id);
+
       toast.success('Dosya başarıyla yüklendi');
       
       // OCR işlemini başlat
-      await processWithOCR(file, reportData.id);
+      await processWithOCR(reportData.id, uploadData.path);
       
       return reportData;
 
@@ -68,7 +73,7 @@ export const useFindeksUpload = () => {
     }
   };
 
-  const processWithOCR = async (file: File, reportId: string) => {
+  const processWithOCR = async (reportId: string, filePath: string) => {
     if (!user) {
       toast.error('Kullanıcı oturumu bulunamadı');
       return;
@@ -77,22 +82,13 @@ export const useFindeksUpload = () => {
     setIsProcessing(true);
     
     try {
-      console.log('Starting OCR processing...');
-      
-      // PDF'i canvas'a çevir ve base64 olarak al
-      const base64Image = await convertPdfToImage(file);
-      
-      if (!base64Image) {
-        throw new Error('PDF görsel dönüştürme başarısız');
-      }
-
-      console.log('PDF converted to image, calling OCR function...');
+      console.log('Starting OCR processing...', 'Report ID:', reportId, 'File path:', filePath);
 
       // OCR edge function'ını çağır
       const { data, error } = await supabase.functions.invoke('process-findeks-ocr', {
         body: {
           reportId,
-          base64Image,
+          filePath,
           userId: user.id
         }
       });
