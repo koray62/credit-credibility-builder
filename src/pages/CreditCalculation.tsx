@@ -218,7 +218,10 @@ const CreditCalculation: React.FC = () => {
         </h1>
         
         {/* Üst bölüm: Yan yana info kutusu ve form */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }} className="responsive-grid">
+        <div 
+          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }} 
+          className="responsive-grid"
+        >
           {/* Bilgi Kutusu */}
           <div style={{ backgroundColor: '#fff9db', padding: '20px', borderRadius: '8px', borderLeft: '5px solid #ffd43b', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', fontSize: '15px', lineHeight: 1.6 }}>
             <p style={{ margin: 0 }}>
@@ -288,7 +291,10 @@ const CreditCalculation: React.FC = () => {
           <div style={{ marginTop: '30px' }}>
             <div style={{ margin: '20px 0', padding: '15px', backgroundColor: '#eaf7ff', borderRadius: '4px' }}>
               <h2>Kredi Özeti</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', marginBottom: '30px' }} className="ozet-responsive">
+              <div 
+                style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', marginBottom: '30px' }} 
+                className="ozet-responsive"
+              >
                 <div style={{ padding: '12px', border: '1px solid #e0e0e0', borderRadius: '4px', backgroundColor: '#f9f9f9', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
                   <div style={{ display: 'block', color: '#2c3e50', marginBottom: '6px', fontSize: '15px', fontWeight: 'bold' }}>Kredi Tutarı</div>
                   <div style={{ fontSize: '17px', fontWeight: 500, color: '#333' }}>{Math.round(globalOdemePlani.krediTutari).toLocaleString('tr-TR')} ₺</div>
@@ -404,21 +410,23 @@ const CreditCalculation: React.FC = () => {
         )}
       </div>
       
-      <style jsx>{`
-        @media (max-width: 900px) {
-          .responsive-grid {
-            grid-template-columns: 1fr !important;
+      <style>
+        {`
+          @media (max-width: 900px) {
+            .responsive-grid {
+              grid-template-columns: 1fr !important;
+            }
+            .ozet-responsive {
+              grid-template-columns: repeat(2, 1fr) !important;
+            }
           }
-          .ozet-responsive {
-            grid-template-columns: repeat(2, 1fr) !important;
+          @media (max-width: 600px) {
+            .ozet-responsive {
+              grid-template-columns: 1fr !important;
+            }
           }
-        }
-        @media (max-width: 600px) {
-          .ozet-responsive {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
+        `}
+      </style>
       
       <Footer />
     </div>
