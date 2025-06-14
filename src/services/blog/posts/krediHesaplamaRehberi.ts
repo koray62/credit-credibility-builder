@@ -59,7 +59,7 @@ export const krediHesaplamaRehberiPost = {
         <li><strong>KKDF ve BSMV</strong></li>
       </ul>
 
-      <p>Faiz tutarı her ay kalan anapara üzerinden hesaplanır. Vade ilerledikçe faiz oranı azalır, ana para oranı artar.</p>
+      <p>Faiz tutarı her ay kalan anapara üzerinden hesaplanır. Vade ilerledikçe taksitin içindeki faiz tutarı azalır, ana para tutarı artar.</p>
 
       <h2>4. Brüt ve Net Faiz Arasındaki Fark</h2>
       
@@ -71,7 +71,7 @@ export const krediHesaplamaRehberiPost = {
 
       <div style="background-color: #d4edda; padding: 20px; border-radius: 8px; border-left: 4px solid #28a745; margin: 20px 0;">
         <h4>💰 Önemli Bilgi</h4>
-        <p style="margin-bottom: 0;">Brüt faiz genellikle bankaların sunduğu örnek taksit hesaplamalarında yer alır. Ancak kendi ödeme planınızı oluştururken her ayın faiz ve vergi bileşenlerini net faiz üzerinden ayrı ayrı hesaplamak daha doğrudur.</p>
+        <p style="margin-bottom: 0;">Brüt faiz genellikle bankaların sunduğu örnek taksit hesaplamalarında yer alır. Konut kredilerinde KKDF yoktur.</p>
       </div>
 
       <h2>5. Pratik Örnek: 100.000 TL Kredi Hesaplaması</h2>
@@ -107,7 +107,7 @@ export const krediHesaplamaRehberiPost = {
           <li><strong>Sadece faiz oranına odaklanmak,</strong> vergi ve masrafları göz ardı etmek</li>
           <li><strong>Gelir düzeyine uygun olmayan</strong> vade seçimi</li>
           <li><strong>Erken ödeme ihtimalini</strong> değerlendirmemek</li>
-          <li><strong>Alternatif yatırım getirisiyle</strong> karşılaştırma yapmamak</li>
+          <li><strong>Ara ödeme</strong> alternatifleri ile aylık taksit tutarlarını düşürmeyi değerlendirmemek</li>
         </ul>
       </div>
 
@@ -118,7 +118,7 @@ export const krediHesaplamaRehberiPost = {
         <ul style="margin-bottom: 0;">
           <li><strong>Kredi ödemeleri</strong> net aylık gelirinizin %40'ını aşmamalıdır</li>
           <li><strong>Vade uzadıkça</strong> aylık ödeme azalır ama toplam faiz yükü artar</li>
-          <li><strong>Acil durum fonunuz</strong> varsa, yüksek taksitli kısa vadeli krediler daha avantajlı olabilir</li>
+          <li><strong>Ödeme gücünüz</strong> varsa, yüksek taksitli kısa vadeli krediler daha avantajlı olabilir</li>
         </ul>
       </div>
 
@@ -129,7 +129,7 @@ export const krediHesaplamaRehberiPost = {
         <li>Detaylı ödeme planı oluşturabilirsiniz</li>
         <li>Farklı faiz oranlarını karşılaştırabilirsiniz</li>
         <li>KKDF ve BSMV hesaplamalarını takip edebilirsiniz</li>
-        <li>Erken ödeme senaryolarını test edebilirsiniz</li>
+        <li>Ara ödeme senaryolarını test edebilirsiniz</li>
       </ul>
 
       <div style="text-align: center; margin: 30px 0;">
@@ -138,16 +138,16 @@ export const krediHesaplamaRehberiPost = {
         </a>
       </div>
 
-      <h2>Sıkça Sorulan Sorular</h2>
+      <h2>Merak Edilen Konular</h2>
       
       <h3>En uygun kredi vadesi nasıl belirlenir?</h3>
       <p>Aylık ödeme kapasitesi ve toplam faiz maliyeti arasında denge kurmalısınız. Kısa vade daha az faiz, uzun vade daha düşük taksit anlamına gelir.</p>
       
       <h3>Erken ödeme yapmak avantajlı mı?</h3>
-      <p>Evet, erken ödeme toplam faiz yükünüzü azaltır. Ancak bankanın erken ödeme komisyonu olup olmadığını kontrol edin.</p>
+      <p>Evet, erken ödeme toplam faiz yükünüzü azaltır. Ancak konut kredileri için bankanın erken ödeme komisyonu olup olmadığını kontrol edin.</p>
       
-      <h3>Hangi faiz türü daha avantajlı?</h3>
-      <p>Sabit faiz oranları öngörülebilir ödemeler sunar. Değişken faiz oranları başlangıçta düşük olabilir ama risk taşır.</p>
+      <h3>Vade içerisinde ödeme planı revizesi yapılabilir mi?</h3>
+      <p>Evet, bankanıza başvurarak vade içerisinde ödeme panı revizesi talep edebilirsiniz.</p>
 
       <div style="background-color: #d4edda; padding: 20px; border-radius: 8px; border-left: 4px solid #28a745; margin: 30px 0;">
         <h4>✅ Sonuç</h4>
