@@ -132,13 +132,13 @@ export const krediHesaplamaRehberiPost = {
 
       <h2>Merak Edilen Konular</h2>
       
-      <h3>En uygun kredi vadesi nasıl belirlenir?</h3>
+      <h3>-En uygun kredi vadesi nasıl belirlenir?</h3>
       <p>Aylık ödeme kapasitesi ve toplam faiz maliyeti arasında denge kurmalısınız. Kısa vade daha az faiz, uzun vade daha düşük taksit anlamına gelir.</p>
       
-      <h3>Erken ödeme yapmak avantajlı mı?</h3>
+      <h3>-Erken ödeme yapmak avantajlı mı?</h3>
       <p>Evet, erken ödeme toplam faiz yükünüzü azaltır. Ancak konut kredileri için bankanın erken ödeme komisyonu olup olmadığını kontrol edin.</p>
       
-      <h3>Vade içerisinde ödeme planı revizesi yapılabilir mi?</h3>
+      <h3>-Vade içerisinde ödeme planı revizesi yapılabilir mi?</h3>
       <p>Evet, bankanıza başvurarak vade içerisinde ödeme planı revizesi talep edebilirsiniz.</p>
 
       <div style="background-color: #d4edda; padding: 20px; border-radius: 8px; border-left: 4px solid #28a745; margin: 30px 0;">
