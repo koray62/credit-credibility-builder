@@ -4,126 +4,154 @@ export const krediHesaplamaRehberiPost = {
   title: "Kredi Hesaplama Nasıl Yapılır? Detaylı Rehber",
   author: "Koray Kaya",
   date: "14 Haziran 2025",
-  readTime: "10 dk okuma",
+  readTime: "12 dk okuma",
   image: "/placeholder.svg",
   content: `
     <div class="prose prose-lg max-w-none">
-      <h2>Kredi Hesaplama Neden Önemlidir?</h2>
-      <p>Kredi almadan önce ödeme planınızı önceden hesaplamak, bütçenizi doğru planlamanız için kritik önem taşır. Doğru hesaplama ile:</p>
-      
+      <p class="text-xl text-gray-600 mb-8">Kredi kullanmak, hayatın farklı dönemlerinde önemli finansal ihtiyaçları karşılamak için başvurulan yaygın bir yöntemdir. Ancak bir kredinin sadece "ne kadar alacağım" sorusuyla sınırlı olmadığını bilmek gerekir.</p>
+
+      <div style="background-color: #e7f3ff; padding: 20px; border-radius: 8px; border-left: 4px solid #0066cc; margin: 20px 0;">
+        <h4>💡 Önemli Not</h4>
+        <p style="margin-bottom: 0;">Asıl önemli olan "ne kadar geri ödeyeceğim" ve "aylık ödeme planım nasıl olacak?" sorularına doğru cevaplar bulabilmektir. Bu yazıda, bireylerin ihtiyaç kredisi gibi teminatsız kredileri kullanmadan önce nasıl hesaplama yapabileceklerini detaylıca açıklıyoruz.</p>
+      </div>
+
+      <h2>1. Kredi Hesaplaması Nedir?</h2>
+      <p>Kredi hesaplaması; almayı planladığınız krediye ilişkin toplam geri ödeme tutarını, aylık taksit miktarlarını ve bu ödemelerin içerisinde yer alan faiz, vergi ve masrafları ortaya koyan finansal bir planlama sürecidir.</p>
+
+      <p>Bu hesaplama sayesinde:</p>
       <ul>
-        <li><strong>Aylık bütçenizi</strong> daha iyi planlayabilirsiniz</li>
-        <li><strong>Faiz maliyetlerini</strong> önceden görebilirsiniz</li>
-        <li><strong>Ara ödemelerle</strong> tasarruf fırsatlarını değerlendirebilirsiniz</li>
-        <li><strong>Farklı kredi seçeneklerini</strong> karşılaştırabilirsiniz</li>
+        <li><strong>Aylık bütçenizi</strong> nasıl ayarlamanız gerektiğini bilirsiniz</li>
+        <li><strong>Toplam maliyeti</strong> öngörerek daha bilinçli bir karar verebilirsiniz</li>
+        <li><strong>Farklı bankaların</strong> tekliflerini kıyaslayabilirsiniz</li>
       </ul>
 
-      <h2>Kredi Hesaplamasında Önemli Kavramlar</h2>
-      
-      <h3>1. Aylık Net Faiz Oranı</h3>
-      <p>Bankanın size sunduğu temel faiz oranıdır. Genellikle aylık bazda ifade edilir ve krediyle ilgili tüm hesaplamaların temelini oluşturur.</p>
-      
-      <h3>2. KKDF (Kaynak Kullanımını Destekleme Fonu)</h3>
-      <p>Net faiz üzerinden %15 oranında hesaplanan devlet vergisidir. Kredi maliyetinizi artıran önemli bir kalemidir.</p>
-      
-      <h3>3. BSMV (Banka ve Sigorta Muameleleri Vergisi)</h3>
-      <p>Net faiz üzerinden %5 oranında hesaplanan bir diğer vergi türüdür.</p>
-      
-      <h3>4. Ara Ödeme</h3>
-      <p>Normal taksit ödemelerine ek olarak yapabileceğiniz ödemelerdir. Ara ödemeler sayesinde:</p>
-      <ul>
-        <li>Sonraki taksitleriniz azalır</li>
-        <li>Toplam faiz maliyetiniz düşer</li>
-        <li>Kredinizi daha erken kapatabilirsiniz</li>
-      </ul>
+      <h2>2. Kredi Hesaplamasında Hangi Kalemler Dikkate Alınır?</h2>
+      <p>Bir kredinin toplam maliyeti yalnızca faiz oranından ibaret değildir. Aşağıdaki kalemlerin tümü değerlendirilmelidir:</p>
 
-      <h2>Kredi Hesaplama Adımları</h2>
-      
-      <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #0066cc; margin: 20px 0;">
-        <h4>📋 Temel Bilgileri Toplayın</h4>
+      <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h4>📊 Kredi Maliyet Kalemleri</h4>
         <ul style="margin-bottom: 0;">
-          <li>Kredi tutarı</li>
-          <li>Aylık net faiz oranı</li>
-          <li>Taksit sayısı</li>
-          <li>Planlanan ara ödemeler (varsa)</li>
+          <li><strong>Aylık faiz oranı</strong> (net/brüt)</li>
+          <li><strong>Vade</strong> (kaç ay süreceği)</li>
+          <li><strong>Kredi tutarı</strong> (ne kadar borç alınacağı)</li>
+          <li><strong>KKDF (%15) ve BSMV (%5)</strong> gibi vergiler</li>
+          <li><strong>Dosya masrafı, sigorta, ekspertiz</strong> gibi diğer ücretler</li>
         </ul>
       </div>
 
-      <h3>1. Aylık Taksit Hesaplama</h3>
-      <p>Aylık taksit tutarı hesaplanırken anüite formülü kullanılır. Bu formül, kredinin eşit taksitlerle ödenmesini sağlar.</p>
-      
-      <h3>2. Faiz ve Vergi Dağılımı</h3>
-      <p>Her taksitte:</p>
-      <ul>
-        <li><strong>Net faiz:</strong> Kalan anapara × Aylık net faiz oranı</li>
-        <li><strong>KKDF:</strong> Net faiz × %15</li>
-        <li><strong>BSMV:</strong> Net faiz × %5</li>
-        <li><strong>Anapara payı:</strong> Taksit tutarı - (Net faiz + KKDF + BSMV)</li>
-      </ul>
+      <h2>3. Kredi Taksiti Nasıl Hesaplanır?</h2>
+      <p>Taksit hesaplamasında kullanılan temel formül şudur:</p>
 
-      <h3>3. Ara Ödeme Optimizasyonu</h3>
-      <p>Ara ödemeler, kredinin başındaki dönemlerde daha fazla tasarruf sağlar. Bunun nedeni:</p>
-      <ul>
-        <li>Başlarda anapara bakiyesi daha yüksektir</li>
-        <li>Faiz hesaplaması kalan anapara üzerinden yapılır</li>
-        <li>Erken yapılan ara ödemeler, gelecekteki tüm taksitleri etkiler</li>
-      </ul>
-
-      <h2>Pratik İpuçları</h2>
-      
       <div style="background-color: #fff3cd; padding: 20px; border-radius: 8px; border-left: 4px solid #ffc107; margin: 20px 0;">
-        <h4>💡 Akıllı Ara Ödeme Stratejileri</h4>
+        <h4>🧮 Taksit Hesaplama Formülü</h4>
+        <p><strong>Aylık Taksit Tutarı = K × [i × (1 + i)^n] / [(1 + i)^n – 1]</strong></p>
+        <p style="margin-bottom: 0;">
+          <strong>K</strong> = kredi tutarı<br>
+          <strong>i</strong> = aylık faiz oranı (ondalık olarak)<br>
+          <strong>n</strong> = vade (ay cinsinden)
+        </p>
+      </div>
+
+      <p>Bu formül sayesinde her ay eşit taksitlerle ödeme yaparsınız. Ancak her taksit şu şekilde üçe ayrılır:</p>
+      <ul>
+        <li><strong>Ana para</strong></li>
+        <li><strong>Faiz</strong></li>
+        <li><strong>KKDF ve BSMV</strong></li>
+      </ul>
+
+      <p>Faiz tutarı her ay kalan anapara üzerinden hesaplanır. Vade ilerledikçe faiz oranı azalır, ana para oranı artar.</p>
+
+      <h2>4. Brüt ve Net Faiz Arasındaki Fark</h2>
+      
+      <h3>Net Faiz</h3>
+      <p>Yalnızca bankanın belirlediği faiz oranıdır.</p>
+
+      <h3>Brüt Faiz</h3>
+      <p>Net faize %20 vergi yükü (KKDF + BSMV) eklendikten sonraki orandır.</p>
+
+      <div style="background-color: #d4edda; padding: 20px; border-radius: 8px; border-left: 4px solid #28a745; margin: 20px 0;">
+        <h4>💰 Önemli Bilgi</h4>
+        <p style="margin-bottom: 0;">Brüt faiz genellikle bankaların sunduğu örnek taksit hesaplamalarında yer alır. Ancak kendi ödeme planınızı oluştururken her ayın faiz ve vergi bileşenlerini net faiz üzerinden ayrı ayrı hesaplamak daha doğrudur.</p>
+      </div>
+
+      <h2>5. Pratik Örnek: 100.000 TL Kredi Hesaplaması</h2>
+      <p><strong>Kredi Detayları:</strong></p>
+      <ul>
+        <li>Kredi tutarı: 100.000 TL</li>
+        <li>Aylık net faiz: %2,5</li>
+        <li>Vade: 24 ay</li>
+      </ul>
+
+      <div style="background-color: #e7f3ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h4>📋 Hesaplama Sonuçları</h4>
+        <ul>
+          <li><strong>Aylık brüt faiz:</strong> 2,5% × 1,2 = 3,00%</li>
+          <li><strong>Taksit tutarı:</strong> yaklaşık 5.384,26 TL</li>
+        </ul>
+        
+        <h5>İlk Ay Detay Hesabı:</h5>
         <ul style="margin-bottom: 0;">
-          <li><strong>İkramiye ödemeleri:</strong> Yıl sonu ikramiyenizi ara ödemeye yönlendirin</li>
-          <li><strong>Vergi iadesi:</strong> Vergi iadenizi kredi ödemesinde kullanın</li>
-          <li><strong>Balon ödeme:</strong> Son taksite büyük bir ara ödeme yazarak aylık taksitleri düşürün</li>
-          <li><strong>Düzenli ara ödemeler:</strong> Her 3 ayda bir küçük ara ödemeler yapın</li>
+          <li><strong>Faiz:</strong> 100.000 × 0,025 = 2.500 TL</li>
+          <li><strong>KKDF:</strong> 375 TL</li>
+          <li><strong>BSMV:</strong> 125 TL</li>
+          <li><strong>Ana Para:</strong> 5.384,26 – 2.500 – 375 – 125 = 2.384,26 TL</li>
+          <li><strong>Kalan anapara:</strong> 100.000 – 2.384,26 = 97.615,74 TL</li>
         </ul>
       </div>
 
-      <h2>Hesaplama Aracımızı Kullanın</h2>
+      <h2>6. Kredi Hesaplamada Sık Yapılan Hatalar</h2>
+      
+      <div style="background-color: #f8d7da; padding: 20px; border-radius: 8px; border-left: 4px solid #dc3545; margin: 20px 0;">
+        <h4>⚠️ Dikkat Edilmesi Gerekenler</h4>
+        <ul style="margin-bottom: 0;">
+          <li><strong>Sadece faiz oranına odaklanmak,</strong> vergi ve masrafları göz ardı etmek</li>
+          <li><strong>Gelir düzeyine uygun olmayan</strong> vade seçimi</li>
+          <li><strong>Erken ödeme ihtimalini</strong> değerlendirmemek</li>
+          <li><strong>Alternatif yatırım getirisiyle</strong> karşılaştırma yapmamak</li>
+        </ul>
+      </div>
+
+      <h2>7. Karar Verirken Nelere Dikkat Etmelisiniz?</h2>
+      
+      <div style="background-color: #d1ecf1; padding: 20px; border-radius: 8px; border-left: 4px solid #0c5460; margin: 20px 0;">
+        <h4>✅ Altın Kurallar</h4>
+        <ul style="margin-bottom: 0;">
+          <li><strong>Kredi ödemeleri</strong> net aylık gelirinizin %40'ını aşmamalıdır</li>
+          <li><strong>Vade uzadıkça</strong> aylık ödeme azalır ama toplam faiz yükü artar</li>
+          <li><strong>Acil durum fonunuz</strong> varsa, yüksek taksitli kısa vadeli krediler daha avantajlı olabilir</li>
+        </ul>
+      </div>
+
+      <h2>Kredi Hesaplama Aracımızı Kullanın</h2>
       <p>Kendi kredi planınızı oluşturmak ve farklı senaryoları test etmek için gelişmiş kredi hesaplama aracımızı kullanabilirsiniz. Araç ile:</p>
       
       <ul>
         <li>Detaylı ödeme planı oluşturabilirsiniz</li>
-        <li>Ara ödemelerin etkisini görselleştirebilirsiniz</li>
         <li>Farklı faiz oranlarını karşılaştırabilirsiniz</li>
         <li>KKDF ve BSMV hesaplamalarını takip edebilirsiniz</li>
+        <li>Erken ödeme senaryolarını test edebilirsiniz</li>
       </ul>
 
       <div style="text-align: center; margin: 30px 0;">
-        <a href="/kredi-hesaplama" target="_blank" style="display: inline-block; background-color: #0066cc; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; transition: background-color 0.3s ease;">
+        <a href="/kredi-hesaplama" target="_blank" style="display: inline-block; background-color: #0066cc; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; transition: background-color 0.3s ease; box-shadow: 0 4px 6px rgba(0, 102, 204, 0.2);">
           🧮 Kredi Hesaplama Aracını Kullan
         </a>
       </div>
 
-      <h2>Örnek Hesaplama</h2>
-      <p>200.000 TL kredi, %3 aylık net faiz, 12 taksit için:</p>
-      
-      <div style="background-color: #e7f3ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h4>📊 Örnek Hesaplama Sonuçları</h4>
-        <ul style="margin-bottom: 0;">
-          <li><strong>Aylık Taksit:</strong> ~19.500 TL</li>
-          <li><strong>Toplam Geri Ödeme:</strong> ~234.000 TL</li>
-          <li><strong>Toplam Faiz Maliyeti:</strong> ~34.000 TL</li>
-          <li><strong>KKDF + BSMV Toplamı:</strong> ~6.800 TL</li>
-        </ul>
-      </div>
-
       <h2>Sıkça Sorulan Sorular</h2>
       
-      <h3>Ara ödeme ne zaman yapmak daha avantajlı?</h3>
-      <p>Ara ödemeler kredinin başlarında daha fazla tasarruf sağlar. Elinize para geçtiği her dönemde ara ödeme yapmanız önerilir.</p>
+      <h3>En uygun kredi vadesi nasıl belirlenir?</h3>
+      <p>Aylık ödeme kapasitesi ve toplam faiz maliyeti arasında denge kurmalısınız. Kısa vade daha az faiz, uzun vade daha düşük taksit anlamına gelir.</p>
       
-      <h3>KKDF ve BSMV'den kaçınmanın yolu var mı?</h3>
-      <p>Bu vergiler yasal zorunluluktur ve kaçınılması mümkün değildir. Ancak ara ödemelerle toplam vergi yükünüzü azaltabilirsiniz.</p>
+      <h3>Erken ödeme yapmak avantajlı mı?</h3>
+      <p>Evet, erken ödeme toplam faiz yükünüzü azaltır. Ancak bankanın erken ödeme komisyonu olup olmadığını kontrol edin.</p>
       
-      <h3>Kredi hesaplaması yaparken nelere dikkat etmeliyim?</h3>
-      <p>Net faiz oranının yanında KKDF ve BSMV'yi de hesaba katmayı unutmayın. Ayrıca ara ödeme imkanlarınızı değerlendirin.</p>
+      <h3>Hangi faiz türü daha avantajlı?</h3>
+      <p>Sabit faiz oranları öngörülebilir ödemeler sunar. Değişken faiz oranları başlangıçta düşük olabilir ama risk taşır.</p>
 
       <div style="background-color: #d4edda; padding: 20px; border-radius: 8px; border-left: 4px solid #28a745; margin: 30px 0;">
         <h4>✅ Sonuç</h4>
-        <p style="margin-bottom: 0;">Doğru kredi hesaplaması, finansal planlamanızın temelini oluşturur. Hesaplama aracımızı kullanarak kendi durumunuza en uygun ödeme planını oluşturun ve ara ödemelerle tasarruf fırsatlarını değerlendirin.</p>
+        <p style="margin-bottom: 0;">Doğru kredi hesaplaması, finansal planlamanızın temelini oluşturur. Hesaplama aracımızı kullanarak kendi durumunuza en uygun ödeme planını oluşturun ve bilinçli kararlar alın.</p>
       </div>
     </div>
   `
