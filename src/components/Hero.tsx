@@ -3,10 +3,37 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const Hero: React.FC = () => {
-  // For new users, show 0 score instead of 1125
-  const currentScore = 0;
+  const { user } = useAuth();
+
+  // Fetch user's profile to get their current Findeks score
+  const { data: profile } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('findeks_score')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return null;
+      }
+      
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  // Use the actual score from profile, default to 0 if not available
+  const currentScore = profile?.findeks_score || 0;
   const maxScore = 1900;
   const scorePercentage = (currentScore / maxScore) * 100;
 
@@ -50,10 +77,16 @@ const Hero: React.FC = () => {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">Kredi Puanınız</h3>
                   <p className="text-gray-500 text-sm">
-                    Puanınızı görmek için Findeks Risk Raporunuzu{' '}
-                    <Link to="/findeks" className="text-primary hover:underline font-medium">
-                      yükleyin
-                    </Link>
+                    {currentScore === 0 ? (
+                      <>
+                        Puanınızı görmek için Findeks Risk Raporunuzu{' '}
+                        <Link to="/findeks" className="text-primary hover:underline font-medium">
+                          yükleyin
+                        </Link>
+                      </>
+                    ) : (
+                      'Güncel Findeks puanınız'
+                    )}
                   </p>
                 </div>
               </div>
@@ -87,7 +120,7 @@ const Hero: React.FC = () => {
                   <div 
                     className="absolute top-0 transform -translate-y-1/2" 
                     style={{ 
-                      left: `${scorePercentage}%`,
+                      left: `${Math.min(scorePercentage, 100)}%`,
                     }}
                   >
                     <div className="w-3 h-3 bg-black transform rotate-45 translate-y-1"></div>
@@ -105,15 +138,21 @@ const Hero: React.FC = () => {
               </div>
               
               <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-800 mb-2">Programı Tamamlayınca</h4>
+                <h4 className="font-semibold text-gray-800 mb-2">
+                  {currentScore > 0 ? 'Mevcut Durumunuz' : 'Programı Tamamlayınca'}
+                </h4>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <svg className="h-5 w-5 text-green-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700">Hedef Puan: 1320+</span>
+                    <span className="text-gray-700">
+                      {currentScore > 0 ? `Mevcut Puan: ${currentScore}` : 'Hedef Puan: 1320+'}
+                    </span>
                   </div>
-                  <span className="text-gray-700">12 ay içinde</span>
+                  <span className="text-gray-700">
+                    {currentScore > 0 ? 'Güncel' : '12 ay içinde'}
+                  </span>
                 </div>
               </div>
             </div>
