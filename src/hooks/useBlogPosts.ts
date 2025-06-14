@@ -6,6 +6,16 @@ import { getBlogPosts, BlogPostType } from '@/services/blogService';
 export const useBlogPosts = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPostCardProps[]>([
     {
+      title: "Kredi Hesaplama Nasıl Yapılır? Detaylı Rehber",
+      excerpt: "Kredi ödeme planınızı hesaplamak için bilmeniz gereken her şey. Faiz oranları, KKDF, BSMV ve ara ödemeler ile ilgili detaylı bilgiler.",
+      author: "Finansal Danışman",
+      date: "15 Haziran 2024",
+      readTime: "12 dk okuma",
+      image: "/placeholder.svg",
+      slug: "kredi-hesaplama-nasil-yapilir",
+      featured: true
+    },
+    {
       title: "Kredi Notu Nedir? Nasıl Hesaplanır?",
       excerpt: "Kredi notu, bankalardan kredi alırken en önemli faktörlerden biridir. Peki nasıl hesaplanır ve nasıl yükseltilir?",
       author: "Koray Kaya",
@@ -13,7 +23,7 @@ export const useBlogPosts = () => {
       readTime: "8 dk okuma",
       image: "/placeholder.svg",
       slug: "kredi-notu-nedir",
-      featured: true
+      featured: false
     },
     {
       title: "Hiç Kredi Kullanmadım, Nasıl Kredibilite Oluşturabilirim?",
@@ -65,6 +75,7 @@ export const useBlogPosts = () => {
 
   const categories = [
     "Kredi Puanı",
+    "Kredi Bilgileri",
     "Finansal Okuryazarlık",
     "Tasarruf İpuçları",
     "Kredibilite",

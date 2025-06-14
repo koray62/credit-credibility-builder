@@ -15,7 +15,6 @@ import AboutUs from "./pages/AboutUs";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Findeks from "./pages/Findeks";
-import CreditCalculation from "./pages/CreditCalculation"; // Import the new page
 import KVKK from "./pages/KVKK";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
@@ -51,7 +50,6 @@ const AppRoutes = () => (
       <Route path="/blog" element={<Blog />} />
       <Route path="/blog/:slug" element={<BlogPost />} />
       <Route path="/findeks" element={<Findeks />} />
-      <Route path="/kredi-hesaplama" element={<CreditCalculation />} /> {/* Add the new route */}
       <Route path="/kvkk" element={<KVKK />} />
       <Route path="/gizlilik-politikasi" element={<PrivacyPolicy />} />
       <Route path="/kullanim-kosullari" element={<TermsOfUse />} />
