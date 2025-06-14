@@ -9,10 +9,15 @@ import { ensureProfileExists } from "@/utils/profileUtils";
 export const signInWithGoogle = async (): Promise<void> => {
   try {
     console.log("Attempting to sign in with Google...");
+    
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        }
       },
     });
     
@@ -28,7 +33,7 @@ export const signInWithGoogle = async (): Promise<void> => {
     
     // Check if we got a redirect URL from the OAuth process
     if (data && data.url) {
-      console.log("Redirecting to Google auth URL:", data.url);
+      console.log("Redirecting to Google auth URL");
       window.location.href = data.url;
     } else {
       console.error("No URL returned from signInWithOAuth");

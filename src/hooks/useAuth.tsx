@@ -24,60 +24,76 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     console.log("Setting up auth state listener");
     
-    // First set up auth state listener to catch any auth events
+    let profileCreationInProgress = false;
+    
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, newSession) => {
         console.log('Auth state changed:', event, newSession?.user?.id);
         
-        // Perform synchronous state updates first to avoid deadlocks
+        // Update state immediately to prevent race conditions
         setSession(newSession);
         setUser(newSession?.user ?? null);
         
-        if (event === 'SIGNED_IN' && newSession?.user) {
+        if (event === 'SIGNED_IN' && newSession?.user && !profileCreationInProgress) {
           console.log("User signed in:", newSession.user.id);
+          profileCreationInProgress = true;
           
-          // Create profile using a Promise to avoid race conditions and deadlocks
-          // Use requestAnimationFrame instead of setTimeout to reduce flicker
-          requestAnimationFrame(() => {
-            const fullName = newSession.user?.user_metadata?.full_name || 
-                        `${newSession.user?.user_metadata?.first_name || ''} ${newSession.user?.user_metadata?.last_name || ''}`.trim();
-                        
-            // Use a Promise to handle profile creation without blocking
-            ensureProfileExists(newSession.user.id, fullName)
-              .catch(error => {
-                console.error("Error ensuring profile exists:", error);
+          // Handle profile creation with better error handling
+          const handleProfileCreation = async () => {
+            try {
+              const fullName = newSession.user?.user_metadata?.full_name || 
+                          `${newSession.user?.user_metadata?.first_name || ''} ${newSession.user?.user_metadata?.last_name || ''}`.trim();
+              
+              await ensureProfileExists(newSession.user.id, fullName);
+              
+              toast({
+                title: "Giriş başarılı",
+                description: "Başarıyla giriş yaptınız.",
               });
-          });
+            } catch (error) {
+              console.error("Error ensuring profile exists:", error);
+              // Don't show error toast for profile creation issues during auth
+            } finally {
+              profileCreationInProgress = false;
+            }
+          };
           
-          toast({
-            title: "Giriş başarılı",
-            description: "Başarıyla giriş yaptınız.",
-          });
+          // Use requestAnimationFrame to avoid blocking the auth flow
+          requestAnimationFrame(handleProfileCreation);
+          
         } else if (event === 'SIGNED_OUT') {
           console.log("User signed out");
+          profileCreationInProgress = false;
           toast({
             title: "Çıkış yapıldı",
             description: "Başarıyla çıkış yaptınız.",
           });
-        } else if (event === 'USER_UPDATED') {
+        } else if (event === 'USER_UPDATED' && newSession?.user && !profileCreationInProgress) {
           console.log("User updated:", newSession?.user);
-          if (newSession?.user) {
-            ensureProfileExists(newSession.user.id);
-          }
+          profileCreationInProgress = true;
+          
+          requestAnimationFrame(async () => {
+            try {
+              await ensureProfileExists(newSession.user.id);
+            } catch (error) {
+              console.error("Error ensuring profile exists on update:", error);
+            } finally {
+              profileCreationInProgress = false;
+            }
+          });
         }
       }
     );
     
-    // Then check for existing session
+    // Check for existing session
     const initializeAuth = async () => {
-      setIsLoading(true);
       try {
         console.log("Checking for existing session");
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error('Error getting session:', error);
-          setIsLoading(false);
           return;
         }
         
@@ -86,29 +102,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setSession(data.session);
           setUser(data.session.user);
           
-          // Create or check profile with retry logic, using a delay to avoid race conditions
-          requestAnimationFrame(() => {
-            let attempts = 0;
-            const maxAttempts = 3;
+          // Ensure profile exists for existing session
+          if (!profileCreationInProgress) {
+            profileCreationInProgress = true;
             
-            const tryCreateProfile = async () => {
-              if (attempts >= maxAttempts) {
-                console.error(`Failed to create profile after ${maxAttempts} attempts`);
-                return;
+            requestAnimationFrame(async () => {
+              try {
+                await ensureProfileExists(data.session.user.id);
+              } catch (error) {
+                console.error("Error ensuring profile exists for existing session:", error);
+              } finally {
+                profileCreationInProgress = false;
               }
-              
-              attempts++;
-              const success = await ensureProfileExists(data.session.user.id);
-              
-              if (!success && attempts < maxAttempts) {
-                console.log(`Profile creation attempt ${attempts} failed, retrying...`);
-                // Increase delay between retries
-                setTimeout(tryCreateProfile, 500 * attempts);
-              }
-            };
-            
-            tryCreateProfile();
-          });
+            });
+          }
         } else {
           console.log("No existing session found");
         }
@@ -127,12 +134,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // Authentication service wrappers with loading state handling
+  // Authentication service wrappers with improved loading state handling
   const signInWithGoogle = async () => {
-    setIsLoading(true);
     try {
       await signInWithGoogleService();
-    } finally {
+    } catch (error) {
+      console.error('Error in signInWithGoogle:', error);
       setIsLoading(false);
     }
   };
@@ -142,6 +149,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await signInWithEmailPasswordService(email, password);
       navigate('/');
+    } catch (error) {
+      console.error('Error in signInWithEmailAndPassword:', error);
     } finally {
       setIsLoading(false);
     }

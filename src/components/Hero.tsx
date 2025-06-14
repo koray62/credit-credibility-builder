@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -8,9 +7,9 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 const Hero: React.FC = () => {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
 
-  // Fetch user's profile to get their current Findeks score
+  // Only fetch profile after auth is fully loaded and user exists
   const { data: profile } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
@@ -29,7 +28,9 @@ const Hero: React.FC = () => {
       
       return data;
     },
-    enabled: !!user,
+    enabled: !!user && !authLoading, // Wait for auth to be loaded and user to exist
+    staleTime: 5000, // Cache for 5 seconds to prevent excessive queries
+    retry: 1, // Only retry once to avoid blocking auth flow
   });
 
   // Use the actual score from profile, default to 0 if not available
@@ -77,21 +78,10 @@ const Hero: React.FC = () => {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">Kredi Puanınız</h3>
                   <p className="text-gray-500 text-sm">
-                    {currentScore === 0 ? (
-                      <>
-                        Puanınızı görmek için Findeks Risk Raporunuzu{' '}
-                        <Link to="/findeks" className="text-primary hover:underline font-medium">
-                          yükleyin
-                        </Link>
-                      </>
-                    ) : (
-                      <>
-                        Puanınızı güncellemek için Findeks Risk Raporunuzu{' '}
-                        <Link to="/findeks" className="text-primary hover:underline font-medium">
-                          yükleyin
-                        </Link>
-                      </>
-                    )}
+                    Puanınızı güncellemek için Findeks Risk Raporunuzu{' '}
+                    <Link to="/findeks" className="text-primary hover:underline font-medium">
+                      yükleyin
+                    </Link>
                   </p>
                 </div>
               </div>
