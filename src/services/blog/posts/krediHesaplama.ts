@@ -1,4 +1,3 @@
-
 export const krediHesaplamaPost = {
   slug: "kredi-hesaplama-nasil-yapilir",
   title: "Kredi Hesaplama Nasıl Yapılır? Detaylı Rehber",
@@ -10,16 +9,16 @@ export const krediHesaplamaPost = {
       <div class="bg-blue-50 border-l-4 border-blue-500 p-6 my-8">
         <h3 class="text-lg font-semibold mb-3 text-blue-800">📊 İnteraktif Kredi Hesaplama Aracı</h3>
         <p class="text-blue-700 mb-4">Kendi kredi hesaplamalarınızı yapmak için interaktif hesaplama aracımızı kullanabilirsiniz. Bu araç ile faiz oranları, ara ödemeler ve farklı vade seçeneklerini test edebilirsiniz.</p>
-        <button 
-          id="kredi-hesaplama-btn" 
-          class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 inline-flex items-center"
-          onclick="window.open('/kredi-hesaplama', '_blank')"
+        <a 
+          href="/kredi-hesaplama" 
+          target="_blank"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 inline-flex items-center no-underline"
         >
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 002 2v14a2 2 0 002 2z"></path>
           </svg>
           Kredi Hesaplama Aracını Başlat
-        </button>
+        </a>
       </div>
 
       <h2 class="text-2xl font-bold mt-12 mb-6 text-gray-900">📋 Kredi Hesaplamasında Temel Kavramlar</h2>
