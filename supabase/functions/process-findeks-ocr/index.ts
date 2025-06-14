@@ -67,13 +67,13 @@ serve(async (req) => {
         throw new Error('Dosya boyutu çok büyük (max 10MB)');
       }
 
-      // Convert PDF to images using pdf-poppler
-      const imageBase64Array = await convertPDFToImages(fileData);
+      // Convert PDF to image using external service
+      const imageBase64 = await convertPDFToImageWithService(fileData);
       
-      console.log('PDF converted to images, count:', imageBase64Array.length);
+      console.log('PDF converted to image successfully');
 
-      // Extract score using OpenAI with first page
-      const extractedScore = await extractScoreFromImage(imageBase64Array[0]);
+      // Extract score using OpenAI with converted image
+      const extractedScore = await extractScoreFromImage(imageBase64);
       
       if (extractedScore.error) {
         throw new Error(extractedScore.error);
@@ -147,60 +147,121 @@ serve(async (req) => {
   }
 });
 
-// Convert PDF to images using pdf-poppler
-async function convertPDFToImages(pdfFile: File): Promise<string[]> {
+// Convert PDF to image using external conversion service
+async function convertPDFToImageWithService(pdfFile: File): Promise<string> {
   try {
-    console.log('Converting PDF to images...');
+    console.log('Converting PDF to image using external service...');
     
-    // For now, we'll use a simple approach: convert PDF to base64 and send to a conversion service
-    // Since we're in Deno environment, we'll use a different approach
-    const formData = new FormData();
-    formData.append('file', pdfFile);
-    
-    // Use pdf2pic or similar service - for now we'll simulate this
-    // In a real implementation, you'd use a PDF-to-image conversion service
-    
-    // Alternative: Use PDF.js in server environment
+    // Convert file to ArrayBuffer and then to base64
     const arrayBuffer = await pdfFile.arrayBuffer();
-    const pdfBytes = new Uint8Array(arrayBuffer);
+    const base64Pdf = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
     
-    // For this implementation, we'll create a single image representation
-    // Convert the first page to a base64 image using a simulated approach
-    const imageBase64 = await convertFirstPageToImage(pdfBytes);
+    // Use PDF.co API for PDF to image conversion
+    const pdfCoApiKey = Deno.env.get('PDFCO_API_KEY');
     
-    return [imageBase64];
+    if (!pdfCoApiKey) {
+      console.log('PDF.co API key not found, using alternative approach...');
+      // Alternative: Use CloudConvert or similar service
+      return await convertPDFWithAlternativeService(base64Pdf);
+    }
+
+    const response = await fetch('https://api.pdf.co/v1/pdf/convert/to/png', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': pdfCoApiKey
+      },
+      body: JSON.stringify({
+        name: 'findeks-report.pdf',
+        url: `data:application/pdf;base64,${base64Pdf}`,
+        pages: '0', // First page only
+        async: false
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`PDF.co API error: ${response.status}`);
+    }
+
+    const result = await response.json();
     
+    if (!result.url) {
+      throw new Error('PDF to image conversion failed');
+    }
+
+    // Download the converted image
+    const imageResponse = await fetch(result.url);
+    const imageBuffer = await imageResponse.arrayBuffer();
+    const imageBase64 = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+    
+    return `data:image/png;base64,${imageBase64}`;
+
   } catch (error) {
     console.error('PDF to image conversion error:', error);
     throw new Error(`PDF dönüştürme hatası: ${error.message}`);
   }
 }
 
-// Simulate PDF to image conversion for the first page
-async function convertFirstPageToImage(pdfBytes: Uint8Array): Promise<string> {
+// Alternative conversion service when PDF.co is not available
+async function convertPDFWithAlternativeService(base64Pdf: string): Promise<string> {
   try {
-    // This is a simplified approach - in reality you'd use PDF.js or similar
-    // For now, we'll encode the PDF as base64 and tell OpenAI it's an image
-    // This is not ideal but will work as a temporary solution
+    console.log('Using alternative PDF conversion method...');
     
-    let binaryString = '';
-    const chunkSize = 8192;
+    // Use ConvertAPI service as fallback
+    const convertApiSecret = Deno.env.get('CONVERTAPI_SECRET');
     
-    for (let i = 0; i < pdfBytes.length; i += chunkSize) {
-      const chunk = pdfBytes.slice(i, i + chunkSize);
-      binaryString += String.fromCharCode.apply(null, Array.from(chunk));
+    if (!convertApiSecret) {
+      console.log('ConvertAPI secret not found, using simple approach...');
+      // As last resort, we'll use a different approach
+      // Create a simple PNG placeholder that tells user to use a different approach
+      return await createInstructionImage();
     }
+
+    const response = await fetch('https://v2.convertapi.com/convert/pdf/to/png', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${convertApiSecret}`
+      },
+      body: JSON.stringify({
+        Parameters: [
+          {
+            Name: 'File',
+            FileValue: {
+              Name: 'document.pdf',
+              Data: base64Pdf
+            }
+          },
+          {
+            Name: 'PageRange',
+            Value: '1'
+          }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`ConvertAPI error: ${response.status}`);
+    }
+
+    const result = await response.json();
     
-    const base64 = btoa(binaryString);
-    
-    // For testing purposes, we'll return as PNG format
-    // In production, you should use actual PDF-to-image conversion
-    return `data:image/png;base64,${base64}`;
-    
+    if (!result.Files || result.Files.length === 0) {
+      throw new Error('No converted files returned');
+    }
+
+    return `data:image/png;base64,${result.Files[0].FileData}`;
+
   } catch (error) {
-    console.error('Image conversion error:', error);
-    throw new Error(`Image dönüştürme hatası: ${error.message}`);
+    console.error('Alternative conversion failed:', error);
+    throw new Error(`Alternative PDF conversion failed: ${error.message}`);
   }
+}
+
+// Create instruction image when conversion services are not available
+async function createInstructionImage(): Promise<string> {
+  // For now, we'll throw an error to inform user about the limitation
+  throw new Error('PDF to image conversion requires external service configuration. Please configure PDF.co or ConvertAPI credentials.');
 }
 
 async function extractScoreFromImage(base64Image: string) {
@@ -237,7 +298,7 @@ async function extractScoreFromImage(base64Image: string) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "gpt-4o", // Using vision model for images
+          model: "gpt-4.1-2025-04-14", // Updated to latest model
           messages: [{
             role: "user",
             content: [
