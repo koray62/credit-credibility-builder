@@ -75,10 +75,20 @@ export const krediHesaplamaPost = {
       <li>Kredi daha erken kapanabilir</li>
     </ul>
 
+    <div class="my-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+      <h3 class="text-lg font-semibold mb-4 text-blue-800">İnteraktif Kredi Hesaplama Aracı</h3>
+      <p class="text-blue-700 mb-4">Kendi kredi hesaplamalarınızı yapmak için interaktif hesaplama aracımızı kullanabilirsiniz. Bu araç ile faiz oranları, ara ödemeler ve farklı vade seçeneklerini test edebilirsiniz.</p>
+      <button 
+        id="kredi-hesaplama-btn" 
+        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200"
+        onclick="window.open('https://f847f5b5-d6af-426f-871a-f83f94bc217b.lovableproject.com/kredi-hesaplama', '_blank')"
+      >
+        Kredi Hesaplama Aracını Başlat
+      </button>
+    </div>
+
     <h2>Sonuç</h2>
     <p>Kredi hesaplaması, finansal planlama sürecinin en önemli parçalarından biridir. Doğru hesaplama yaparak hem bütçenizi koruyabilir hem de en uygun kredi seçeneklerini değerlendirebilirsiniz. Ara ödeme stratejileri kullanarak da toplam kredi maliyetinizi önemli ölçüde azaltabilirsiniz.</p>
-
-    <p>SkorUp olarak, kredi sürecinizde size rehberlik etmek ve en uygun koşulları bulmanıza yardımcı olmak için buradayız. Kredi başvurunuz için bizimle iletişime geçebilirsiniz.</p>
   `,
   author: "Finansal Danışman",
   date: "15 Haziran 2024",
