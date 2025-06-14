@@ -85,7 +85,12 @@ const Hero: React.FC = () => {
                         </Link>
                       </>
                     ) : (
-                      'Güncel Findeks puanınız'
+                      <>
+                        Puanınızı güncellemek için Findeks Risk Raporunuzu{' '}
+                        <Link to="/findeks" className="text-primary hover:underline font-medium">
+                          yükleyin
+                        </Link>
+                      </>
                     )}
                   </p>
                 </div>
