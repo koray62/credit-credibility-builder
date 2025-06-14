@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +19,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import CreditCalculator from "./pages/CreditCalculator";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +49,7 @@ const AppRoutes = () => (
       <Route path="/biz-kimiz" element={<AboutUs />} />
       <Route path="/blog" element={<Blog />} />
       <Route path="/blog/:slug" element={<BlogPost />} /> {/* Add route for blog post detail */}
+      <Route path="/kredi-hesaplama" element={<CreditCalculator />} />
       <Route path="/findeks" element={<Findeks />} />
       <Route path="/kvkk" element={<KVKK />} />
       <Route path="/gizlilik-politikasi" element={<PrivacyPolicy />} />
