@@ -15,15 +15,16 @@ export const useFindeksUpload = () => {
       return null;
     }
 
-    if (!file.type.includes('pdf')) {
-      toast.error('Lütfen PDF formatında bir dosya seçin');
+    // Image file validation
+    if (!file.type.includes('image/')) {
+      toast.error('Lütfen PNG veya JPG formatında bir görüntü seçin');
       return null;
     }
 
     setIsUploading(true);
 
     try {
-      console.log('Starting PDF upload...', file.name, 'Size:', file.size);
+      console.log('Starting image upload...', file.name, 'Size:', file.size);
 
       // Dosyayı storage'a yükle
       const fileName = `${user.id}/${Date.now()}-${file.name}`;
@@ -57,7 +58,7 @@ export const useFindeksUpload = () => {
 
       console.log('Report record created:', reportData.id);
 
-      toast.success('Dosya başarıyla yüklendi');
+      toast.success('Görüntü başarıyla yüklendi');
       
       // OCR işlemini başlat
       await processWithOCR(reportData.id, uploadData.path);
@@ -66,7 +67,7 @@ export const useFindeksUpload = () => {
 
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error('Dosya yükleme başarısız: ' + (error.message || 'Bilinmeyen hata'));
+      toast.error('Görüntü yükleme başarısız: ' + (error.message || 'Bilinmeyen hata'));
       return null;
     } finally {
       setIsUploading(false);

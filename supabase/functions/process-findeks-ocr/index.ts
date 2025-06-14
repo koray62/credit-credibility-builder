@@ -51,25 +51,70 @@ serve(async (req) => {
     console.log('OCR record created:', ocrRecord.id);
 
     try {
-      // Download PDF file from storage
+      // Download image file from storage
       const { data: fileData, error: downloadError } = await supabase.storage
         .from('findeks-reports')
         .download(filePath);
 
       if (downloadError || !fileData) {
-        throw new Error(`PDF dosyası indirilemedi: ${downloadError?.message}`);
+        throw new Error(`Görüntü dosyası indirilemedi: ${downloadError?.message}`);
       }
 
-      console.log('PDF file downloaded, size:', fileData.size);
+      console.log('Image file downloaded, size:', fileData.size);
 
       // Check file size limit (10MB)
       if (fileData.size > 10 * 1024 * 1024) {
         throw new Error('Dosya boyutu çok büyük (max 10MB)');
       }
 
-      // For now, let's try a simpler approach - just tell the user to upload an image instead
-      // This bypasses the PDF conversion issue entirely
-      throw new Error('PDF otomatik işleme şu anda desteklenmiyor. Lütfen Findeks raporunuzun ekran görüntüsünü PNG veya JPG formatında yükleyin.');
+      // Convert file to base64
+      const arrayBuffer = await fileData.arrayBuffer();
+      const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+      const base64Image = `data:${fileData.type};base64,${base64}`;
+
+      console.log('Image converted to base64, length:', base64.length);
+
+      // Extract score using OpenAI Vision
+      const result = await extractScoreFromImage(base64Image);
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      console.log('OCR extraction successful:', result);
+
+      // Update OCR processing record with success
+      await supabase
+        .from('ocr_processing')
+        .update({
+          status: 'completed',
+          extracted_score: result.score,
+          confidence_score: result.confidence,
+          processed_at: new Date().toISOString()
+        })
+        .eq('id', ocrRecord.id);
+
+      // Update the findeks report with extracted score
+      await supabase
+        .from('findeks_reports')
+        .update({
+          score: result.score,
+          ocr_processed: true,
+          ocr_extracted_score: result.score,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', reportId);
+
+      console.log('Successfully updated report with score:', result.score);
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          score: result.score,
+          confidence: result.confidence
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
 
     } catch (processingError) {
       console.error('OCR Error:', processingError);
@@ -139,7 +184,7 @@ async function extractScoreFromImage(base64Image: string) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "gpt-4.1-2025-04-14",
+          model: "gpt-4o-mini",
           messages: [{
             role: "user",
             content: [
