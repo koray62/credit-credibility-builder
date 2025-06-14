@@ -67,51 +67,9 @@ serve(async (req) => {
         throw new Error('Dosya boyutu çok büyük (max 10MB)');
       }
 
-      // Convert PDF to image using external service
-      const imageBase64 = await convertPDFToImageWithService(fileData);
-      
-      console.log('PDF converted to image successfully');
-
-      // Extract score using OpenAI with converted image
-      const extractedScore = await extractScoreFromImage(imageBase64);
-      
-      if (extractedScore.error) {
-        throw new Error(extractedScore.error);
-      }
-
-      console.log('Score extracted successfully:', extractedScore.score);
-
-      // Update OCR processing record with success
-      await supabase
-        .from('ocr_processing')
-        .update({
-          status: 'completed',
-          extracted_score: extractedScore.score,
-          confidence_score: extractedScore.confidence,
-          processed_at: new Date().toISOString()
-        })
-        .eq('id', ocrRecord.id);
-
-      // Update findeks_reports table with extracted score
-      await supabase
-        .from('findeks_reports')
-        .update({
-          score: extractedScore.score,
-          ocr_processed: true,
-          ocr_extracted_score: extractedScore.score
-        })
-        .eq('id', reportId);
-
-      console.log('OCR processing completed successfully');
-
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          score: extractedScore.score,
-          confidence: extractedScore.confidence 
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      // For now, let's try a simpler approach - just tell the user to upload an image instead
+      // This bypasses the PDF conversion issue entirely
+      throw new Error('PDF otomatik işleme şu anda desteklenmiyor. Lütfen Findeks raporunuzun ekran görüntüsünü PNG veya JPG formatında yükleyin.');
 
     } catch (processingError) {
       console.error('OCR Error:', processingError);
@@ -147,123 +105,6 @@ serve(async (req) => {
   }
 });
 
-// Convert PDF to image using external conversion service
-async function convertPDFToImageWithService(pdfFile: File): Promise<string> {
-  try {
-    console.log('Converting PDF to image using external service...');
-    
-    // Convert file to ArrayBuffer and then to base64
-    const arrayBuffer = await pdfFile.arrayBuffer();
-    const base64Pdf = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-    
-    // Use PDF.co API for PDF to image conversion
-    const pdfCoApiKey = Deno.env.get('PDFCO_API_KEY');
-    
-    if (!pdfCoApiKey) {
-      console.log('PDF.co API key not found, using alternative approach...');
-      // Alternative: Use CloudConvert or similar service
-      return await convertPDFWithAlternativeService(base64Pdf);
-    }
-
-    const response = await fetch('https://api.pdf.co/v1/pdf/convert/to/png', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': pdfCoApiKey
-      },
-      body: JSON.stringify({
-        name: 'findeks-report.pdf',
-        url: `data:application/pdf;base64,${base64Pdf}`,
-        pages: '0', // First page only
-        async: false
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`PDF.co API error: ${response.status}`);
-    }
-
-    const result = await response.json();
-    
-    if (!result.url) {
-      throw new Error('PDF to image conversion failed');
-    }
-
-    // Download the converted image
-    const imageResponse = await fetch(result.url);
-    const imageBuffer = await imageResponse.arrayBuffer();
-    const imageBase64 = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
-    
-    return `data:image/png;base64,${imageBase64}`;
-
-  } catch (error) {
-    console.error('PDF to image conversion error:', error);
-    throw new Error(`PDF dönüştürme hatası: ${error.message}`);
-  }
-}
-
-// Alternative conversion service when PDF.co is not available
-async function convertPDFWithAlternativeService(base64Pdf: string): Promise<string> {
-  try {
-    console.log('Using alternative PDF conversion method...');
-    
-    // Use ConvertAPI service as fallback
-    const convertApiSecret = Deno.env.get('CONVERTAPI_SECRET');
-    
-    if (!convertApiSecret) {
-      console.log('ConvertAPI secret not found, using simple approach...');
-      // As last resort, we'll use a different approach
-      // Create a simple PNG placeholder that tells user to use a different approach
-      return await createInstructionImage();
-    }
-
-    const response = await fetch('https://v2.convertapi.com/convert/pdf/to/png', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${convertApiSecret}`
-      },
-      body: JSON.stringify({
-        Parameters: [
-          {
-            Name: 'File',
-            FileValue: {
-              Name: 'document.pdf',
-              Data: base64Pdf
-            }
-          },
-          {
-            Name: 'PageRange',
-            Value: '1'
-          }
-        ]
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`ConvertAPI error: ${response.status}`);
-    }
-
-    const result = await response.json();
-    
-    if (!result.Files || result.Files.length === 0) {
-      throw new Error('No converted files returned');
-    }
-
-    return `data:image/png;base64,${result.Files[0].FileData}`;
-
-  } catch (error) {
-    console.error('Alternative conversion failed:', error);
-    throw new Error(`Alternative PDF conversion failed: ${error.message}`);
-  }
-}
-
-// Create instruction image when conversion services are not available
-async function createInstructionImage(): Promise<string> {
-  // For now, we'll throw an error to inform user about the limitation
-  throw new Error('PDF to image conversion requires external service configuration. Please configure PDF.co or ConvertAPI credentials.');
-}
-
 async function extractScoreFromImage(base64Image: string) {
   try {
     const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY");
@@ -298,7 +139,7 @@ async function extractScoreFromImage(base64Image: string) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "gpt-4.1-2025-04-14", // Updated to latest model
+          model: "gpt-4.1-2025-04-14",
           messages: [{
             role: "user",
             content: [
