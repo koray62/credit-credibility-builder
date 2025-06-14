@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, ChevronDown } from 'lucide-react';
@@ -90,6 +91,13 @@ const Navbar: React.FC = () => {
                     onClick={() => setIsDropdownOpen(false)}
                   >
                     Blog
+                  </Link>
+                  <Link 
+                    to="/kredi-hesaplama" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary hover:text-white"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Kredi Hesaplama
                   </Link>
                   <Link 
                     to="/findeks" 
@@ -191,6 +199,13 @@ const Navbar: React.FC = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Blog
+              </Link>
+              <Link 
+                to="/kredi-hesaplama" 
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Kredi Hesaplama
               </Link>
               <Link 
                 to="/findeks" 

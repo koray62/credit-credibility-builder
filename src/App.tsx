@@ -13,8 +13,9 @@ import Process from "./pages/Process";
 import SuccessPage from "./pages/SuccessPage";
 import AboutUs from "./pages/AboutUs";
 import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost"; // Import the new BlogPost component
+import BlogPost from "./pages/BlogPost";
 import Findeks from "./pages/Findeks";
+import CreditCalculation from "./pages/CreditCalculation"; // Import the new page
 import KVKK from "./pages/KVKK";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
@@ -48,8 +49,9 @@ const AppRoutes = () => (
       <Route path="/basvuru-basarili" element={<SuccessPage />} />
       <Route path="/biz-kimiz" element={<AboutUs />} />
       <Route path="/blog" element={<Blog />} />
-      <Route path="/blog/:slug" element={<BlogPost />} /> {/* Add route for blog post detail */}
+      <Route path="/blog/:slug" element={<BlogPost />} />
       <Route path="/findeks" element={<Findeks />} />
+      <Route path="/kredi-hesaplama" element={<CreditCalculation />} /> {/* Add the new route */}
       <Route path="/kvkk" element={<KVKK />} />
       <Route path="/gizlilik-politikasi" element={<PrivacyPolicy />} />
       <Route path="/kullanim-kosullari" element={<TermsOfUse />} />
