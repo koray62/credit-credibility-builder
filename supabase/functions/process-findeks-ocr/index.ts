@@ -62,15 +62,18 @@ serve(async (req) => {
 
       console.log('PDF file downloaded, size:', fileData.size);
 
-      // Convert PDF blob to base64
-      const arrayBuffer = await fileData.arrayBuffer();
-      const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-      const base64WithPrefix = `data:application/pdf;base64,${base64}`;
+      // Check file size limit (10MB)
+      if (fileData.size > 10 * 1024 * 1024) {
+        throw new Error('Dosya boyutu çok büyük (max 10MB)');
+      }
 
-      console.log('PDF converted to base64, length:', base64WithPrefix.length);
+      // Convert PDF to base64 using optimized method
+      const base64PDF = await convertToBase64Optimized(fileData);
+      
+      console.log('PDF converted to base64 successfully');
 
       // Extract score using OpenAI
-      const extractedScore = await extractScoreFromPDF(base64WithPrefix);
+      const extractedScore = await extractScoreFromPDF(base64PDF);
       
       if (extractedScore.error) {
         throw new Error(extractedScore.error);
@@ -144,6 +147,35 @@ serve(async (req) => {
   }
 });
 
+// Optimized base64 conversion to prevent stack overflow
+async function convertToBase64Optimized(file: File): Promise<string> {
+  try {
+    console.log('Starting optimized base64 conversion for file size:', file.size);
+    
+    const arrayBuffer = await file.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    
+    // Use TextDecoder with base64 encoding for better memory efficiency
+    let binaryString = '';
+    const chunkSize = 8192; // Process in 8KB chunks to avoid stack overflow
+    
+    for (let i = 0; i < uint8Array.length; i += chunkSize) {
+      const chunk = uint8Array.slice(i, i + chunkSize);
+      binaryString += String.fromCharCode.apply(null, Array.from(chunk));
+    }
+    
+    const base64 = btoa(binaryString);
+    const base64WithPrefix = `data:application/pdf;base64,${base64}`;
+    
+    console.log('Base64 conversion completed, length:', base64WithPrefix.length);
+    return base64WithPrefix;
+    
+  } catch (error) {
+    console.error('Base64 conversion error:', error);
+    throw new Error(`Base64 dönüştürme hatası: ${error.message}`);
+  }
+}
+
 async function extractScoreFromPDF(base64PDF: string) {
   try {
     const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY");
@@ -168,7 +200,7 @@ async function extractScoreFromPDF(base64PDF: string) {
 
     // Add timeout to the fetch request
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
 
     try {
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -178,7 +210,7 @@ async function extractScoreFromPDF(base64PDF: string) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "gpt-4o",
+          model: "gpt-4.1-2025-04-14", // Updated to newer model
           messages: [{
             role: "user",
             content: [
