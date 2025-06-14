@@ -1,18 +1,24 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, ArrowLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 const BlogPostFooter: React.FC = () => {
   return (
     <div className="border-t border-gray-100 p-6 md:p-8 bg-gray-50">
       <div className="flex flex-wrap items-center justify-between">
-        <div className="mb-4 md:mb-0">
+        <div className="mb-4 md:mb-0 flex space-x-3">
+          <Link to="/blog">
+            <Button variant="outline" className="flex items-center">
+              <ArrowLeft size={16} className="mr-2" />
+              Blog Ana Sayfa
+            </Button>
+          </Link>
           <Link to="/blog">
             <Button variant="outline" className="flex items-center">
               <ChevronLeft size={16} className="mr-2" />
-              Blog'a Dön
+              Tüm Yazılar
             </Button>
           </Link>
         </div>

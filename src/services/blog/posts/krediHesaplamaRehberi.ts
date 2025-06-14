@@ -10,6 +10,14 @@ export const krediHesaplamaRehberiPost = {
     <div class="prose prose-lg max-w-none">
       <p class="text-xl text-gray-600 mb-8">Kredi kullanmak, hayatın farklı dönemlerinde önemli finansal ihtiyaçları karşılamak için başvurulan yaygın bir yöntemdir. Ancak bir kredinin sadece "ne kadar alacağım" sorusuyla sınırlı olmadığını bilmek gerekir.</p>
 
+      <div style="text-align: center; margin: 30px 0; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px;">
+        <h3 style="color: white; margin-bottom: 15px;">🧮 Kendi Kredi Planınızı Oluşturun</h3>
+        <p style="color: white; margin-bottom: 20px; opacity: 0.9;">Detaylı ödeme planı oluşturun, farklı faiz oranlarını karşılaştırın</p>
+        <a href="/kredi-hesaplama" style="display: inline-block; background-color: white; color: #667eea; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+          Kredi Hesaplama Aracını Kullan
+        </a>
+      </div>
+
       <div style="background-color: #e7f3ff; padding: 20px; border-radius: 8px; border-left: 4px solid #0066cc; margin: 20px 0;">
         <h4>💡 Önemli Not</h4>
         <p style="margin-bottom: 0;">Asıl önemli olan "ne kadar geri ödeyeceğim" ve "aylık ödeme planım nasıl olacak?" sorularına doğru cevaplar bulabilmektir. Bu yazıda, bireylerin ihtiyaç kredisi gibi teminatsız kredileri kullanmadan önce nasıl hesaplama yapabileceklerini detaylıca açıklıyoruz.</p>
@@ -122,22 +130,6 @@ export const krediHesaplamaRehberiPost = {
         </ul>
       </div>
 
-      <h2>Kredi Hesaplama Aracımızı Kullanın</h2>
-      <p>Kendi kredi planınızı oluşturmak ve farklı senaryoları test etmek için gelişmiş kredi hesaplama aracımızı kullanabilirsiniz. Araç ile:</p>
-      
-      <ul>
-        <li>Detaylı ödeme planı oluşturabilirsiniz</li>
-        <li>Farklı faiz oranlarını karşılaştırabilirsiniz</li>
-        <li>KKDF ve BSMV hesaplamalarını takip edebilirsiniz</li>
-        <li>Ara ödeme senaryolarını test edebilirsiniz</li>
-      </ul>
-
-      <div style="text-align: center; margin: 30px 0;">
-        <a href="/kredi-hesaplama" target="_blank" style="display: inline-block; background-color: #0066cc; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; transition: background-color 0.3s ease; box-shadow: 0 4px 6px rgba(0, 102, 204, 0.2);">
-          🧮 Kredi Hesaplama Aracını Kullan
-        </a>
-      </div>
-
       <h2>Merak Edilen Konular</h2>
       
       <h3>En uygun kredi vadesi nasıl belirlenir?</h3>
@@ -147,7 +139,7 @@ export const krediHesaplamaRehberiPost = {
       <p>Evet, erken ödeme toplam faiz yükünüzü azaltır. Ancak konut kredileri için bankanın erken ödeme komisyonu olup olmadığını kontrol edin.</p>
       
       <h3>Vade içerisinde ödeme planı revizesi yapılabilir mi?</h3>
-      <p>Evet, bankanıza başvurarak vade içerisinde ödeme panı revizesi talep edebilirsiniz.</p>
+      <p>Evet, bankanıza başvurarak vade içerisinde ödeme planı revizesi talep edebilirsiniz.</p>
 
       <div style="background-color: #d4edda; padding: 20px; border-radius: 8px; border-left: 4px solid #28a745; margin: 30px 0;">
         <h4>✅ Sonuç</h4>
