@@ -55,7 +55,7 @@ const FindeksUploader: React.FC = () => {
             <p className="font-medium mb-2">Nasıl ekran görüntüsü alınır:</p>
             <ol className="list-decimal pl-4 space-y-1">
               <li>Findeks raporunuzu bilgisayarınızda açın</li>
-              <li>Kredi notunuzun görünür olduğu bölümün ekran görüntüsünü alın</li>
+              <li>Kredi notunuzun görünür olduğu bölümün ekran görüntüsünü alın (2.sayfa)</li>
               <li>Görüntüyü PNG veya JPG formatında kaydedin</li>
               <li>Bu sayfaya yükleyin</li>
             </ol>
