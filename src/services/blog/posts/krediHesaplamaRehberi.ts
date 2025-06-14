@@ -1,7 +1,7 @@
 
 export const krediHesaplamaRehberiPost = {
+  slug: "kredi-hesaplama-rehberi",
   title: "Kredi Hesaplama Nasıl Yapılır? Detaylı Rehber",
-  excerpt: "Kredi ödemelerinizi doğru hesaplamak için bilmeniz gereken her şey. Aylık taksit, faiz oranları ve ara ödemelerle ilgili detaylı bilgiler.",
   author: "Koray Kaya",
   date: "14 Haziran 2025",
   readTime: "10 dk okuma",
