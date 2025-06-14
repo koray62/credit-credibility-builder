@@ -81,22 +81,15 @@ const Footer: React.FC = () => {
           
           <div>
             <h3 className="font-semibold text-gray-800 mb-4">İletişim</h3>
-            <ul className="space-y-3 text-gray-600">
-              <li className="flex items-center justify-between group">
+            <div className="text-gray-600">
+              <div className="flex items-center justify-between group">
                 <span className="text-sm">E-posta</span>
                 <a href="mailto:info@skorup.org" className="text-primary font-medium group-hover:underline flex items-center">
                   info@skorup.org
                   <ArrowUpRight className="ml-1 h-3 w-3" />
                 </a>
-              </li>
-              <li className="flex items-center justify-between group">
-                <span className="text-sm">Telefon</span>
-                <a href="tel:+905001234567" className="text-primary font-medium group-hover:underline flex items-center">
-                  0850 123 4567
-                  <ArrowUpRight className="ml-1 h-3 w-3" />
-                </a>
-              </li>
-            </ul>
+              </div>
+            </div>
           </div>
         </div>
         
