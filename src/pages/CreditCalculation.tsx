@@ -78,7 +78,6 @@ const CreditCalculation: React.FC = () => {
     const taksitTutari = taksitTutariHesapla(dynamicRemainingInitial, aylikNetFaizOrani, taksitSayisi);
     
     let displayRemaining = krediTutari;
-    let dynamicRemaining = dynamicRemainingInitial;
     
     let toplamKKDF = 0;
     let toplamBSMV = 0;
@@ -125,11 +124,6 @@ const CreditCalculation: React.FC = () => {
         displayRemaining -= araOdeme;
       }
       
-      dynamicRemaining -= normalAnaparaTutari;
-      if (araOdeme > 0) {
-        dynamicRemaining -= araOdeme;
-      }
-      
       toplamKKDF += kkdfTutari;
       toplamBSMV += bsmvTutari;
       toplamNetFaiz += netFaizTutari;
@@ -148,10 +142,6 @@ const CreditCalculation: React.FC = () => {
         kalanAnapara: displayRemaining < 0 ? 0 : displayRemaining,
         tvmDegeri: tvmDegerleri[taksitNo - 1]
       });
-      
-      if (dynamicRemaining <= 0) {
-        break;
-      }
     }
     
     return {
