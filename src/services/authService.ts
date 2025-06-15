@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from '@/hooks/use-toast';
 import { ensureProfileExists } from "@/utils/profileUtils";
@@ -16,7 +15,6 @@ export const signInWithGoogle = async (): Promise<void> => {
         redirectTo: `${window.location.origin}/auth/callback`,
         queryParams: {
           access_type: 'offline',
-          prompt: 'consent',
         }
       },
     });
