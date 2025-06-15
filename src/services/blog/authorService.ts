@@ -12,42 +12,42 @@ export interface AuthorInfo {
 // Get author information
 export const getAuthorInfo = (authorName: string): AuthorInfo => {
   // This would normally come from a database with all authors
-  const authorDatabase: Record<string, AuthorInfo> = {
+  const authorDatabase = {
     "Koray Kaya": {
       name: "Koray Kaya",
       role: "Finans Uzmanı",
       bio: "10+ yıllık bankacılık deneyimiyle finans ve kredi sistemleri konusunda uzmanlaşmış yazar.",
-      avatar: "/kredi_kredinotu_kredibilite.svg"
+      avatar: "/placeholder.svg"
     },
     "Ayşe Yılmaz": {
       name: "Ayşe Yılmaz",
       role: "Finansal Danışman",
       bio: "Kişisel finans ve bütçe yönetimi konularında danışmanlık yapan uzman yazar.",
-      avatar: "/kredi_kredinotu_kredibilite.svg"
+      avatar: "/placeholder.svg"
     },
     "Mehmet Demir": {
       name: "Mehmet Demir",
       role: "Ekonomist",
       bio: "Gençlerin finansal okuryazarlığı üzerine çalışmalar yapan ekonomi yazarı.",
-      avatar: "/kredi_kredinotu_kredibilite.svg"
+      avatar: "/placeholder.svg"
     },
     "Zeynep Kara": {
       name: "Zeynep Kara",
       role: "Kredi Sistemleri Uzmanı",
       bio: "Kredi raporlama sistemleri ve kredi skorlama üzerine uzmanlaşmış finans yazarı.",
-      avatar: "/kredi_kredinotu_kredibilite.svg"
+      avatar: "/placeholder.svg"
     },
     "Ali Can": {
       name: "Ali Can",
       role: "Kişisel Finans Koçu",
       bio: "Bütçe yönetimi ve finansal disiplin konularında kitapları olan finans koçu.",
-      avatar: "/kredi_kredinotu_kredibilite.svg"
+      avatar: "/placeholder.svg"
     },
     "Sevgi Yılmaz": {
       name: "Sevgi Yılmaz",
       role: "Toplumsal Finans Uzmanı",
       bio: "Kadınların finansal bağımsızlığı üzerine çalışmalar yapan uzman danışman.",
-      avatar: "/kredi_kredinotu_kredibilite.svg"
+      avatar: "/placeholder.svg"
     }
   };
 
@@ -56,6 +56,6 @@ export const getAuthorInfo = (authorName: string): AuthorInfo => {
     name: authorName,
     role: "Finans Yazarı",
     bio: "Finans ve ekonomi konularında uzman yazar.",
-    avatar: "/kredi_kredinotu_kredibilite.svg"
+    avatar: "/placeholder.svg"
   };
 };
