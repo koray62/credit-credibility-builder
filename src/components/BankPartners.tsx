@@ -4,11 +4,7 @@ import React from 'react';
 const BankPartners: React.FC = () => {
   // Banka logoları 
   const banks = [
-    { name: "Colendibank", logo: "/placeholder.svg" },
-    { name: "Örnek Banka 2", logo: "/placeholder.svg" },
-    { name: "Örnek Banka 3", logo: "/placeholder.svg" },
-    { name: "Örnek Banka 4", logo: "/placeholder.svg" },
-    { name: "Örnek Banka 5", logo: "/placeholder.svg" }
+    { name: "Colendibank", logo: "/lovable-uploads/ab4315a3-ab9b-43cc-bef1-8efad9454e7e.png" }
   ];
 
   return (
