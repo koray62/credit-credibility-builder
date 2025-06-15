@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { BlogPostCardProps } from '@/components/blog/BlogPostCard';
 import { getBlogPosts, BlogPostType } from '@/services/blogService';
@@ -10,7 +11,7 @@ export const useBlogPosts = () => {
       author: "Koray Kaya",
       date: "14 Haziran 2025",
       readTime: "10 dk okuma",
-      image: "/kredi_kredinotu_kredibilite.svg",
+      image: "/lovable-uploads/3e11d1e1-ba6a-424b-a89d-f42c51439d1e.png",
       slug: "kredi-hesaplama-rehberi",
       featured: true
     },

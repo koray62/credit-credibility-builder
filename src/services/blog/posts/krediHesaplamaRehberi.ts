@@ -1,11 +1,10 @@
-
 export const krediHesaplamaRehberiPost = {
   slug: "kredi-hesaplama-rehberi",
   title: "Kredi Hesaplama Nasıl Yapılır? Detaylı Rehber",
   author: "Koray Kaya",
   date: "14 Haziran 2025",
   readTime: "12 dk okuma",
-  image: "/placeholder.svg",
+  image: "/lovable-uploads/3e11d1e1-ba6a-424b-a89d-f42c51439d1e.png",
   content: `
     <div class="prose prose-lg max-w-none">
       <p class="text-xl text-gray-600 mb-8">Kredi kullanmak, hayatın farklı dönemlerinde önemli finansal ihtiyaçları karşılamak için başvurulan yaygın bir yöntemdir. Ancak bir kredinin sadece "ne kadar alacağım" sorusuyla sınırlı olmadığını bilmek gerekir.</p>
