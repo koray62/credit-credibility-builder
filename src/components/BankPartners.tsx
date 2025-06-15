@@ -14,8 +14,8 @@ const BankPartners: React.FC = () => {
         
         <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
           {banks.map((bank, index) => (
-            <div key={index} className="w-32 h-32 flex items-center justify-center bg-white rounded-lg shadow-sm p-4 grayscale hover:grayscale-0 transition-all duration-300">
-              <img src={bank.logo} alt={bank.name} className="max-w-full max-h-full" />
+            <div key={index} className="w-48 h-32 flex items-center justify-center bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-all duration-300">
+              <img src={bank.logo} alt={bank.name} className="max-w-full max-h-full object-contain" />
             </div>
           ))}
         </div>
