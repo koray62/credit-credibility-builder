@@ -18,7 +18,15 @@ export interface BlogPostType {
 
 // Get all blog posts
 export const getBlogPosts = (): Record<string, BlogPostType> => {
-  return allBlogPosts;
+  const updatedPosts = Object.entries(allBlogPosts).reduce((acc, [slug, post]) => {
+    acc[slug] = {
+      ...post,
+      image: post.image === '/placeholder.svg' ? '/kredi_kredinotu_kredibilite.svg' : post.image,
+    };
+    return acc;
+  }, {} as Record<string, BlogPostType>);
+
+  return updatedPosts;
 };
 
 // Re-export the author and related posts functions for easy access

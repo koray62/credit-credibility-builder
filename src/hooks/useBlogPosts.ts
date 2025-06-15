@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { BlogPostCardProps } from '@/components/blog/BlogPostCard';
 import { getBlogPosts, BlogPostType } from '@/services/blogService';
@@ -10,7 +11,7 @@ export const useBlogPosts = () => {
       author: "Koray Kaya",
       date: "14 Haziran 2025",
       readTime: "10 dk okuma",
-      image: "/placeholder.svg",
+      image: "/kredi_kredinotu_kredibilite.svg",
       slug: "kredi-hesaplama-rehberi",
       featured: true
     },
@@ -20,7 +21,7 @@ export const useBlogPosts = () => {
       author: "Koray Kaya",
       date: "10 Haziran 2023",
       readTime: "8 dk okuma",
-      image: "/placeholder.svg",
+      image: "/kredi_kredinotu_kredibilite.svg",
       slug: "kredi-notu-nedir",
       featured: false
     },
@@ -40,7 +41,7 @@ export const useBlogPosts = () => {
       author: "Mehmet Demir",
       date: "1 Haziran 2023",
       readTime: "8 dk okuma",
-      image: "/placeholder.svg",
+      image: "/kredi_kredinotu_kredibilite.svg",
       slug: "gencler-icin-finansal-okuryazarlik"
     },
     {
@@ -49,7 +50,7 @@ export const useBlogPosts = () => {
       author: "Zeynep Kara",
       date: "28 Mayıs 2023",
       readTime: "7 dk okuma",
-      image: "/placeholder.svg",
+      image: "/kredi_kredinotu_kredibilite.svg",
       slug: "findeks-raporu-nedir"
     },
     {
@@ -58,7 +59,7 @@ export const useBlogPosts = () => {
       author: "Ali Can",
       date: "22 Mayıs 2023",
       readTime: "6 dk okuma",
-      image: "/placeholder.svg",
+      image: "/kredi_kredinotu_kredibilite.svg",
       slug: "finansal-disiplin"
     },
     {
@@ -67,7 +68,7 @@ export const useBlogPosts = () => {
       author: "Sevgi Yılmaz",
       date: "15 Mayıs 2023",
       readTime: "5 dk okuma",
-      image: "/placeholder.svg",
+      image: "/kredi_kredinotu_kredibilite.svg",
       slug: "ev-hanimlari-icin-rehber"
     }
   ]);
