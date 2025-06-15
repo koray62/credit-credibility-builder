@@ -1,4 +1,3 @@
-
 // Blog post data for "Kredi Notu Nedir?"
 export const krediNotuNedirPost = {
   slug: "kredi-notu-nedir",
@@ -6,7 +5,7 @@ export const krediNotuNedirPost = {
   author: "Koray Kaya",
   date: "10 Haziran 2023",
   readTime: "8 dk okuma",
-  image: "/placeholder.svg",
+  image: "/lovable-uploads/1504fd32-c631-406e-9b20-7132a95a8bc1.png",
   content: `
     <div class="space-y-6">
       <p class="text-lg leading-relaxed text-gray-700">
