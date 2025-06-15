@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { BlogPostCardProps } from '@/components/blog/BlogPostCard';
 import { getBlogPosts, BlogPostType } from '@/services/blogService';
@@ -41,7 +40,7 @@ export const useBlogPosts = () => {
       author: "Mehmet Demir",
       date: "1 Haziran 2023",
       readTime: "8 dk okuma",
-      image: "/kredi_kredinotu_kredibilite.svg",
+      image: "/lovable-uploads/854c0b51-a423-4186-a3b3-29fc77616400.png",
       slug: "gencler-icin-finansal-okuryazarlik"
     },
     {

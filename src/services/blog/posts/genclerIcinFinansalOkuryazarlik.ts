@@ -1,4 +1,3 @@
-
 // Blog post data for "Gençler İçin Finansal Okuryazarlık Rehberi"
 export const genclerIcinFinansalOkuryazarlikPost = {
   slug: "gencler-icin-finansal-okuryazarlik",
@@ -6,7 +5,7 @@ export const genclerIcinFinansalOkuryazarlikPost = {
   author: "Mehmet Demir",
   date: "1 Haziran 2023",
   readTime: "8 dk okuma",
-  image: "/placeholder.svg",
+  image: "/lovable-uploads/854c0b51-a423-4186-a3b3-29fc77616400.png",
   content: `
     <div class="space-y-6">
       <p class="text-lg leading-relaxed text-gray-700">
