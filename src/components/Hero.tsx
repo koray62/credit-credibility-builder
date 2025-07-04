@@ -67,7 +67,7 @@ const Hero: React.FC = () => {
             
             <div className="mt-8 p-4 bg-white rounded-lg shadow-sm border border-gray-100 animate-fade-in" style={{ animationDelay: "0.6s" }}>
               <p className="text-gray-700">
-                <span><strong>Nasıl?:</strong> SkorUp aracılığıyla, kredi puanınızı oluşturmaya yönelik sıfır faizli özel bir kredi ile anlaşmalı bankalardan kredi hesabı açarak Findeks notunuzu oluşturmaya başlayabilirsiniz. </span>
+                <span><strong>Nasıl?:</strong> Ev hanımı, öğrenci veya kredi kullanmadığınız için kredi notu olmayan bir kişi iseniz SkorUp aracılığıyla, kredi puanınızı oluşturmaya başlayabilirsiniz. Programı tamaladıktan sonra tasarruf ettiğiniz tutar hesabınıza nakit olarak geçecek, aynı zamanda size özel avantajlardan faydalanma hakkına sahip olacaksınız. </span>
               </p>
             </div>
           </div>
