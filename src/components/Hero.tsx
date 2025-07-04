@@ -44,7 +44,7 @@ const Hero: React.FC = () => {
         <div className="flex flex-col lg:flex-row items-center">
           <div className="lg:w-1/2 lg:pr-8 mb-10 lg:mb-0">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-dark leading-tight mb-6 animate-fade-in">
-              Findeks Notunuzu Oluşturarak, <span className="text-secondary">Gruba Katılın</span> Avantajlardan Faydalanın
+              Findeks Notunuzu Oluşturarak <span className="text-secondary">Gruba Katılın</span> Avantajlardan Faydalanın
             </h1>
             
             <p className="text-gray-700 text-lg md:text-xl mb-8 animate-fade-in" style={{ animationDelay: "0.2s" }}>
