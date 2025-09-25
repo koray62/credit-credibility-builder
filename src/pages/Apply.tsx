@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CheckIcon, ChevronRightIcon, AlertTriangle, HelpCircle, Calendar as CalendarIcon } from 'lucide-react';
+import { CheckIcon, ChevronRightIcon, AlertTriangle, HelpCircle, Calendar as CalendarIcon, Upload, FileText, X } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from 'react-router-dom';
 import {
@@ -58,6 +58,7 @@ const Apply: React.FC = () => {
     gelir: '',
     taksitTutari: '2000',
     krediVadesi: '12',
+    sgkBelgesi: null as File | null,
     kvkkOnay: false,
     pazarlamaIzni: false,
     taahhut1: false,
@@ -165,6 +166,38 @@ const Apply: React.FC = () => {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Check file type (PDF or images)
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        toast({
+          title: "Geçersiz dosya formatı",
+          description: "Lütfen PDF, JPG, JPEG veya PNG formatında bir dosya seçin.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Check file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast({
+          title: "Dosya çok büyük",
+          description: "Dosya boyutu 10MB'dan küçük olmalıdır.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      setFormData(prev => ({ ...prev, sgkBelgesi: file }));
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setFormData(prev => ({ ...prev, sgkBelgesi: null }));
+  };
+
   const validateStepFields = (step: number) => {
     let isValid = true;
     let newErrors = { ...formErrors };
@@ -202,6 +235,8 @@ const Apply: React.FC = () => {
                formData.gelir && formData.taksitTutari && 
                formData.krediVadesi;
       case 3:
+        return formData.sgkBelgesi !== null;
+      case 4:
         return formData.kvkkOnay && (formData.taahhut1 && formData.taahhut2 && formData.taahhut3);
       default:
         return true;
@@ -345,7 +380,7 @@ const Apply: React.FC = () => {
               
               <div className="mb-10">
                 <div className="flex justify-between items-center mb-2">
-                  {[1, 2, 3].map((step) => (
+                  {[1, 2, 3, 4].map((step) => (
                     <div 
                       key={step}
                       className={`w-10 h-10 rounded-full flex items-center justify-center ${
@@ -363,12 +398,13 @@ const Apply: React.FC = () => {
                 <div className="relative h-2 bg-gray-200 rounded-full">
                   <div 
                     className="absolute h-full bg-primary rounded-full transition-all duration-300"
-                    style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
+                    style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
                   ></div>
                 </div>
                 <div className="flex justify-between mt-2">
                   <span className="text-sm text-gray-600">Kişisel Bilgiler</span>
                   <span className="text-sm text-gray-600">Ek Bilgiler</span>
+                  <span className="text-sm text-gray-600">Belgeler</span>
                   <span className="text-sm text-gray-600">Onay</span>
                 </div>
               </div>
@@ -664,6 +700,111 @@ const Apply: React.FC = () => {
                 
                 {currentStep === 3 && (
                   <div className="space-y-6 animate-fade-in">
+                    <div className="text-center mb-8">
+                      <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                        <FileText className="w-8 h-8 text-blue-600" />
+                      </div>
+                      <h2 className="text-2xl font-bold text-gray-800 mb-2">SGK Belgesi Yükleme</h2>
+                      <p className="text-gray-600">
+                        Başvurunuzun değerlendirilebilmesi için SGK (Sosyal Güvenlik Kurumu) belgenizi yüklemeniz gerekmektedir.
+                      </p>
+                    </div>
+
+                    {!formData.sgkBelgesi ? (
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary transition-colors">
+                        <Upload className="mx-auto w-12 h-12 text-gray-400 mb-4" />
+                        <h3 className="text-lg font-medium text-gray-700 mb-2">SGK Belgesini Yükleyin</h3>
+                        <p className="text-gray-500 mb-4">
+                          PDF, JPG, JPEG veya PNG formatında, maksimum 10MB boyutunda dosya yükleyebilirsiniz.
+                        </p>
+                        <input
+                          type="file"
+                          id="sgkBelgesi"
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          onChange={handleFileChange}
+                          className="hidden"
+                        />
+                        <label
+                          htmlFor="sgkBelgesi"
+                          className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 cursor-pointer transition-colors"
+                        >
+                          <Upload className="w-5 h-5 mr-2" />
+                          Dosya Seç
+                        </label>
+                      </div>
+                    ) : (
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                              <FileText className="w-5 h-5 text-green-600" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-green-800">{formData.sgkBelgesi.name}</p>
+                              <p className="text-sm text-green-600">
+                                {(formData.sgkBelgesi.size / 1024 / 1024).toFixed(2)} MB
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleRemoveFile}
+                            className="text-red-600 border-red-200 hover:bg-red-50"
+                          >
+                            <X className="w-4 h-4 mr-1" />
+                            Kaldır
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {!formData.sgkBelgesi && (
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div className="flex items-start space-x-3">
+                          <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <p className="font-medium text-yellow-800">Belge Yükleme Zorunludur</p>
+                            <p className="text-sm text-yellow-700">
+                              SGK belgenizi yüklemeden başvurunuzu ilerletemezsiniz. Belge yükledikten sonra "Devam Et" butonu aktif hale gelecektir.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="pt-4 flex justify-between">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={handlePrevious}
+                      >
+                        Geri Dön
+                      </Button>
+                      <div className="flex space-x-3">
+                        <Button 
+                          type="button" 
+                          variant="outline"
+                          onClick={() => navigate('/')}
+                        >
+                          İptal Et
+                        </Button>
+                        <Button 
+                          type="button" 
+                          onClick={handleNext}
+                          className="bg-primary hover:bg-primary-dark text-white"
+                          disabled={!isStepValid(3)}
+                        >
+                          Devam Et <ChevronRightIcon className="ml-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {currentStep === 4 && (
+                  <div className="space-y-6 animate-fade-in">
                     <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
                       <h3 className="text-lg font-semibold mb-4">Başvuru Özeti</h3>
                       <div className="grid grid-cols-2 gap-4 text-sm">
@@ -843,7 +984,7 @@ const Apply: React.FC = () => {
                       <Button 
                         type="submit"
                         className="bg-primary hover:bg-primary-dark text-white"
-                        disabled={!isStepValid(3) || isSubmitting}
+                        disabled={!isStepValid(4) || isSubmitting}
                       >
                         {isSubmitting ? (
                           <span className="flex items-center">
